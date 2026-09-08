@@ -105,6 +105,18 @@ class PenelitianPkmController extends Controller
         return view('penelitian-pkm.verifikasi', compact('penelitianList'));
     }
 
+    public function verifikasiShow(PenelitianPkm $penelitianPkm)
+    {
+        $penelitianPkm->load(
+            'dosen',
+            'tahunAkademik',
+            'laporanAkhir',
+            'hilirisasi'
+        );
+
+        return view('penelitian-pkm.verifikasi-show', compact('penelitianPkm'));
+    }
+
     /**
      * Kaprodi: setujui Penelitian/PKM.
      */

@@ -158,6 +158,11 @@ class PublicMahasiswaController extends Controller
                 'string',
                 'max:255',
             ],
+            'tempat_pelaksanaan' => [
+                'nullable',
+                'string',
+                'max:255',
+            ],
             'tahun_akademik_id' => [
                 'required',
                 'exists:tahun_akademik,id',
@@ -224,21 +229,25 @@ class PublicMahasiswaController extends Controller
                 'string',
                 'max:20',
             ],
+
             'status_utama' => [
                 'nullable',
                 'string',
                 'max:255',
             ],
+
             'nama_instansi' => [
                 'nullable',
                 'string',
                 'max:255',
             ],
+
             'kesesuaian_bidang' => [
                 'nullable',
                 'string',
                 'max:255',
             ],
+
             'rentang_pendapatan' => [
                 'nullable',
                 'string',
@@ -246,15 +255,25 @@ class PublicMahasiswaController extends Controller
             ],
         ]);
 
-        $validated['mahasiswa_id'] = $mahasiswa->id;
+        $tracerStudy = $mahasiswa->tracerStudy()
+            ->latest()
+            ->first();
 
-        TracerStudy::create($validated);
+        if ($tracerStudy) {
+            $tracerStudy->update($validated);
+
+            $message = 'Data Tracer Study berhasil diperbarui.';
+        } else {
+            $validated['mahasiswa_id'] = $mahasiswa->id;
+
+            TracerStudy::create($validated);
+
+            $message = 'Tracer Study berhasil dicatat. Terima kasih!';
+        }
 
         return redirect()
             ->route('public.mahasiswa.menu', $nim)
-            ->with(
-                'status',
-                'Tracer study berhasil dicatat. Terima kasih!'
-            );
+            ->with('status', $message);
+
     }
 }

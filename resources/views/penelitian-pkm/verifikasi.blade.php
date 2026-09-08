@@ -26,22 +26,56 @@
                             <span class="px-2 py-1 rounded-full text-xs font-medium" style="background: var(--secondary);">{{ ucfirst($p->status) }}</span>
                         </td>
                         <td class="p-3">
-                            @if ($p->status === 'diajukan')
-                                <div class="flex gap-2">
-                                    <form method="POST" action="{{ route('penelitian-pkm.approve', $p) }}">
+                            <div class="flex flex-wrap gap-2">
+
+                                {{-- Detail --}}
+                                <a
+                                    href="{{ route('penelitian-pkm.verifikasi.show', $p) }}"
+                                    class="px-3 py-1 rounded-lg text-xs font-medium border"
+                                    style="border-color: var(--border); color: var(--foreground);"
+                                >
+                                    Detail
+                                </a>
+
+                                @if ($p->status === 'diajukan')
+
+                                    {{-- Setujui --}}
+                                    <form
+                                        method="POST"
+                                        action="{{ route('penelitian-pkm.approve', $p) }}"
+                                    >
                                         @csrf
                                         @method('PATCH')
-                                        <button type="submit" class="px-3 py-1 rounded-lg text-xs font-medium text-white" style="background: #2e7d32;">Setujui</button>
+
+                                        <button
+                                            type="submit"
+                                            class="px-3 py-1 rounded-lg text-xs font-medium text-white"
+                                            style="background: #2e7d32;"
+                                        >
+                                            Setujui
+                                        </button>
                                     </form>
-                                    <form method="POST" action="{{ route('penelitian-pkm.reject', $p) }}">
+
+                                    {{-- Tolak --}}
+                                    <form
+                                        method="POST"
+                                        action="{{ route('penelitian-pkm.reject', $p) }}"
+                                    >
                                         @csrf
                                         @method('PATCH')
-                                        <button type="submit" class="px-3 py-1 rounded-lg text-xs font-medium text-white" style="background: #a13d3d;">Tolak</button>
+
+                                        <button
+                                            type="submit"
+                                            class="px-3 py-1 rounded-lg text-xs font-medium text-white"
+                                            style="background: #a13d3d;"
+                                        >
+                                            Tolak
+                                        </button>
                                     </form>
-                                </div>
-                            @else
-                                <span class="text-xs" style="color: var(--muted-foreground);">-</span>
-                            @endif
+
+                                @endif
+
+                            </div>
                         </td>
                     </tr>
                 @empty

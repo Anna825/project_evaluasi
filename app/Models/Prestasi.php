@@ -15,6 +15,7 @@ class Prestasi extends Model
         'tingkat',
         'jenis',
         'peringkat',
+        'tempat_pelaksanaan',
         'tahun_akademik_id',
     ];
 

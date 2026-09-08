@@ -21,6 +21,13 @@ class UserManagementController extends Controller
         return view('admin.users.index', ['users' => $users]);
     }
 
+    public function show(User $user)
+    {
+        $user->load('dosen.prodi');
+
+        return view('admin.users.show', compact('user'));
+    }
+
     /**
      * Aktifkan akun dosen.
      */

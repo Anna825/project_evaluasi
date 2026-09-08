@@ -16,6 +16,7 @@
                     <th class="p-3 font-medium">Nama Kegiatan</th>
                     <th class="p-3 font-medium">Tingkat</th>
                     <th class="p-3 font-medium">Peringkat</th>
+                    <th class="p-3 font-medium">Tempat Pelaksanaan</th>
                     <th class="p-3 font-medium">Tahun</th>
                 </tr>
             </thead>
@@ -25,10 +26,11 @@
                         <td class="p-3">{{ $p->nama_kegiatan }}</td>
                         <td class="p-3">{{ $p->tingkat ?? '-' }}</td>
                         <td class="p-3">{{ $p->peringkat ?? '-' }}</td>
+                        <td class="p-3">{{ $p->tempat_pelaksanaan ?? '-' }}</td>
                         <td class="p-3">{{ $p->tahunAkademik->label ?? '-' }}</td>
                     </tr>
                 @empty
-                    <tr><td colspan="4" class="p-6 text-center" style="color: var(--muted-foreground);">Belum ada prestasi tercatat.</td></tr>
+                    <tr><td colspan="5" class="p-6 text-center" style="color: var(--muted-foreground);">Belum ada prestasi tercatat.</td></tr>
                 @endforelse
             </tbody>
         </table>

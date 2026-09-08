@@ -103,6 +103,7 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     })->name('admin.dashboard');
 
     Route::get('/admin/users', [UserManagementController::class, 'index'])->name('admin.users.index');
+    Route::get('/admin/users/{user}', [UserManagementController::class, 'show'])->name('admin.users.show');
     Route::patch('/admin/users/{user}/activate', [UserManagementController::class, 'activate'])->name('admin.users.activate');
     Route::patch('/admin/users/{user}/deactivate', [UserManagementController::class, 'deactivate'])->name('admin.users.deactivate');
 });
@@ -222,6 +223,7 @@ Route::middleware(['auth', 'role:admin,kaprodi'])->group(function () {
     Route::get('/kurikulum/{kurikulum}/laporan-cpl', [LaporanCplController::class, 'index'])->name('kurikulum.laporan-cpl');
 
     Route::get('/verifikasi-penelitian', [PenelitianPkmController::class, 'verifikasiIndex'])->name('penelitian-pkm.verifikasi');
+    Route::get('/verifikasi-penelitian/{penelitianPkm}', [PenelitianPkmController::class, 'verifikasiShow'])->name('penelitian-pkm.verifikasi.show');
     Route::patch('/verifikasi-penelitian/{penelitianPkm}/approve', [PenelitianPkmController::class, 'verifikasiApprove'])->name('penelitian-pkm.approve');
     Route::patch('/verifikasi-penelitian/{penelitianPkm}/reject', [PenelitianPkmController::class, 'verifikasiReject'])->name('penelitian-pkm.reject');
 

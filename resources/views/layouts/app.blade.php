@@ -38,6 +38,8 @@
     $roleNames = auth()->user()->roles()->pluck('nama_role')->toArray();
     $activeRole = in_array('admin', $roleNames) ? 'admin' : (in_array('kaprodi', $roleNames) ? 'kaprodi' : 'dosen');
 
+    $pendingDosenCount = $activeRole === 'admin'? \App\Models\User::whereHas('dosen')->where('status', 'pending')->count(): 0;
+
     $roleLabels = ['admin' => 'Administrator', 'kaprodi' => 'Ka. Program Studi', 'dosen' => 'Dosen'];
     $roleColors = ['admin' => '#b8952a', 'kaprodi' => '#6a1b9a', 'dosen' => '#1565c0'];
 
@@ -127,7 +129,15 @@
                                     <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" class="shrink-0">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="{{ $item['icon'] }}" />
                                     </svg>
-                                    <span class="truncate">{{ $item['label'] }}</span>
+                                    <!-- <span class="truncate">{{ $item['label'] }}</span> -->
+                                    <span class="truncate flex-1">{{ $item['label'] }}</span>
+
+                                    @if ($item['route'] === 'admin.users.index' && $pendingDosenCount > 0)
+                                        <span
+                                            class="w-2.5 h-2.5 rounded-full bg-red-500 shrink-0"
+                                            title="{{ $pendingDosenCount }} akun dosen menunggu verifikasi"
+                                        ></span>
+                                    @endif
                                 </a>
                             </li>
                         @endforeach

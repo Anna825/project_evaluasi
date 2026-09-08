@@ -35,6 +35,13 @@
                         </td>
                         <td class="p-3">
                             <div class="flex gap-2">
+                                <a
+                                    href="{{ route('admin.users.show', $user) }}"
+                                    class="px-3 py-1 rounded-lg text-xs font-medium border"
+                                    style="border-color: var(--border); color: var(--foreground);"
+                                >
+                                    Detail
+                                </a>
                                 @if ($user->status !== 'aktif')
                                     <form method="POST" action="{{ route('admin.users.activate', $user) }}">
                                         @csrf
