@@ -5,6 +5,16 @@
 @section('page-desc', $penelitianPkm->jenis . ' — ' . ($penelitianPkm->tahunAkademik->label ?? '-'))
 
 @section('content')
+    {{-- Kembali --}}
+    <div class="mb-4 text-left">
+        <a
+            href="{{ route('penelitian-pkm.index') }}"
+            class="text-sm underline hover:opacity-70"
+            style="color: var(--muted-foreground);"
+        >
+            ← Kembali ke Penelitian & PKM
+        </a>
+    </div>
     <div class="rounded-2xl border p-5 mb-4" style="background: var(--card); border-color: var(--border);">
         <span class="px-2 py-1 rounded-full text-xs font-medium" style="background: var(--secondary);">{{ ucfirst($penelitianPkm->status) }}</span>
         <div class="mt-3">

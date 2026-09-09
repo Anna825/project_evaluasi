@@ -74,18 +74,53 @@ class PenelitianPkmController extends Controller
 
         $tahunAkademikList = TahunAkademik::all();
 
-        return view('penelitian-pkm.edit', compact('penelitianPkm', 'tahunAkademikList'));
+        $dosenId = Auth::user()->dosen->id;
+
+        $dosenList = Dosen::where('id', '!=', $dosenId)->get();
+
+        $penelitianPkm->load('dosen');
+
+        return view('penelitian-pkm.edit', compact(
+            'penelitianPkm',
+            'tahunAkademikList',
+            'dosenList'
+        ));
     }
 
     public function update(StorePenelitianPkmRequest $request, PenelitianPkm $penelitianPkm)
     {
         $this->pastikanAnggotaTim($penelitianPkm);
 
+        // Update data utama penelitian/PKM
         $penelitianPkm->update($request->validated());
 
-        return redirect()->route('penelitian-pkm.index')->with('status', 'Penelitian/PKM berhasil diperbarui.');
-    }
+        // Ambil anggota yang dipilih dari form
+        $anggotaIds = $request->input('anggota', []);
 
+        // Ketua tetap adalah dosen yang sedang login
+        $ketuaId = Auth::user()->dosen->id;
+
+        // Siapkan data untuk tabel pivot
+        $syncData = [];
+
+        foreach ($anggotaIds as $dosenId) {
+            $syncData[$dosenId] = [
+                'peran' => 'Anggota',
+            ];
+        }
+
+        // Pastikan dosen yang login tetap menjadi Ketua
+        $syncData[$ketuaId] = [
+            'peran' => 'Ketua',
+        ];
+
+        // Sinkronisasi anggota tim
+        $penelitianPkm->dosen()->sync($syncData);
+
+        return redirect()
+            ->route('penelitian-pkm.index')
+            ->with('status', 'Penelitian/PKM berhasil diperbarui.');
+    }
     public function destroy(PenelitianPkm $penelitianPkm)
     {
         $this->pastikanAnggotaTim($penelitianPkm);

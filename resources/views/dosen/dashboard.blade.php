@@ -6,22 +6,82 @@
 
 @section('content')
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-        <div class="rounded-2xl p-5 border card-hover" style="background: var(--card); border-color: var(--border);">
-            <p class="text-xs font-medium uppercase tracking-wider mb-2" style="color: var(--muted-foreground);">Mata Kuliah Diampu</p>
-            <p class="text-3xl font-bold mono" style="color: #1565c0;">{{ $stats['mata_kuliah'] }}</p>
-        </div>
-        <div class="rounded-2xl p-5 border card-hover" style="background: var(--card); border-color: var(--border);">
-            <p class="text-xs font-medium uppercase tracking-wider mb-2" style="color: var(--muted-foreground);">Total Kelas</p>
-            <p class="text-3xl font-bold mono" style="color: #2e7d32;">{{ $stats['kelas'] }}</p>
-        </div>
-        <div class="rounded-2xl p-5 border card-hover" style="background: var(--card); border-color: var(--border);">
-            <p class="text-xs font-medium uppercase tracking-wider mb-2" style="color: var(--muted-foreground);">Penelitian &amp; PKM Aktif</p>
-            <p class="text-3xl font-bold mono" style="color: #6a1b9a;">{{ $stats['penelitian_aktif'] }}</p>
-        </div>
-        <div class="rounded-2xl p-5 border card-hover" style="background: var(--card); border-color: var(--border);">
-            <p class="text-xs font-medium uppercase tracking-wider mb-2" style="color: var(--muted-foreground);">Prestasi Tercatat</p>
-            <p class="text-3xl font-bold mono" style="color: var(--accent);">{{ $stats['prestasi'] }}</p>
-        </div>
+        <a
+            href="{{ route('mata-kuliah.index') }}"
+            class="block rounded-2xl p-5 border card-hover transition hover:shadow-md"
+            style="background: var(--card); border-color: var(--border);"
+        >
+            <p
+                class="text-xs font-medium uppercase tracking-wider mb-2"
+                style="color: var(--muted-foreground);"
+            >
+                Mata Kuliah Diampu
+            </p>
+
+            <p
+                class="text-3xl font-bold mono"
+                style="color: #1565c0;"
+            >
+                {{ $stats['mata_kuliah'] }}
+            </p>
+        </a>        
+        <a
+            href="{{ route('mata-kuliah.index') }}"
+            class="block rounded-2xl p-5 border card-hover transition hover:shadow-md"
+            style="background: var(--card); border-color: var(--border);"
+        >
+            <p
+                class="text-xs font-medium uppercase tracking-wider mb-2"
+                style="color: var(--muted-foreground);"
+            >
+                Total Kelas
+            </p>
+
+            <p
+                class="text-3xl font-bold mono"
+                style="color: #2e7d32;"
+            >
+                {{ $stats['kelas'] }}
+            </p>
+        </a>
+        <a
+            href="{{ route('penelitian-pkm.index') }}"
+            class="block rounded-2xl p-5 border card-hover transition hover:shadow-md"
+            style="background: var(--card); border-color: var(--border);"
+        >
+            <p
+                class="text-xs font-medium uppercase tracking-wider mb-2"
+                style="color: var(--muted-foreground);"
+            >
+                Penelitian &amp; PKM Aktif
+            </p>
+
+            <p
+                class="text-3xl font-bold mono"
+                style="color: #6a1b9a;"
+            >
+                {{ $stats['penelitian_aktif'] }}
+            </p>
+        </a>
+        <a
+            href="{{ route('prestasi-dosen.index') }}"
+            class="block rounded-2xl p-5 border card-hover transition hover:shadow-md"
+            style="background: var(--card); border-color: var(--border);"
+        >
+            <p
+                class="text-xs font-medium uppercase tracking-wider mb-2"
+                style="color: var(--muted-foreground);"
+            >
+                Prestasi Tercatat
+            </p>
+
+            <p
+                class="text-3xl font-bold mono"
+                style="color: var(--accent);"
+            >
+                {{ $stats['prestasi'] }}
+            </p>
+        </a>
     </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">

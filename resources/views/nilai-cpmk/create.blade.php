@@ -5,6 +5,18 @@
 @section('page-desc', '')
 
 @section('content')
+
+    {{-- Kembali --}}
+    <div class="mb-4 text-left">
+        <a
+            href="{{ route('mata-kuliah.show', $kelas->mata_kuliah_id) }}"
+            class="text-sm underline hover:opacity-70"
+            style="color: var(--muted-foreground);"
+        >
+            ← Kembali ke CPMK &amp; RPS
+        </a>
+    </div>
+
     @if ($cpmkList->isEmpty())
         <div class="rounded-xl p-4 text-sm" style="background: #fef3d9; color: #8a6816;">Belum ada CPMK untuk mata kuliah ini.</div>
     @elseif ($mahasiswaList->isEmpty())

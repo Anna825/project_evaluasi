@@ -6,26 +6,52 @@
 
 @section('content')
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-        <div class="rounded-2xl p-5 border card-hover" style="background: var(--card); border-color: var(--border);">
-            <p class="text-xs font-medium uppercase tracking-wider mb-2" style="color: var(--muted-foreground);">Mahasiswa Aktif</p>
-            <p class="text-3xl font-bold mono" style="color: #1565c0;">{{ $stats['mahasiswa'] }}</p>
-        </div>
-        <div class="rounded-2xl p-5 border card-hover" style="background: var(--card); border-color: var(--border);">
-            <p class="text-xs font-medium uppercase tracking-wider mb-2" style="color: var(--muted-foreground);">Dosen Tetap</p>
-            <p class="text-3xl font-bold mono" style="color: #2e7d32;">{{ $stats['dosen'] }}</p>
-        </div>
-        <div class="rounded-2xl p-5 border card-hover" style="background: var(--card); border-color: var(--border);">
-            <p class="text-xs font-medium uppercase tracking-wider mb-2" style="color: var(--muted-foreground);">Kurikulum Aktif</p>
-            <p class="text-3xl font-bold mono" style="color: #6a1b9a;">{{ $stats['kurikulum_aktif'] }}</p>
-        </div>
+        <a href="{{ route('mahasiswa.index') }}"
+        class="rounded-2xl p-5 border card-hover block"
+        style="background: var(--card); border-color: var(--border);">
+            <p class="text-xs font-medium uppercase tracking-wider mb-2"
+            style="color: var(--muted-foreground);">
+                Mahasiswa Aktif
+            </p>
+
+            <p class="text-3xl font-bold mono" style="color: #1565c0;">
+                {{ $stats['mahasiswa'] }}
+            </p>
+        </a>
+        <a href="{{ route('kaprodi.dosen.index') }}"
+        class="rounded-2xl p-5 border card-hover block"
+        style="background: var(--card); border-color: var(--border);">
+
+            <p class="text-xs font-medium uppercase tracking-wider mb-2"
+            style="color: var(--muted-foreground);">
+                Dosen Tetap
+            </p>
+
+            <p class="text-3xl font-bold mono"
+            style="color: #2e7d32;">
+                {{ $stats['dosen'] }}
+            </p>
+        </a>
+        <a href="{{ route('kurikulum.index') }}"
+        class="rounded-2xl p-5 border card-hover block"
+        style="background: var(--card); border-color: var(--border);">
+            <p class="text-xs font-medium uppercase tracking-wider mb-2"
+            style="color: var(--muted-foreground);">
+                Kurikulum Aktif
+            </p>
+
+            <p class="text-3xl font-bold mono" style="color: #6a1b9a;">
+                {{ $stats['kurikulum_aktif'] }}
+            </p>
+        </a>
         <div class="rounded-2xl p-5 border card-hover" style="background: var(--card); border-color: var(--border);">
             <p class="text-xs font-medium uppercase tracking-wider mb-2" style="color: var(--muted-foreground);">Penelitian Menunggu Verifikasi</p>
             <p class="text-3xl font-bold mono" style="color: var(--accent);">{{ $stats['penelitian_pending'] }}</p>
-            @if ($stats['penelitian_pending'] > 0)
+            <!-- @if ($stats['penelitian_pending'] > 0)
                 <a href="{{ route('penelitian-pkm.verifikasi') }}" class="text-xs mt-1 inline-block font-medium" style="color: var(--primary);">Tinjau sekarang &rarr;</a>
             @else
                 <p class="text-xs mt-1" style="color: var(--muted-foreground);">Semua sudah ditinjau</p>
-            @endif
+            @endif -->
         </div>
     </div>
 

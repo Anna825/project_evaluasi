@@ -5,6 +5,16 @@
 @section('page-desc', $mataKuliah->sks . ' SKS, Semester ke-' . $mataKuliah->semester_ke)
 
 @section('content')
+     {{-- Kembali --}}
+    <div class="mb-4 text-left">
+        <a
+            href="{{ route('mata-kuliah.index') }}"
+            class="text-sm underline hover:opacity-70"
+            style="color: var(--muted-foreground);"
+        >
+            ← Kembali ke Mata Kuliah
+        </a>
+    </div>
     <div class="rounded-2xl border overflow-hidden mb-6" style="background: var(--card); border-color: var(--border);">
         <div class="px-6 py-4 border-b flex items-center justify-between" style="border-color: var(--border);">
             <h2 class="font-serif-display text-lg">CPMK</h2>

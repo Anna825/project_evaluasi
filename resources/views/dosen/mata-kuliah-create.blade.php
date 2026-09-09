@@ -7,8 +7,17 @@
 @section('page-desc', 'Tambahkan mata kuliah yang Anda ampu.')
 
 @section('content')
-
-<div class="max-w-3xl">
+{{-- Kembali --}}
+<div class="mb-4 text-left">
+    <a
+        href="{{ route('mata-kuliah.index') }}"
+        class="text-sm underline hover:opacity-70"
+        style="color: var(--muted-foreground);"
+    >
+        ← Kembali ke Mata Kuliah
+    </a>
+</div>
+<div class="w-full">
 
     <div
         class="rounded-2xl border p-6"

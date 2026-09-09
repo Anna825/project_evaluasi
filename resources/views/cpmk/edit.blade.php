@@ -5,7 +5,20 @@
 @section('page-desc', '')
 
 @section('content')
-    <div class="rounded-2xl border p-6 max-w-xl" style="background: var(--card); border-color: var(--border);">
+        {{-- Kembali --}}
+    <div class="mb-4 text-left">
+        <a
+            href="{{ route('mata-kuliah.show', $cpmk->mata_kuliah_id) }}"
+            class="text-sm underline hover:opacity-70"
+            style="color: var(--muted-foreground);"
+        >
+            ← Kembali ke CPMK &amp; RPS
+        </a>
+    </div>
+    <div
+        class="w-full rounded-2xl border p-6 sm:p-8"
+        style="background: var(--card); border-color: var(--border);"
+    >
         @if ($errors->any())
             <div class="mb-4 px-4 py-3 rounded-xl text-sm" style="background: #fdecea; color: #a13d3d;">
                 @foreach ($errors->all() as $error)<p>{{ $error }}</p>@endforeach
