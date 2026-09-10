@@ -188,4 +188,17 @@ class MataKuliahDosenController extends Controller
             compact('mataKuliah')
         );
     }
+    public function showKaprodi(MataKuliah $mataKuliah)
+    {
+        $mataKuliah->load(
+            'cpmk.cpl',
+            'rps',
+            'kurikulum'
+        );
+
+        return view(
+            'kurikulum.mata-kuliah-show',
+            compact('mataKuliah')
+        );
+    }
 }

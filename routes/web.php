@@ -343,6 +343,9 @@ Route::middleware(['auth', 'role:kaprodi'])->group(function () {
 
     Route::get('/kaprodi/dosen/{dosen}', [DosenController::class, 'show'])
     ->name('kaprodi.dosen.show');
+    
+    Route::get('/kaprodi/mata-kuliah/{mataKuliah}', [MataKuliahDosenController::class, 'showKaprodi'])
+    ->name('kaprodi.mata-kuliah.show');
 });
 
 
