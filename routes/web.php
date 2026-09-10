@@ -554,4 +554,7 @@ Route::middleware(['auth', 'role:admin,kaprodi'])->group(function () {
 
     Route::get('/report/laporan-cpl/{kurikulum}/pdf', [ReportController::class, 'laporanCplPdf'])
         ->name('report.laporan-cpl.pdf');
+
+    Route::get('/kurikulum/{kurikulum}/mata-kuliah/{mataKuliah}', [MataKuliahDosenController::class, 'showFromKurikulum'])
+        ->name('kurikulum.mata-kuliah.show');    
 });

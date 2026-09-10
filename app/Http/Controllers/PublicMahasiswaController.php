@@ -107,7 +107,9 @@ class PublicMahasiswaController extends Controller
      */
     public function profil(string $nim)
     {
-        $mahasiswa = Mahasiswa::where('nim', $nim)->firstOrFail();
+        $mahasiswa = Mahasiswa::with('prodi')
+            ->where('nim', $nim)
+            ->firstOrFail();
 
         return view(
             'public.profil',

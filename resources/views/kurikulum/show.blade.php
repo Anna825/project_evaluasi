@@ -42,10 +42,36 @@
         </div>
         <div class="p-2">
             @forelse ($kurikulum->mataKuliah as $mk)
-                <div class="p-4 border-b last:border-b-0 text-sm" style="border-color: var(--border);">
-                    {{ $mk->kode }} — {{ $mk->nama }} ({{ $mk->sks }} SKS)
+
+            <a
+                href="{{ route('kurikulum.mata-kuliah.show', [$kurikulum, $mk]) }}"
+                class="block p-4 border-b last:border-b-0 text-sm hover:bg-[var(--secondary)] transition"
+                style="border-color: var(--border);"
+            >
+                <div class="flex items-center justify-between gap-4">
+                    <div>
+                        <p class="font-medium">
+                            {{ $mk->kode }} — {{ $mk->nama }}
+                        </p>
+
+                        <p
+                            class="text-xs mt-1"
+                            style="color: var(--muted-foreground);"
+                        >
+                            {{ $mk->sks }} SKS
+                        </p>
+                    </div>
+
+                    <span
+                        class="text-sm"
+                        style="color: var(--primary);"
+                    >
+                        Lihat Detail →
+                    </span>
                 </div>
-            @empty
+            </a>
+
+            @empty                
                 <p class="p-6 text-center text-sm" style="color: var(--muted-foreground);">Belum ada mata kuliah.</p>
             @endforelse
         </div>
