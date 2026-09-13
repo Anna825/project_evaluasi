@@ -12,6 +12,47 @@ use Illuminate\Support\Facades\DB;
 
 class MataKuliahDosenController extends Controller
 {
+        /**
+     * Pastikan Kaprodi hanya dapat mengakses
+     * Mata Kuliah dari Prodi sendiri.
+     */
+    private function pastikanAksesKaprodi(MataKuliah $mataKuliah): void
+    {
+        $user = Auth::user();
+
+        // Admin memiliki akses penuh.
+        $isAdmin = $user->roles()
+            ->where('nama_role', 'admin')
+            ->exists();
+
+        if ($isAdmin) {
+            return;
+        }
+
+        // Ambil Prodi dari role Kaprodi.
+        $kaprodiPivot = $user->roles()
+            ->where('nama_role', 'kaprodi')
+            ->first()?->pivot;
+
+        $prodiId = $kaprodiPivot?->prodi_id;
+
+        if (! $prodiId) {
+            abort(403, 'Akun Kaprodi belum memiliki Program Studi.');
+        }
+
+        // Mata Kuliah mengikuti Prodi dari Kurikulumnya.
+        $mataKuliah->loadMissing('kurikulum');
+
+        if (
+            ! $mataKuliah->kurikulum ||
+            (int) $mataKuliah->kurikulum->prodi_id !== (int) $prodiId
+        ) {
+            abort(
+                403,
+                'Anda tidak memiliki akses ke Mata Kuliah Program Studi lain.'
+            );
+        }
+    }
     /**
      * Menampilkan daftar mata kuliah yang diampu
      * oleh dosen yang sedang login.
@@ -190,6 +231,8 @@ class MataKuliahDosenController extends Controller
     }
     public function showKaprodi(MataKuliah $mataKuliah)
     {
+        $this->pastikanAksesKaprodi($mataKuliah);
+
         $mataKuliah->load(
             'cpmk.cpl',
             'rps',
@@ -201,8 +244,21 @@ class MataKuliahDosenController extends Controller
             compact('mataKuliah')
         );
     }
-    public function showFromKurikulum(Kurikulum $kurikulum, MataKuliah $mataKuliah)
-    {
+    public function showFromKurikulum(
+        Kurikulum $kurikulum,
+        MataKuliah $mataKuliah
+    ) {
+        // Pastikan Mata Kuliah memang berasal
+        // dari Kurikulum yang ada di URL.
+        if ((int) $mataKuliah->kurikulum_id !== (int) $kurikulum->id) {
+            abort(
+                403,
+                'Mata Kuliah tidak sesuai dengan Kurikulum yang dipilih.'
+            );
+        }
+
+        $this->pastikanAksesKaprodi($mataKuliah);
+
         $mataKuliah->load(
             'cpmk.cpl',
             'rps',
