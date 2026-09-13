@@ -91,23 +91,7 @@
                     </p>
 
                     <p class="text-sm font-semibold">
-                        {{ $dosen->prodi->nama ?? '-' }}
-                    </p>
-
-                </div>
-
-
-                {{-- Jenis Kelamin --}}
-                <div class="rounded-xl border p-4"
-                     style="border-color: var(--border);">
-
-                    <p class="text-xs mb-2"
-                       style="color: var(--muted-foreground);">
-                        Jenis Kelamin
-                    </p>
-
-                    <p class="text-sm font-semibold">
-                        {{ $dosen->jenis_kelamin ?? '-' }}
+                        {{ $dosen->prodi?->nama ?? '-' }}
                     </p>
 
                 </div>
@@ -171,7 +155,7 @@
                     </p>
 
                     <p class="text-sm font-semibold">
-                        {{ $dosen->nomor_hp ?? '-' }}
+                        {{ $dosen->no_hp ?? '-' }}
                     </p>
 
                 </div>

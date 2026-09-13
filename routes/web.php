@@ -10,6 +10,7 @@ use App\Http\Controllers\MahasiswaController;
 use App\Http\Controllers\DosenController;
 use App\Http\Controllers\ProdiController;
 use App\Http\Controllers\TahunAkademikController;
+use App\Http\Controllers\SemesterController;
 use App\Http\Controllers\MahasiswaImportController;
 use App\Http\Controllers\KurikulumController;
 use App\Http\Controllers\CplController;
@@ -25,6 +26,7 @@ use App\Http\Controllers\PrestasiDosenController;
 use App\Http\Controllers\PublicMahasiswaController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\DosenProfileController;
 
 
 /*
@@ -211,6 +213,15 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
 
     Route::patch('/admin/users/{user}/deactivate', [UserManagementController::class, 'deactivate'])
         ->name('admin.users.deactivate');
+
+    Route::resource('tahun-akademik', TahunAkademikController::class)
+    ->except('show');
+
+    Route::resource('semester', SemesterController::class)
+        ->except('show');
+    
+    Route::post('/prodi/{prodi}/kaprodi', [ProdiController::class, 'setKaprodi'])
+        ->name('prodi.set-kaprodi');
 });
 
 
@@ -355,7 +366,15 @@ Route::middleware(['auth', 'role:kaprodi'])->group(function () {
 |--------------------------------------------------------------------------
 */
 
-Route::middleware(['auth', 'role:dosen'])->group(function () {
+Route::middleware(['auth', 'role:dosen,kaprodi'])->group(function () {
+    Route::get('/dosen/profil', [DosenProfileController::class, 'show'])
+         ->name('dosen.profil.show');
+
+    Route::get('/dosen/profil/edit', [DosenProfileController::class, 'edit'])
+        ->name('dosen.profil.edit');
+
+    Route::put('/dosen/profil', [DosenProfileController::class, 'update'])
+        ->name('dosen.profil.update');
 
     Route::get('/dosen/dashboard', function () {
 
@@ -484,6 +503,9 @@ Route::middleware(['auth', 'role:dosen'])->group(function () {
 
 Route::middleware(['auth', 'role:admin,kaprodi'])->group(function () {
 
+    Route::get('/mahasiswa/kelas/{kelas}', [MahasiswaController::class, 'kelas'])
+        ->name('mahasiswa.kelas.show');
+
     Route::resource('mahasiswa', MahasiswaController::class);
 
 
@@ -499,10 +521,6 @@ Route::middleware(['auth', 'role:admin,kaprodi'])->group(function () {
 
     Route::resource('prodi', ProdiController::class)
         ->except('show');
-
-    Route::resource('tahun-akademik', TahunAkademikController::class)
-        ->except('show');
-
 
     Route::resource('kurikulum', KurikulumController::class);
 

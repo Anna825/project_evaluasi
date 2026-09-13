@@ -5,6 +5,13 @@
 @section('page-desc', 'Detail data mahasiswa')
 
 @section('content')
+    <div class="mb-5">
+        <a href="{{ route('mahasiswa.kelas.show', $mahasiswa->kelasMahasiswa) }}"
+        class="inline-flex items-center gap-2 text-sm font-medium transition hover:opacity-70"
+        style="color: var(--muted-foreground);">
+            ← Kembali ke Daftar Mahasiswa
+        </a>
+    </div>
     @php
         $statusBadge = [
             'aktif' => ['bg' => '#eff6ff', 'text' => '#1e40af'],
@@ -26,21 +33,30 @@
             </span>
 
             <dl class="space-y-3 text-sm">
-                <div class="flex justify-between">
+                <div class="flex justify-between gap-4">
                     <dt style="color: var(--muted-foreground);">NIM</dt>
-                    <dd class="mono font-semibold">{{ $mahasiswa->nim }}</dd>
+                    <dd class="mono font-semibold text-right">{{ $mahasiswa->nim }}</dd>
                 </div>
-                <div class="flex justify-between">
+
+                <div class="flex justify-between gap-4">
                     <dt style="color: var(--muted-foreground);">Program Studi</dt>
-                    <dd class="font-medium text-right">{{ $mahasiswa->prodi->nama ?? '-' }}</dd>
+                    <dd class="font-medium text-right">
+                        {{ $mahasiswa->prodi->nama ?? '-' }}
+                    </dd>
                 </div>
-                <div class="flex justify-between">
+
+                <div class="flex justify-between gap-4">
+                    <dt style="color: var(--muted-foreground);">Kelas</dt>
+                    <dd class="font-medium text-right">
+                        {{ $mahasiswa->kelasMahasiswa->nama_kelas ?? '-' }}
+                    </dd>
+                </div>
+
+                <div class="flex justify-between gap-4">
                     <dt style="color: var(--muted-foreground);">Angkatan</dt>
-                    <dd class="font-medium">{{ $mahasiswa->angkatan }}</dd>
-                </div>
-                <div class="flex justify-between">
-                    <dt style="color: var(--muted-foreground);">IPK Terakhir</dt>
-                    <dd class="mono font-semibold" style="color: var(--accent);">{{ $mahasiswa->ipk_terakhir ? number_format($mahasiswa->ipk_terakhir, 2) : '-' }}</dd>
+                    <dd class="font-medium text-right">
+                        {{ $mahasiswa->kelasMahasiswa->angkatan ?? '-' }}
+                    </dd>
                 </div>
             </dl>
 

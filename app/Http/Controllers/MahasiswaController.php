@@ -6,6 +6,7 @@ use App\Http\Requests\StoreMahasiswaRequest;
 use App\Http\Requests\UpdateMahasiswaRequest;
 use App\Models\Mahasiswa;
 use App\Models\Prodi;
+use App\Models\KelasMahasiswa;
 
 class MahasiswaController extends Controller
 {
@@ -14,19 +15,25 @@ class MahasiswaController extends Controller
      */
     public function index()
     {
-        $mahasiswa = Mahasiswa::with('prodi')
-            ->withCount('prestasi')
-            ->when(request('search'), function ($query, $search) {
-                $query->where(function ($q) use ($search) {
-                    $q->where('nama', 'like', "%{$search}%")
-                        ->orWhere('nim', 'like', "%{$search}%");
-                });
-            })
-            ->latest()
-            ->paginate(15)
-            ->withQueryString();
+        $kelasMahasiswa = KelasMahasiswa::with('prodi')
+            ->withCount('mahasiswa')
+            ->orderBy('angkatan', 'desc')
+            ->orderBy('nama_kelas', 'asc')
+            ->get();
 
-        return view('mahasiswa.index', compact('mahasiswa'));
+        return view('mahasiswa.index', compact('kelasMahasiswa'));
+    }
+
+    public function kelas(\App\Models\KelasMahasiswa $kelas)
+    {
+        $kelas->load('prodi');
+
+        $mahasiswa = $kelas->mahasiswa()
+            ->with('prodi')
+            ->orderBy('nim', 'asc')
+            ->paginate(15);
+
+        return view('mahasiswa.kelas', compact('kelas', 'mahasiswa'));
     }
 
     /**
@@ -34,21 +41,76 @@ class MahasiswaController extends Controller
      */
     public function create()
     {
-        $prodiList = Prodi::all();
+        $prodiList = Prodi::orderBy('nama')->get();
 
-        return view('mahasiswa.create', compact('prodiList'));
+        $kelasList = KelasMahasiswa::with('prodi')
+            ->orderBy('angkatan', 'desc')
+            ->orderBy('nama_kelas')
+            ->get();
+
+        return view('mahasiswa.create', compact('prodiList', 'kelasList'));
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreMahasiswaRequest $request)
+   public function store(StoreMahasiswaRequest $request)
     {
-        Mahasiswa::create($request->validated());
+        $data = $request->validated();
 
-        return redirect()->route('mahasiswa.index')->with('status', 'Data mahasiswa berhasil ditambahkan.');
+        $prodiId = $data['prodi_id'];
+        $angkatan = $data['angkatan'];
+
+        if ($data['kelas_mahasiswa_id'] === 'baru') {
+
+            $namaKelas = trim($data['kelas_baru']);
+
+            $kelas = \App\Models\KelasMahasiswa::firstOrCreate(
+                [
+                    'prodi_id' => $prodiId,
+                    'nama_kelas' => $namaKelas,
+                    'angkatan' => $angkatan,
+                ],
+                [
+                    'status_kelas' => 'aktif',
+                ]
+            );
+
+            $data['kelas_mahasiswa_id'] = $kelas->id;
+        } else {
+
+            $kelas = \App\Models\KelasMahasiswa::findOrFail(
+                $data['kelas_mahasiswa_id']
+            );
+
+            if ((int) $kelas->prodi_id !== (int) $prodiId) {
+                return back()
+                    ->withInput()
+                    ->withErrors([
+                        'kelas_mahasiswa_id' =>
+                            'Kelas yang dipilih tidak sesuai dengan Program Studi mahasiswa.',
+                    ]);
+            }
+
+            if ((int) $kelas->angkatan !== (int) $angkatan) {
+                return back()
+                    ->withInput()
+                    ->withErrors([
+                        'kelas_mahasiswa_id' =>
+                            'Kelas yang dipilih tidak sesuai dengan Angkatan mahasiswa.',
+                    ]);
+            }
+        }
+
+        unset($data['angkatan']);
+        unset($data['kelas_baru']);
+
+        Mahasiswa::create($data);
+
+        return redirect()
+            ->route('mahasiswa.index')
+            ->with('status', 'Data mahasiswa berhasil ditambahkan.');
     }
-
     /**
      * Display the specified resource.
      */

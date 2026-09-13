@@ -68,15 +68,14 @@
     style="background-color: var(--background); color: var(--foreground);"
 >
 
-<div class="min-h-screen grid grid-cols-1 lg:grid-cols-2">
+<div class="h-screen grid grid-cols-1 lg:grid-cols-2 overflow-hidden">
 
     {{-- ========================================================= --}}
     {{-- PANEL KIRI : BRANDING --}}
     {{-- ========================================================= --}}
 
     <div
-        class="relative hidden lg:flex flex-col justify-between p-12 overflow-hidden"
-        style="background: linear-gradient(160deg, var(--primary-dark), var(--primary));"
+        class="relative hidden lg:flex flex-col justify-between p-12 overflow-hidden h-screen"        style="background: linear-gradient(160deg, var(--primary-dark), var(--primary));"
     >
 
         {{-- Dekorasi --}}
@@ -212,9 +211,7 @@
     {{-- PANEL KANAN : FORM REGISTRASI --}}
     {{-- ========================================================= --}}
 
-    <div class="flex items-center justify-center p-6 sm:p-10 lg:p-12">
-
-        <div class="w-full max-w-md">
+    <div class="h-screen overflow-y-auto flex items-start justify-center p-6 sm:p-10 lg:p-12">        <div class="w-full max-w-md">
 
             {{-- Logo mobile --}}
             <div class="flex items-center gap-3 mb-8 lg:hidden">

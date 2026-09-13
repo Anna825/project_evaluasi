@@ -176,25 +176,6 @@
                         </p>
                     </div>
 
-
-                    {{-- Jenis Kelamin --}}
-                    <div
-                        class="rounded-xl border p-4"
-                        style="border-color: var(--border);"
-                    >
-                        <p
-                            class="text-xs mb-1"
-                            style="color: var(--muted-foreground);"
-                        >
-                            Jenis Kelamin
-                        </p>
-
-                        <p class="font-semibold">
-                            {{ $user->dosen->jenis_kelamin ?? '-' }}
-                        </p>
-                    </div>
-
-
                     {{-- Jabatan --}}
                     <div
                         class="rounded-xl border p-4"

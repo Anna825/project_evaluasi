@@ -11,26 +11,22 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('mahasiswa', function (Blueprint $table) {
+        Schema::create('kelas_mahasiswa', function (Blueprint $table) {
             $table->id();
 
             $table->foreignId('prodi_id')
                 ->constrained('prodi')
                 ->onDelete('cascade');
 
-            $table->foreignId('kelas_mahasiswa_id')
-                ->constrained('kelas_mahasiswa')
-                ->onDelete('restrict');
+            $table->string('nama_kelas');
+            $table->integer('angkatan');
 
-            $table->string('nim')->unique();
-            $table->string('nama');
-
-            $table->decimal('ipk_terakhir', 3, 2)->nullable();
-
-            $table->enum('status', ['aktif', 'cuti', 'lulus', 'DO'])
+            $table->enum('status_kelas', ['aktif', 'lulus'])
                 ->default('aktif');
 
             $table->timestamps();
+
+            $table->unique(['prodi_id', 'nama_kelas', 'angkatan']);
         });
     }
 
@@ -39,6 +35,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('mahasiswa');
+        Schema::dropIfExists('kelas_mahasiswa');
     }
 };

@@ -26,12 +26,23 @@
 
         <div class="rounded-2xl border p-5 card-hover" style="background: var(--card); border-color: var(--border);">
             <h2 class="font-serif-display text-lg mb-1">Laporan Capaian CPL</h2>
-            <p class="text-sm mb-3" style="color: var(--muted-foreground);">Pilih kurikulum untuk laporan capaian CPL (PDF).</p>
+            <p class="text-sm mb-3" style="color: var(--muted-foreground);">
+                Pilih kurikulum untuk laporan capaian CPL (PDF).
+            </p>
+
             <div class="space-y-1">
-                @forelse (\App\Models\Kurikulum::all() as $k)
-                    <a href="{{ route('report.laporan-cpl.pdf', $k) }}" class="block text-sm hover:underline" style="color: var(--primary);">{{ $k->nama }} — Download PDF</a>
+                @forelse ($kurikulumList as $k)
+                    <a
+                        href="{{ route('report.laporan-cpl.pdf', $k) }}"
+                        class="block text-sm hover:underline"
+                        style="color: var(--primary);"
+                    >
+                        {{ $k->nama }} — Download PDF
+                    </a>
                 @empty
-                    <p class="text-sm" style="color: var(--muted-foreground);">Belum ada kurikulum.</p>
+                    <p class="text-sm" style="color: var(--muted-foreground);">
+                        Belum ada kurikulum.
+                    </p>
                 @endforelse
             </div>
         </div>

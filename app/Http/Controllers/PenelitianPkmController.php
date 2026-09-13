@@ -16,10 +16,54 @@ class PenelitianPkmController extends Controller
     private function pastikanAnggotaTim(PenelitianPkm $penelitianPkm): void
     {
         $dosenId = Auth::user()->dosen->id;
-        $termasuk = $penelitianPkm->dosen()->where('dosen_id', $dosenId)->exists();
+
+        $termasuk = $penelitianPkm->dosen()
+            ->where('dosen_id', $dosenId)
+            ->exists();
 
         if (! $termasuk) {
             abort(403, 'Anda bukan anggota tim penelitian/PKM ini.');
+        }
+    }
+
+    /**
+     * Pastikan Admin boleh mengakses semua data,
+     * sedangkan Kaprodi hanya boleh mengakses
+     * Penelitian/PKM yang Ketua-nya berasal dari Prodi sendiri.
+     */
+    private function pastikanAksesKaprodi(PenelitianPkm $penelitianPkm): void
+    {
+        $user = Auth::user();
+
+        // Admin memiliki akses penuh.
+        $isAdmin = $user->roles()
+            ->where('nama_role', 'admin')
+            ->exists();
+
+        if ($isAdmin) {
+            return;
+        }
+
+        // Ambil Prodi dari role Kaprodi.
+        $kaprodiPivot = $user->roles()
+            ->where('nama_role', 'kaprodi')
+            ->first()?->pivot;
+
+        $prodiId = $kaprodiPivot?->prodi_id;
+
+        if (! $prodiId) {
+            abort(403, 'Akun Kaprodi belum memiliki Program Studi.');
+        }
+
+        // Penelitian/PKM dianggap milik Prodi
+        // berdasarkan Dosen yang berperan sebagai Ketua.
+        $ketuaDariProdiIni = $penelitianPkm->dosen()
+            ->where('penelitian_pkm_dosen.peran', 'Ketua')
+            ->where('dosen.prodi_id', $prodiId)
+            ->exists();
+
+        if (! $ketuaDariProdiIni) {
+            abort(403, 'Anda tidak memiliki akses ke Penelitian/PKM Program Studi lain.');
         }
     }
 
@@ -29,7 +73,11 @@ class PenelitianPkmController extends Controller
     public function index()
     {
         $dosen = Auth::user()->dosen;
-        $penelitianList = $dosen->penelitianPkm()->with('laporanAkhir', 'hilirisasi')->latest()->get();
+
+        $penelitianList = $dosen->penelitianPkm()
+            ->with('laporanAkhir', 'hilirisasi')
+            ->latest()
+            ->get();
 
         return view('penelitian-pkm.index', compact('penelitianList'));
     }
@@ -37,35 +85,61 @@ class PenelitianPkmController extends Controller
     public function create()
     {
         $tahunAkademikList = TahunAkademik::all();
-        $dosenList = Dosen::where('id', '!=', Auth::user()->dosen->id)->get();
 
-        return view('penelitian-pkm.create', compact('tahunAkademikList', 'dosenList'));
+        $dosenList = Dosen::where(
+            'id',
+            '!=',
+            Auth::user()->dosen->id
+        )->get();
+
+        return view(
+            'penelitian-pkm.create',
+            compact('tahunAkademikList', 'dosenList')
+        );
     }
 
     public function store(StorePenelitianPkmRequest $request)
     {
-        $penelitian = PenelitianPkm::create($request->validated() + ['status' => 'diajukan']);
+        $penelitian = PenelitianPkm::create(
+            $request->validated() + ['status' => 'diajukan']
+        );
 
-        // Dosen pengaju otomatis jadi "Ketua"
-        $penelitian->dosen()->attach(Auth::user()->dosen->id, ['peran' => 'Ketua']);
+        // Dosen pengaju otomatis menjadi Ketua.
+        $penelitian->dosen()->attach(
+            Auth::user()->dosen->id,
+            ['peran' => 'Ketua']
+        );
 
-        // Anggota tambahan (kalau dipilih)
+        // Anggota tambahan jika dipilih.
         if ($request->has('anggota')) {
             foreach ($request->anggota as $dosenId) {
-                $penelitian->dosen()->attach($dosenId, ['peran' => 'Anggota']);
+                $penelitian->dosen()->attach(
+                    $dosenId,
+                    ['peran' => 'Anggota']
+                );
             }
         }
 
-        return redirect()->route('penelitian-pkm.index')->with('status', 'Penelitian/PKM berhasil diajukan.');
+        return redirect()
+            ->route('penelitian-pkm.index')
+            ->with('status', 'Penelitian/PKM berhasil diajukan.');
     }
 
     public function show(PenelitianPkm $penelitianPkm)
     {
         $this->pastikanAnggotaTim($penelitianPkm);
 
-        $penelitianPkm->load('dosen', 'laporanAkhir', 'hilirisasi', 'tahunAkademik');
+        $penelitianPkm->load(
+            'dosen',
+            'laporanAkhir',
+            'hilirisasi',
+            'tahunAkademik'
+        );
 
-        return view('penelitian-pkm.show', compact('penelitianPkm'));
+        return view(
+            'penelitian-pkm.show',
+            compact('penelitianPkm')
+        );
     }
 
     public function edit(PenelitianPkm $penelitianPkm)
@@ -80,27 +154,34 @@ class PenelitianPkmController extends Controller
 
         $penelitianPkm->load('dosen');
 
-        return view('penelitian-pkm.edit', compact(
-            'penelitianPkm',
-            'tahunAkademikList',
-            'dosenList'
-        ));
+        return view(
+            'penelitian-pkm.edit',
+            compact(
+                'penelitianPkm',
+                'tahunAkademikList',
+                'dosenList'
+            )
+        );
     }
 
-    public function update(StorePenelitianPkmRequest $request, PenelitianPkm $penelitianPkm)
-    {
+    public function update(
+        StorePenelitianPkmRequest $request,
+        PenelitianPkm $penelitianPkm
+    ) {
         $this->pastikanAnggotaTim($penelitianPkm);
 
-        // Update data utama penelitian/PKM
-        $penelitianPkm->update($request->validated());
+        // Update data utama penelitian/PKM.
+        $penelitianPkm->update(
+            $request->validated()
+        );
 
-        // Ambil anggota yang dipilih dari form
+        // Ambil anggota yang dipilih dari form.
         $anggotaIds = $request->input('anggota', []);
 
-        // Ketua tetap adalah dosen yang sedang login
+        // Ketua tetap adalah dosen yang sedang login.
         $ketuaId = Auth::user()->dosen->id;
 
-        // Siapkan data untuk tabel pivot
+        // Siapkan data pivot.
         $syncData = [];
 
         foreach ($anggotaIds as $dosenId) {
@@ -109,39 +190,89 @@ class PenelitianPkmController extends Controller
             ];
         }
 
-        // Pastikan dosen yang login tetap menjadi Ketua
+        // Pastikan dosen yang login tetap menjadi Ketua.
         $syncData[$ketuaId] = [
             'peran' => 'Ketua',
         ];
 
-        // Sinkronisasi anggota tim
+        // Sinkronisasi anggota tim.
         $penelitianPkm->dosen()->sync($syncData);
 
         return redirect()
             ->route('penelitian-pkm.index')
             ->with('status', 'Penelitian/PKM berhasil diperbarui.');
     }
+
     public function destroy(PenelitianPkm $penelitianPkm)
     {
         $this->pastikanAnggotaTim($penelitianPkm);
 
         $penelitianPkm->delete();
 
-        return redirect()->route('penelitian-pkm.index')->with('status', 'Penelitian/PKM berhasil dihapus.');
+        return redirect()
+            ->route('penelitian-pkm.index')
+            ->with('status', 'Penelitian/PKM berhasil dihapus.');
     }
 
     /**
-     * Kaprodi: lihat semua Penelitian/PKM untuk diverifikasi.
+     * Kaprodi: lihat Penelitian/PKM
+     * dari Prodi sendiri untuk diverifikasi.
      */
     public function verifikasiIndex()
     {
-        $penelitianList = PenelitianPkm::with('dosen', 'tahunAkademik')->latest()->get();
+        $user = Auth::user();
 
-        return view('penelitian-pkm.verifikasi', compact('penelitianList'));
+        $isAdmin = $user->roles()
+            ->where('nama_role', 'admin')
+            ->exists();
+
+        if ($isAdmin) {
+            // Admin dapat melihat semua Penelitian/PKM.
+            $penelitianList = PenelitianPkm::with(
+                'dosen',
+                'tahunAkademik'
+            )
+                ->latest()
+                ->get();
+        } else {
+            // Kaprodi hanya melihat Penelitian/PKM
+            // yang Ketua-nya berasal dari Prodi sendiri.
+            $kaprodiPivot = $user->roles()
+                ->where('nama_role', 'kaprodi')
+                ->first()?->pivot;
+
+            $prodiId = $kaprodiPivot?->prodi_id;
+
+            if (! $prodiId) {
+                abort(403, 'Akun Kaprodi belum memiliki Program Studi.');
+            }
+
+            $penelitianList = PenelitianPkm::with(
+                'dosen',
+                'tahunAkademik'
+            )
+                ->whereHas('dosen', function ($query) use ($prodiId) {
+                    $query
+                        ->where('dosen.prodi_id', $prodiId)
+                        ->where('penelitian_pkm_dosen.peran', 'Ketua');
+                })
+                ->latest()
+                ->get();
+        }
+
+        return view(
+            'penelitian-pkm.verifikasi',
+            compact('penelitianList')
+        );
     }
 
+    /**
+     * Kaprodi: lihat detail Penelitian/PKM.
+     */
     public function verifikasiShow(PenelitianPkm $penelitianPkm)
     {
+        $this->pastikanAksesKaprodi($penelitianPkm);
+
         $penelitianPkm->load(
             'dosen',
             'tahunAkademik',
@@ -149,7 +280,10 @@ class PenelitianPkmController extends Controller
             'hilirisasi'
         );
 
-        return view('penelitian-pkm.verifikasi-show', compact('penelitianPkm'));
+        return view(
+            'penelitian-pkm.verifikasi-show',
+            compact('penelitianPkm')
+        );
     }
 
     /**
@@ -157,9 +291,14 @@ class PenelitianPkmController extends Controller
      */
     public function verifikasiApprove(PenelitianPkm $penelitianPkm)
     {
-        $penelitianPkm->update(['status' => 'disetujui']);
+        $this->pastikanAksesKaprodi($penelitianPkm);
 
-        return back()->with('status', 'Penelitian/PKM telah disetujui.');
+        $penelitianPkm->update([
+            'status' => 'disetujui',
+        ]);
+
+        return back()
+            ->with('status', 'Penelitian/PKM telah disetujui.');
     }
 
     /**
@@ -167,8 +306,13 @@ class PenelitianPkmController extends Controller
      */
     public function verifikasiReject(PenelitianPkm $penelitianPkm)
     {
-        $penelitianPkm->update(['status' => 'ditolak']);
+        $this->pastikanAksesKaprodi($penelitianPkm);
 
-        return back()->with('status', 'Penelitian/PKM telah ditolak.');
+        $penelitianPkm->update([
+            'status' => 'ditolak',
+        ]);
+
+        return back()
+            ->with('status', 'Penelitian/PKM telah ditolak.');
     }
 }

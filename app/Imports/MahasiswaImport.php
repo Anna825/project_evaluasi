@@ -2,56 +2,116 @@
 
 namespace App\Imports;
 
+use App\Models\KelasMahasiswa;
 use App\Models\Mahasiswa;
 use App\Models\Prodi;
+use Illuminate\Support\Str;
+use Maatwebsite\Excel\Concerns\SkipsOnFailure;
+use Maatwebsite\Excel\Concerns\SkipsFailures;
 use Maatwebsite\Excel\Concerns\ToModel;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use Maatwebsite\Excel\Concerns\WithValidation;
-use Maatwebsite\Excel\Concerns\SkipsOnFailure;
-use Maatwebsite\Excel\Concerns\SkipsFailures;
 
-class MahasiswaImport implements ToModel, WithHeadingRow, WithValidation, SkipsOnFailure
+class MahasiswaImport implements
+    ToModel,
+    WithHeadingRow,
+    WithValidation,
+    SkipsOnFailure
 {
     use SkipsFailures;
 
-    /**
-     * @param array $row
-     */
     public function model(array $row)
     {
-        $prodi = Prodi::where('nama', trim($row['prodi']))->first();
+        $prodiNama = trim((string) ($row['program_studi'] ?? ''));
+        $namaKelas = trim((string) ($row['kelas'] ?? ''));
+        $angkatan = (int) $row['angkatan'];
+
+        $prodi = Prodi::where('nama', $prodiNama)->first();
+
+        if (!$prodi) {
+            return null;
+        }
+
+        $kelasMahasiswa = KelasMahasiswa::firstOrCreate(
+            [
+                'prodi_id' => $prodi->id,
+                'nama_kelas' => $namaKelas,
+                'angkatan' => $angkatan,
+            ],
+            [
+                'status_kelas' => 'aktif',
+            ]
+        );
 
         return new Mahasiswa([
-            'prodi_id' => $prodi?->id,
-            'nim' => $row['nim'],
-            'nama' => $row['nama'],
-            'angkatan' => $row['angkatan'],
-            'ipk_terakhir' => $row['ipk_terakhir'] ?? null,
-            'status' => $row['status'] ?? 'aktif',
+            'prodi_id' => $prodi->id,
+            'kelas_mahasiswa_id' => $kelasMahasiswa->id,
+            'nim' => trim((string) $row['nim']),
+            'nama' => trim((string) $row['nama']),
+            'status' => strtolower(trim((string) ($row['status'] ?? 'aktif'))),
         ]);
     }
 
-    /**
-     * Aturan validasi per baris.
-     */
     public function rules(): array
     {
         return [
-            'prodi' => ['required', 'exists:prodi,nama'],
-            'nim' => ['required', 'distinct', 'unique:mahasiswa,nim'],
-            'nama' => ['required', 'string'],
-            'angkatan' => ['required', 'integer'],
-            'ipk_terakhir' => ['nullable', 'numeric'],
-            'status' => ['nullable', 'in:aktif,cuti,lulus,DO'],
+            'nim' => [
+                'required',
+                'distinct',
+                'unique:mahasiswa,nim',
+            ],
+
+            'nama' => [
+                'required',
+                'string',
+            ],
+
+            'program_studi' => [
+                'required',
+                'exists:prodi,nama',
+            ],
+
+            'kelas' => [
+                'required',
+                'string',
+            ],
+
+            'status' => [
+                'required',
+                function ($attribute, $value, $fail) {
+                    $status = strtolower(trim((string) $value));
+
+                    if (!in_array($status, ['aktif', 'cuti', 'lulus', 'do'])) {
+                        $fail('Status mahasiswa harus Aktif, Cuti, Lulus, atau DO.');
+                    }
+                },
+            ],
+
+            'angkatan' => [
+                'required',
+                'integer',
+            ],
         ];
     }
 
     public function customValidationMessages()
     {
         return [
-            'prodi.exists' => 'Nama program studi tidak ditemukan di sistem.',
+            'nim.required' => 'NIM wajib diisi.',
             'nim.unique' => 'NIM sudah terdaftar di sistem.',
-            'nim.distinct' => 'NIM duplikat di dalam file.',
+            'nim.distinct' => 'Terdapat NIM duplikat di dalam file.',
+
+            'nama.required' => 'Nama mahasiswa wajib diisi.',
+
+            'program_studi.required' => 'Program Studi wajib diisi.',
+            'program_studi.exists' => 'Nama Program Studi tidak ditemukan di sistem.',
+
+            'kelas.required' => 'Kelas mahasiswa wajib diisi.',
+
+            'status.required' => 'Status mahasiswa wajib diisi.',
+
+            'angkatan.required' => 'Angkatan wajib diisi.',
+            'angkatan.integer' => 'Angkatan harus berupa angka.',
         ];
     }
 }

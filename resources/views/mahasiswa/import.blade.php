@@ -7,9 +7,7 @@
 @section('content')
 @php
     $totalMahasiswa = $totalMahasiswa ?? \App\Models\Mahasiswa::count();
-    $prodis = $prodis ?? \App\Models\Prodi::orderBy('nama')->get();
 @endphp
-
 {{-- Header Bar: Breadcrumb & Statistik --}}
 <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
     <div class="flex items-center gap-2 text-sm">
@@ -220,60 +218,104 @@
     <div class="lg:col-span-5 space-y-6">
 
         {{-- Petunjuk Struktur Kolom --}}
-        <div class="rounded-2xl border p-6" style="background: var(--card); border-color: var(--border);">
-            <div class="flex items-center gap-2 mb-3">
-                <svg class="w-5 h-5" style="color: var(--accent);" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                <h3 class="font-serif-display font-bold text-base">Panduan Format Kolom Excel</h3>
-            </div>
-            <p class="text-xs mb-4" style="color: var(--muted-foreground);">
-                Pastikan baris pertama file Anda adalah header dengan nama kolom persis seperti di bawah ini:
-            </p>
+        <div class="overflow-x-auto rounded-xl border" style="border-color: var(--border);">
+            <table class="w-full text-left text-xs">
+                <thead style="background: var(--secondary);">
+                    <tr>
+                        <th class="py-2.5 px-3 font-semibold">Kolom</th>
+                        <th class="py-2.5 px-2 font-semibold">Sifat</th>
+                        <th class="py-2.5 px-3 font-semibold">Keterangan</th>
+                    </tr>
+                </thead>
 
-            <div class="overflow-x-auto rounded-xl border" style="border-color: var(--border);">
-                <table class="w-full text-left text-xs">
-                    <thead style="background: var(--secondary);">
-                        <tr>
-                            <th class="py-2.5 px-3 font-semibold">Kolom</th>
-                            <th class="py-2.5 px-2 font-semibold">Sifat</th>
-                            <th class="py-2.5 px-3 font-semibold">Keterangan</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y" style="border-color: var(--border);">
-                        <tr>
-                            <td class="py-2 px-3 font-mono font-bold" style="color: var(--primary);">nim</td>
-                            <td class="py-2 px-2"><span class="px-1.5 py-0.5 rounded text-[10px] font-semibold bg-red-100 text-red-700">Wajib</span></td>
-                            <td class="py-2 px-3" style="color: var(--muted-foreground);">Nomor Induk unik, tidak boleh duplikat</td>
-                        </tr>
-                        <tr>
-                            <td class="py-2 px-3 font-mono font-bold" style="color: var(--primary);">nama</td>
-                            <td class="py-2 px-2"><span class="px-1.5 py-0.5 rounded text-[10px] font-semibold bg-red-100 text-red-700">Wajib</span></td>
-                            <td class="py-2 px-3" style="color: var(--muted-foreground);">Nama lengkap mahasiswa</td>
-                        </tr>
-                        <tr>
-                            <td class="py-2 px-3 font-mono font-bold" style="color: var(--primary);">prodi</td>
-                            <td class="py-2 px-2"><span class="px-1.5 py-0.5 rounded text-[10px] font-semibold bg-red-100 text-red-700">Wajib</span></td>
-                            <td class="py-2 px-3" style="color: var(--muted-foreground);">Harus sesuai nama prodi terdaftar</td>
-                        </tr>
-                        <tr>
-                            <td class="py-2 px-3 font-mono font-bold" style="color: var(--primary);">angkatan</td>
-                            <td class="py-2 px-2"><span class="px-1.5 py-0.5 rounded text-[10px] font-semibold bg-red-100 text-red-700">Wajib</span></td>
-                            <td class="py-2 px-3" style="color: var(--muted-foreground);">Tahun 4 digit (misal: 2024)</td>
-                        </tr>
-                        <tr>
-                            <td class="py-2 px-3 font-mono font-bold" style="color: var(--primary);">ipk_terakhir</td>
-                            <td class="py-2 px-2"><span class="px-1.5 py-0.5 rounded text-[10px] font-semibold bg-gray-100 text-gray-600">Opsional</span></td>
-                            <td class="py-2 px-3" style="color: var(--muted-foreground);">Angka desimal dengan titik (misal: 3.75)</td>
-                        </tr>
-                        <tr>
-                            <td class="py-2 px-3 font-mono font-bold" style="color: var(--primary);">status</td>
-                            <td class="py-2 px-2"><span class="px-1.5 py-0.5 rounded text-[10px] font-semibold bg-gray-100 text-gray-600">Opsional</span></td>
-                            <td class="py-2 px-3" style="color: var(--muted-foreground);">aktif / cuti / lulus / DO (default: aktif)</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
+                <tbody class="divide-y" style="border-color: var(--border);">
+
+                    <tr>
+                        <td class="py-2 px-3 font-mono font-bold" style="color: var(--primary);">No</td>
+                        <td class="py-2 px-2">
+                            <span class="px-1.5 py-0.5 rounded text-[10px] font-semibold bg-gray-100 text-gray-600">
+                                Otomatis
+                            </span>
+                        </td>
+                        <td class="py-2 px-3" style="color: var(--muted-foreground);">
+                            Nomor urut data pada file Excel
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td class="py-2 px-3 font-mono font-bold" style="color: var(--primary);">NIM</td>
+                        <td class="py-2 px-2">
+                            <span class="px-1.5 py-0.5 rounded text-[10px] font-semibold bg-red-100 text-red-700">
+                                Wajib
+                            </span>
+                        </td>
+                        <td class="py-2 px-3" style="color: var(--muted-foreground);">
+                            Nomor Induk Mahasiswa dan harus unik
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td class="py-2 px-3 font-mono font-bold" style="color: var(--primary);">Nama</td>
+                        <td class="py-2 px-2">
+                            <span class="px-1.5 py-0.5 rounded text-[10px] font-semibold bg-red-100 text-red-700">
+                                Wajib
+                            </span>
+                        </td>
+                        <td class="py-2 px-3" style="color: var(--muted-foreground);">
+                            Nama lengkap mahasiswa
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td class="py-2 px-3 font-mono font-bold" style="color: var(--primary);">Program Studi</td>
+                        <td class="py-2 px-2">
+                            <span class="px-1.5 py-0.5 rounded text-[10px] font-semibold bg-red-100 text-red-700">
+                                Wajib
+                            </span>
+                        </td>
+                        <td class="py-2 px-3" style="color: var(--muted-foreground);">
+                            Harus sesuai dengan nama program studi yang terdaftar di sistem
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td class="py-2 px-3 font-mono font-bold" style="color: var(--primary);">Kelas</td>
+                        <td class="py-2 px-2">
+                            <span class="px-1.5 py-0.5 rounded text-[10px] font-semibold bg-red-100 text-red-700">
+                                Wajib
+                            </span>
+                        </td>
+                        <td class="py-2 px-3" style="color: var(--muted-foreground);">
+                            Kelas mahasiswa, misalnya 4AEC-1
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td class="py-2 px-3 font-mono font-bold" style="color: var(--primary);">Status</td>
+                        <td class="py-2 px-2">
+                            <span class="px-1.5 py-0.5 rounded text-[10px] font-semibold bg-red-100 text-red-700">
+                                Wajib
+                            </span>
+                        </td>
+                        <td class="py-2 px-3" style="color: var(--muted-foreground);">
+                            Aktif / Cuti / Lulus / DO
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td class="py-2 px-3 font-mono font-bold" style="color: var(--primary);">Angkatan</td>
+                        <td class="py-2 px-2">
+                            <span class="px-1.5 py-0.5 rounded text-[10px] font-semibold bg-red-100 text-red-700">
+                                Wajib
+                            </span>
+                        </td>
+                        <td class="py-2 px-3" style="color: var(--muted-foreground);">
+                            Tahun angkatan, misalnya 2023
+                        </td>
+                    </tr>
+
+                </tbody>
+            </table>
         </div>
 
         {{-- Tips Penting --}}

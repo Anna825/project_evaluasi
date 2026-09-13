@@ -66,19 +66,82 @@
             ['route' => 'report.index', 'pattern' => 'report.*', 'label' => 'Pusat Laporan', 'icon' => $icons['report']],
         ],
         'kaprodi' => [
-            ['route' => 'kaprodi.dashboard', 'pattern' => 'kaprodi.dashboard', 'label' => 'Ringkasan', 'icon' => $icons['dashboard']],
-            ['route' => 'mahasiswa.index', 'pattern' => 'mahasiswa.*', 'label' => 'Data Mahasiswa', 'icon' => $icons['people']],
-            ['route' => 'kurikulum.index', 'pattern' => 'kurikulum.*', 'label' => 'Kurikulum & CPL', 'icon' => $icons['book']],
-            ['route' => 'prodi.index', 'pattern' => 'prodi.*', 'label' => 'Program Studi', 'icon' => $icons['building']],
-            ['route' => 'tahun-akademik.index', 'pattern' => 'tahun-akademik.*', 'label' => 'Tahun Akademik', 'icon' => $icons['calendar']],
-            ['route' => 'penelitian-pkm.verifikasi', 'pattern' => 'penelitian-pkm.verifikasi', 'label' => 'Verifikasi Penelitian', 'icon' => $icons['research']],
-            ['route' => 'report.index', 'pattern' => 'report.*', 'label' => 'Pusat Laporan', 'icon' => $icons['report']],
+            [
+                'group' => 'manajemen_prodi',
+                'label' => 'Manajemen Program Studi',
+                'icon' => $icons['building'],
+                'items' => [
+                    [
+                        'route' => 'mahasiswa.index',
+                        'pattern' => 'mahasiswa.*',
+                        'label' => 'Data Mahasiswa',
+                        'icon' => $icons['people'],
+                    ],
+                    [
+                        'route' => 'kaprodi.dosen.index',
+                        'pattern' => 'kaprodi.dosen.*',
+                        'label' => 'Data Dosen',
+                        'icon' => $icons['people'],
+                    ],
+                    [
+                        'route' => 'kurikulum.index',
+                        'pattern' => 'kurikulum.*',
+                        'label' => 'Kurikulum & CPL',
+                        'icon' => $icons['book'],
+                    ],
+                    [
+                        'route' => 'penelitian-pkm.verifikasi',
+                        'pattern' => 'penelitian-pkm.verifikasi',
+                        'label' => 'Verifikasi Penelitian',
+                        'icon' => $icons['research'],
+                    ],
+                    [
+                        'route' => 'report.index',
+                        'pattern' => 'report.*',
+                        'label' => 'Pusat Laporan',
+                        'icon' => $icons['report'],
+                    ],
+                ],
+            ],
+
+            [
+                'group' => 'akademik_dosen',
+                'label' => 'Kegiatan Akademik Dosen',
+                'icon' => $icons['book'],
+                'items' => [
+                    [
+                        'route' => 'mata-kuliah.index',
+                        'pattern' => 'mata-kuliah.*',
+                        'label' => 'Mata Kuliah, CPMK & RPS',
+                        'icon' => $icons['book'],
+                    ],
+                    [
+                        'route' => 'penelitian-pkm.index',
+                        'pattern' => 'penelitian-pkm.index',
+                        'label' => 'Penelitian & PKM',
+                        'icon' => $icons['research'],
+                    ],
+                    [
+                        'route' => 'prestasi-dosen.index',
+                        'pattern' => 'prestasi-dosen.*',
+                        'label' => 'Prestasi Saya',
+                        'icon' => $icons['award'],
+                    ],
+                    [
+                        'route' => 'dosen.profil.show',
+                        'pattern' => 'dosen.profil.*',
+                        'label' => 'Profil Dosen',
+                        'icon' => $icons['people'],
+                    ],
+                ],
+            ],
         ],
         'dosen' => [
             ['route' => 'dosen.dashboard', 'pattern' => 'dosen.dashboard', 'label' => 'Ringkasan', 'icon' => $icons['dashboard']],
             ['route' => 'mata-kuliah.index', 'pattern' => 'mata-kuliah.*', 'label' => 'Mata Kuliah, CPMK & RPS', 'icon' => $icons['book']],
             ['route' => 'penelitian-pkm.index', 'pattern' => 'penelitian-pkm.index', 'label' => 'Penelitian & PKM', 'icon' => $icons['research']],
             ['route' => 'prestasi-dosen.index', 'pattern' => 'prestasi-dosen.*', 'label' => 'Prestasi Saya', 'icon' => $icons['award']],
+            ['route' => 'dosen.profil.show', 'pattern' => 'dosen.profil.*', 'label' => 'Profil Dosen', 'icon' => $icons['people']],
         ],
     ];
 
@@ -121,27 +184,144 @@
                 <nav class="px-3 mt-3 flex-1 overflow-y-auto">
                     <p class="text-xs uppercase tracking-widest mb-2 px-2" style="color: rgba(255,255,255,0.35);">Menu Utama</p>
                     <ul class="space-y-0.5">
-                        @foreach ($navItems as $item)
+
+                    @foreach ($navItems as $item)
+
+                        {{-- Menu biasa --}}
+                        @if (isset($item['route']))
+
                             <li>
                                 <a href="{{ route($item['route']) }}"
-                                    class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium {{ request()->routeIs($item['pattern']) ? 'active' : '' }}"
-                                    style="color: {{ request()->routeIs($item['pattern']) ? '#fff' : 'rgba(255,255,255,0.65)' }}; border-left: 3px solid {{ request()->routeIs($item['pattern']) ? $roleColor : 'transparent' }};">
-                                    <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" class="shrink-0">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="{{ $item['icon'] }}" />
+                                class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium {{ request()->routeIs($item['pattern']) ? 'active' : '' }}"
+                                style="color: {{ request()->routeIs($item['pattern']) ? '#fff' : 'rgba(255,255,255,0.65)' }}; border-left: 3px solid {{ request()->routeIs($item['pattern']) ? $roleColor : 'transparent' }};">
+
+                                    <svg width="18"
+                                        height="18"
+                                        fill="none"
+                                        viewBox="0 0 24 24"
+                                        stroke="currentColor"
+                                        stroke-width="1.8"
+                                        class="shrink-0">
+
+                                        <path stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                            d="{{ $item['icon'] }}" />
+
                                     </svg>
-                                    <!-- <span class="truncate">{{ $item['label'] }}</span> -->
-                                    <span class="truncate flex-1">{{ $item['label'] }}</span>
+
+                                    <span class="truncate flex-1">
+                                        {{ $item['label'] }}
+                                    </span>
 
                                     @if ($item['route'] === 'admin.users.index' && $pendingDosenCount > 0)
+
                                         <span
                                             class="w-2.5 h-2.5 rounded-full bg-red-500 shrink-0"
-                                            title="{{ $pendingDosenCount }} akun dosen menunggu verifikasi"
-                                        ></span>
+                                            title="{{ $pendingDosenCount }} akun dosen menunggu verifikasi">
+                                        </span>
+
                                     @endif
+
                                 </a>
                             </li>
-                        @endforeach
-                    </ul>
+
+                        {{-- Menu Dropdown --}}
+                        @else
+
+                            @php
+                                $groupActive = collect($item['items'])
+                                    ->contains(function ($subItem) {
+                                        return request()->routeIs($subItem['pattern']);
+                                    });
+                            @endphp
+
+                            <li>
+
+                                <button type="button"
+                                        class="sidebar-link w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium"
+                                        style="color: rgba(255,255,255,0.65);"
+                                        onclick="toggleSidebarGroup('{{ $item['group'] }}')">
+
+                                    <svg width="18"
+                                        height="18"
+                                        fill="none"
+                                        viewBox="0 0 24 24"
+                                        stroke="currentColor"
+                                        stroke-width="1.8"
+                                        class="shrink-0">
+
+                                        <path stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                            d="{{ $item['icon'] }}" />
+
+                                    </svg>
+
+                                    <span class="truncate flex-1 text-left">
+                                        {{ $item['label'] }}
+                                    </span>
+
+                                    <svg id="arrow-{{ $item['group'] }}"
+                                        width="16"
+                                        height="16"
+                                        fill="none"
+                                        viewBox="0 0 24 24"
+                                        stroke="currentColor"
+                                        stroke-width="2"
+                                        class="shrink-0 transition-transform duration-200 {{ $groupActive ? 'rotate-90' : '' }}">
+
+                                        <path stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                            d="M9 5l7 7-7 7" />
+
+                                    </svg>
+
+                                </button>
+
+
+                                <ul id="sidebar-group-{{ $item['group'] }}"
+                                    class="{{ $groupActive ? '' : 'hidden' }} ml-4 mt-1 space-y-0.5">
+
+                                    @foreach ($item['items'] as $subItem)
+
+                                        <li>
+
+                                            <a href="{{ route($subItem['route']) }}"
+                                            class="sidebar-link flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium {{ request()->routeIs($subItem['pattern']) ? 'active' : '' }}"
+                                            style="color: {{ request()->routeIs($subItem['pattern']) ? '#fff' : 'rgba(255,255,255,0.55)' }}; border-left: 3px solid {{ request()->routeIs($subItem['pattern']) ? $roleColor : 'transparent' }};">
+
+                                                <svg width="16"
+                                                    height="16"
+                                                    fill="none"
+                                                    viewBox="0 0 24 24"
+                                                    stroke="currentColor"
+                                                    stroke-width="1.8"
+                                                    class="shrink-0">
+
+                                                    <path stroke-linecap="round"
+                                                        stroke-linejoin="round"
+                                                        d="{{ $subItem['icon'] }}" />
+
+                                                </svg>
+
+                                                <span class="truncate">
+                                                    {{ $subItem['label'] }}
+                                                </span>
+
+                                            </a>
+
+                                        </li>
+
+                                    @endforeach
+
+                                </ul>
+
+                            </li>
+
+                        @endif
+
+                    @endforeach
+
+                </ul>
 
                     <p class="text-xs uppercase tracking-widest mb-2 px-2 mt-6" style="color: rgba(255,255,255,0.35);">Akun</p>
                     <ul class="space-y-0.5">
@@ -201,9 +381,18 @@
                     </div>
                 @endif
 
-                <h1 class="font-serif-display text-2xl mb-1">@yield('page-title', 'Dashboard')</h1>
-                <p class="text-sm mb-6" style="color: var(--muted-foreground);">@yield('page-desc', '')</p>
+                    @if (View::hasSection('page-title'))
+                        <h1 class="font-serif-display text-2xl mb-1">
+                            @yield('page-title')
+                        </h1>
 
+                        @if (View::hasSection('page-desc'))
+                            <p class="text-sm mb-5" style="color: var(--muted-foreground);">
+                                @yield('page-desc')
+                            </p>
+                        @endif
+
+                    @endif
                 @yield('content')
             </div>
         </main>
@@ -213,6 +402,18 @@
         document.getElementById('sidebarToggle').addEventListener('click', function () {
             document.getElementById('appSidebar').classList.toggle('sidebar-collapsed');
         });
+
+        function toggleSidebarGroup(group) {
+            const menu = document.getElementById('sidebar-group-' + group);
+            const arrow = document.getElementById('arrow-' + group);
+
+            if (!menu || !arrow) {
+                return;
+            }
+
+            menu.classList.toggle('hidden');
+            arrow.classList.toggle('rotate-90');
+        }
     </script>
 </body>
 </html>

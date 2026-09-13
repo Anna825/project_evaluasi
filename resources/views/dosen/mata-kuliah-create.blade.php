@@ -196,22 +196,23 @@
                     id="jenis"
                     class="w-full rounded-xl border px-4 py-3"
                     style="background: var(--background); border-color: var(--border);"
+                    required
                 >
 
-                    <option value="">-- Pilih Jenis --</option>
+                    <option value="">-- Pilih Jenis Mata Kuliah --</option>
 
                     <option
-                        value="wajib"
-                        {{ old('jenis') == 'wajib' ? 'selected' : '' }}
+                        value="praktek"
+                        {{ old('jenis') == 'praktek' ? 'selected' : '' }}
                     >
-                        Wajib
+                        Mata Kuliah Praktek
                     </option>
 
                     <option
-                        value="pilihan"
-                        {{ old('jenis') == 'pilihan' ? 'selected' : '' }}
+                        value="teori"
+                        {{ old('jenis') == 'teori' ? 'selected' : '' }}
                     >
-                        Pilihan
+                        Mata Kuliah Teori
                     </option>
 
                 </select>
@@ -244,10 +245,10 @@
                             value="{{ $semester->id }}"
                             {{ old('semester_id') == $semester->id ? 'selected' : '' }}
                         >
-                            {{ $semester->nama ?? 'Semester #' . $semester->id }}
+                            {{ ucfirst($semester->jenis) }} — {{ $semester->tahunAkademik->label ?? 'Tahun Akademik #' . $semester->tahun_akademik_id }}
                         </option>
                     @endforeach
-
+                    
                 </select>
 
             </div>
