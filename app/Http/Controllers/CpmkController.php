@@ -14,8 +14,53 @@ class CpmkController extends Controller
      */
     private function pastikanDiampu(MataKuliah $mataKuliah): void
     {
-        $dosenId = Auth::user()->dosen->id;
-        $diampu = $mataKuliah->kelas()->where('dosen_pengampu_id', $dosenId)->exists();
+        $user = Auth::user();
+
+        if (! $user->dosen) {
+            abort(403, 'Akun Anda tidak terhubung ke data dosen.');
+        }
+
+        /*
+        * Jika user adalah Kaprodi,
+        * akses berdasarkan Program Studi Kaprodi.
+        */
+        $isKaprodi = $user->roles()
+            ->where('nama_role', 'kaprodi')
+            ->exists();
+
+        if ($isKaprodi) {
+            $kaprodiPivot = $user->roles()
+                ->where('nama_role', 'kaprodi')
+                ->first()?->pivot;
+
+            $prodiId = $kaprodiPivot?->prodi_id;
+
+            if (! $prodiId) {
+                abort(403, 'Akun Kaprodi belum memiliki Program Studi.');
+            }
+
+            $mataKuliah->loadMissing('kurikulum');
+
+            if (
+                ! $mataKuliah->kurikulum ||
+                (int) $mataKuliah->kurikulum->prodi_id !== (int) $prodiId
+            ) {
+                abort(403, 'Anda tidak memiliki akses ke CPMK Program Studi lain.');
+            }
+
+            return;
+        }
+
+        /*
+        * Jika user adalah Dosen biasa,
+        * tetap gunakan aturan lama:
+        * hanya boleh mengakses mata kuliah yang diampu.
+        */
+        $dosenId = $user->dosen->id;
+
+        $diampu = $mataKuliah->kelas()
+            ->where('dosen_pengampu_id', $dosenId)
+            ->exists();
 
         if (! $diampu) {
             abort(403, 'Anda tidak mengampu mata kuliah ini.');

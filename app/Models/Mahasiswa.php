@@ -16,7 +16,6 @@ class Mahasiswa extends Model
         'kelas_mahasiswa_id',
         'nim',
         'nama',
-        'angkatan',
         'ipk_terakhir',
         'status',
     ];
@@ -49,5 +48,10 @@ class Mahasiswa extends Model
     public function kelasMahasiswa(): BelongsTo
     {
         return $this->belongsTo(KelasMahasiswa::class, 'kelas_mahasiswa_id');
+    }
+
+    public function getAngkatanAttribute()
+    {
+        return $this->kelasMahasiswa?->angkatan;
     }
 }

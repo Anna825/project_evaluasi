@@ -12,8 +12,15 @@ use Illuminate\Support\Facades\DB;
 
 class ProdiController extends Controller
 {
+    private function pastikanAdmin(): void
+    {
+        if (! auth()->user()->roles()->where('nama_role', 'admin')->exists()) {
+            abort(403, 'Hanya Admin yang dapat mengelola Program Studi.');
+        }
+    }
     public function index()
     {
+        $this->pastikanAdmin();
         $prodi = Prodi::with([
             'jurusan',
             'dosen.user',
@@ -48,6 +55,7 @@ class ProdiController extends Controller
     }    
     public function create()
     {
+        $this->pastikanAdmin();
         $jurusanList = Jurusan::all();
 
         return view('prodi.create', compact('jurusanList'));
@@ -55,6 +63,7 @@ class ProdiController extends Controller
 
     public function store(StoreProdiRequest $request)
     {
+        $this->pastikanAdmin();
         Prodi::create($request->validated());
 
         return redirect()->route('prodi.index')->with('status', 'Prodi berhasil ditambahkan.');
@@ -62,6 +71,7 @@ class ProdiController extends Controller
 
     public function edit(Prodi $prodi)
     {
+        $this->pastikanAdmin();
         $jurusanList = Jurusan::all();
 
         return view('prodi.edit', compact('prodi', 'jurusanList'));
@@ -69,6 +79,7 @@ class ProdiController extends Controller
 
     public function update(StoreProdiRequest $request, Prodi $prodi)
     {
+        $this->pastikanAdmin();
         $prodi->update($request->validated());
 
         return redirect()->route('prodi.index')->with('status', 'Prodi berhasil diperbarui.');
@@ -76,6 +87,7 @@ class ProdiController extends Controller
 
     public function setKaprodi(Request $request, Prodi $prodi)
     {
+        $this->pastikanAdmin();
         $validated = $request->validate([
             'dosen_id' => ['required', 'exists:dosen,id'],
         ]);
@@ -187,6 +199,7 @@ class ProdiController extends Controller
 
     public function destroy(Prodi $prodi)
     {
+        $this->pastikanAdmin();
         $prodi->delete();
 
         return redirect()->route('prodi.index')->with('status', 'Prodi berhasil dihapus.');

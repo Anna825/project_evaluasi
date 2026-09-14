@@ -102,7 +102,6 @@ class MahasiswaController extends Controller
             }
         }
 
-        unset($data['angkatan']);
         unset($data['kelas_baru']);
 
         Mahasiswa::create($data);

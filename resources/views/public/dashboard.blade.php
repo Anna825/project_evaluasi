@@ -14,7 +14,7 @@
     {{-- =========================
         RINGKASAN
     ========================== --}}
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-5 mb-6">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-6">
 
         {{-- Total Prestasi --}}
         <a
@@ -76,74 +76,6 @@
                 Lihat prestasi →
             </div>
         </a>
-
-
-        {{-- IPK --}}
-        <a
-            href="{{ route('public.profil', $mahasiswa->nim) }}"
-            class="group block rounded-2xl border p-5 card-hover"
-            style="background: var(--card); border-color: var(--border);"
-        >
-            <div class="flex items-start justify-between gap-4">
-
-                <div>
-                    <p
-                        class="text-xs font-semibold uppercase tracking-wider mb-2"
-                        style="color: var(--muted-foreground);"
-                    >
-                        IPK Terakhir
-                    </p>
-
-                    <p
-                        class="text-3xl font-bold mono"
-                        style="color: var(--accent);"
-                    >
-                        {{ $mahasiswa->ipk_terakhir ?? '-' }}
-                    </p>
-
-                    <p
-                        class="text-xs mt-2"
-                        style="color: var(--muted-foreground);"
-                    >
-                        Berdasarkan data akademik terakhir
-                    </p>
-                </div>
-
-                <div
-                    class="w-11 h-11 rounded-xl flex items-center justify-center shrink-0"
-                    style="background: rgba(184,149,42,.10); color: var(--accent);"
-                >
-                    <svg
-                        width="22"
-                        height="22"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                        stroke-width="1.8"
-                    >
-                        <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            d="M12 3l8 4.5v5c0 4.5-3.5 7.5-8 8.5-4.5-1-8-4-8-8.5v-5L12 3z"
-                        />
-                        <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            d="M8 10.5l4 2 4-2"
-                        />
-                    </svg>
-                </div>
-
-            </div>
-
-            <div
-                class="mt-4 text-xs font-medium group-hover:underline"
-                style="color: var(--primary);"
-            >
-                Lihat profil →
-            </div>
-        </a>
-
 
         {{-- Tracer Study --}}
         @if ($mahasiswa->status === 'lulus')
@@ -286,13 +218,6 @@
                     <h2 class="font-serif-display text-xl">
                         Informasi Akademik
                     </h2>
-
-                    <p
-                        class="text-sm mt-1"
-                        style="color: var(--muted-foreground);"
-                    >
-                        Informasi dasar akademik mahasiswa.
-                    </p>
                 </div>
 
                 <a
@@ -377,93 +302,6 @@
                     {{ ucfirst($mahasiswa->status ?? '-') }}
                 </span>
             </div>
-
-            <div>
-                <p
-                    class="text-xs uppercase tracking-wider mb-1"
-                    style="color: var(--muted-foreground);"
-                >
-                    IPK Terakhir
-                </p>
-
-                <p class="font-semibold mono">
-                    {{ $mahasiswa->ipk_terakhir ?? '-' }}
-                </p>
-            </div>
-
         </div>
     </div>
-
-
-    {{-- =========================
-        AKSI CEPAT
-    ========================== --}}
-    <div
-        class="rounded-2xl border p-6"
-        style="background: var(--card); border-color: var(--border);"
-    >
-
-        <div class="mb-4">
-            <h2 class="font-serif-display text-xl">
-                Aksi Cepat
-            </h2>
-
-            <p
-                class="text-sm mt-1"
-                style="color: var(--muted-foreground);"
-            >
-                Akses fitur yang paling sering digunakan.
-            </p>
-        </div>
-
-        <div class="flex flex-wrap gap-3">
-
-            <a
-                href="{{ route('public.prestasi.create', $mahasiswa->nim) }}"
-                class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold text-white hover:opacity-90 transition"
-                style="background: var(--primary);"
-            >
-                <span>+</span>
-                Tambah Prestasi
-            </a>
-
-            <a
-                href="{{ route('public.prestasi.index', $mahasiswa->nim) }}"
-                class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold hover:opacity-90 transition"
-                style="
-                    background: var(--secondary);
-                    color: var(--foreground);
-                "
-            >
-                Lihat Prestasi
-            </a>
-
-            @if ($mahasiswa->status === 'lulus' && !$tracerSudahIsi)
-
-                <a
-                    href="{{ route('public.tracer.create', $mahasiswa->nim) }}"
-                    class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold text-white hover:opacity-90 transition"
-                    style="background: var(--mhs);"
-                >
-                    Isi Tracer Study
-                </a>
-
-            @elseif ($mahasiswa->status === 'lulus' && $tracerSudahIsi)
-
-                <a
-                    href="{{ route('public.tracer.create', $mahasiswa->nim) }}"
-                    class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold hover:opacity-90 transition"
-                    style="
-                        background: rgba(46,125,50,.10);
-                        color: var(--mhs);
-                    "
-                >
-                    Perbarui Tracer Study
-                </a>
-
-            @endif
-
-        </div>
-    </div>
-
 @endsection

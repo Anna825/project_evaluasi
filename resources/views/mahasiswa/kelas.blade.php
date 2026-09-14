@@ -215,13 +215,28 @@
 
 
                                 <td class="px-5 py-3.5">
+                                    <div class="flex items-center gap-3">
 
-                                    <a href="{{ route('mahasiswa.show', $mhs) }}"
-                                       class="inline-flex items-center text-sm font-medium underline hover:opacity-70"
-                                       style="color: var(--foreground);">
-                                        Detail →
-                                    </a>
+                                        <a href="{{ route('mahasiswa.show', $mhs) }}"
+                                        class="inline-flex items-center text-sm font-medium underline hover:opacity-70"
+                                        style="color: var(--foreground);">
+                                            Detail →
+                                        </a>
 
+                                        <form action="{{ route('mahasiswa.destroy', $mhs) }}"
+                                            method="POST"
+                                            onsubmit="return confirm('Apakah Anda yakin ingin menghapus mahasiswa ini?');">
+                                            @csrf
+                                            @method('DELETE')
+
+                                            <button type="submit"
+                                                    class="text-sm font-medium underline hover:opacity-70"
+                                                    style="color: #c62828;">
+                                                Hapus
+                                            </button>
+                                        </form>
+
+                                    </div>
                                 </td>
 
                             </tr>
