@@ -57,4 +57,12 @@ class Dosen extends Model
     {
         return $this->belongsToMany(Prestasi::class, 'prestasi_dosen');
     }
+
+    public function prestasiMahasiswaDibimbing(): BelongsToMany
+    {
+        return $this->belongsToMany(
+            Prestasi::class,
+            'prestasi_mahasiswa_dosen'
+        )->withPivot('mahasiswa_id');
+    }
 }

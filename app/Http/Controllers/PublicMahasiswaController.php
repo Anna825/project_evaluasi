@@ -113,6 +113,174 @@ class PublicMahasiswaController extends Controller
         );
     }
 
+    public function prestasiShow(string $nim, Prestasi $prestasi)
+    {
+        $mahasiswa = Mahasiswa::where('nim', $nim)->firstOrFail();
+
+        // Pastikan prestasi tersebut memang milik mahasiswa yang sedang dibuka
+        if (! $prestasi->mahasiswa()->whereKey($mahasiswa->id)->exists()) {
+            abort(403, 'Anda tidak memiliki akses ke prestasi ini.');
+        }
+
+        // Ambil data dosen pembimbing
+        $prestasi->load([
+            'mahasiswa',
+            'tahunAkademik',
+            'dosenPembimbing',
+        ]);
+
+        return view(
+            'public.prestasi-show',
+            compact(
+                'mahasiswa',
+                'prestasi'
+            )
+        );
+    }
+
+    public function prestasiEdit(string $nim, Prestasi $prestasi)
+    {
+        $mahasiswa = Mahasiswa::where('nim', $nim)->firstOrFail();
+
+        // Pastikan prestasi milik mahasiswa ini
+        if (! $prestasi->mahasiswa()->whereKey($mahasiswa->id)->exists()) {
+            abort(403, 'Anda tidak memiliki akses ke prestasi ini.');
+        }
+
+        $tahunAkademikList = TahunAkademik::all();
+
+        $dosenList = Dosen::orderBy('nama')->get();
+
+        $prestasi->load([
+            'dosenPembimbing',
+            'tahunAkademik',
+        ]);
+
+        return view(
+            'public.prestasi-edit',
+            compact(
+                'mahasiswa',
+                'prestasi',
+                'tahunAkademikList',
+                'dosenList'
+            )
+        );
+    }
+
+    public function prestasiUpdate(Request $request, string $nim, Prestasi $prestasi)
+    {
+        $mahasiswa = Mahasiswa::where('nim', $nim)->firstOrFail();
+
+        // Pastikan prestasi milik mahasiswa ini
+        if (! $prestasi->mahasiswa()->whereKey($mahasiswa->id)->exists()) {
+            abort(403, 'Anda tidak memiliki akses ke prestasi ini.');
+        }
+
+        $validated = $request->validate([
+            'nama_kegiatan' => [
+                'required',
+                'string',
+                'max:255',
+            ],
+
+            'tingkat' => [
+                'nullable',
+                'string',
+                'max:255',
+            ],
+
+            'jenis' => [
+                'nullable',
+                'string',
+                'max:255',
+            ],
+
+            'peringkat' => [
+                'nullable',
+                'string',
+                'max:255',
+            ],
+
+            'tempat_pelaksanaan' => [
+                'nullable',
+                'string',
+                'max:255',
+            ],
+
+            'tanggal_penerimaan' => [
+                'nullable',
+                'date',
+            ],
+
+            'tahun_akademik_id' => [
+                'required',
+                'exists:tahun_akademik,id',
+            ],
+
+            'dosen_id' => [
+                'nullable',
+                'exists:dosen,id',
+            ],
+        ]);
+
+        $dosenId = $validated['dosen_id'] ?? null;
+
+        unset($validated['dosen_id']);
+
+        // Update data utama prestasi
+        $prestasi->update($validated);
+
+        // Update dosen pembimbing
+        $prestasi->dosenPembimbing()->detach();
+
+        if ($dosenId) {
+            $prestasi->dosenPembimbing()->attach(
+                $dosenId,
+                [
+                    'mahasiswa_id' => $mahasiswa->id,
+                ]
+            );
+        }
+
+        return redirect()
+            ->route('public.prestasi.show', [
+                $mahasiswa->nim,
+                $prestasi->id,
+            ])
+            ->with(
+                'status',
+                'Prestasi berhasil diperbarui.'
+            );
+    }
+
+    public function prestasiDestroy(string $nim, Prestasi $prestasi)
+    {
+        $mahasiswa = Mahasiswa::where('nim', $nim)->firstOrFail();
+
+        // Pastikan prestasi milik mahasiswa ini
+        if (! $prestasi->mahasiswa()->whereKey($mahasiswa->id)->exists()) {
+            abort(403, 'Anda tidak memiliki akses ke prestasi ini.');
+        }
+
+        // Hapus relasi mahasiswa
+        $prestasi->mahasiswa()->detach($mahasiswa->id);
+
+        // Hapus relasi dosen pembimbing untuk mahasiswa ini
+        $prestasi->dosenPembimbing()
+            ->wherePivot('mahasiswa_id', $mahasiswa->id)
+            ->detach();
+
+        // Hapus data prestasi
+        $prestasi->delete();
+
+        return redirect()
+            ->route('public.prestasi.index', $mahasiswa->nim)
+            ->with(
+                'status',
+                'Prestasi berhasil dihapus.'
+            );
+    }
+
     /**
      * Menampilkan profil mahasiswa.
      */
@@ -137,9 +305,15 @@ class PublicMahasiswaController extends Controller
 
         $tahunAkademikList = TahunAkademik::all();
 
+        $dosenList = Dosen::orderBy('nama')->get();
+
         return view(
             'public.prestasi-create',
-            compact('mahasiswa', 'tahunAkademikList')
+            compact(
+                'mahasiswa',
+                'tahunAkademikList',
+                'dosenList'
+            )
         );
     }
 
@@ -156,44 +330,76 @@ class PublicMahasiswaController extends Controller
                 'string',
                 'max:255',
             ],
+
             'tingkat' => [
                 'nullable',
                 'string',
                 'max:255',
             ],
+
             'jenis' => [
                 'nullable',
                 'string',
                 'max:255',
             ],
+
             'peringkat' => [
                 'nullable',
                 'string',
                 'max:255',
             ],
+
             'tempat_pelaksanaan' => [
                 'nullable',
                 'string',
                 'max:255',
             ],
+
+            'tanggal_penerimaan' => [
+                'nullable',
+                'date',
+            ],
+
             'tahun_akademik_id' => [
                 'required',
                 'exists:tahun_akademik,id',
             ],
+
+            'dosen_id' => [
+                'nullable',
+                'exists:dosen,id',
+            ],
         ]);
 
+        // Simpan ID dosen pembimbing secara terpisah
+        $dosenId = $validated['dosen_id'] ?? null;
+
+        unset($validated['dosen_id']);
+
+        // Simpan data utama prestasi
         $prestasi = Prestasi::create($validated);
 
+        // Hubungkan prestasi dengan mahasiswa yang menginput
         $prestasi->mahasiswa()->attach($mahasiswa->id);
 
+        // Jika memilih dosen pembimbing,
+        // simpan ke tabel khusus prestasi_mahasiswa_dosen
+        if ($dosenId) {
+            $prestasi->dosenPembimbing()->attach(
+                $dosenId,
+                [
+                    'mahasiswa_id' => $mahasiswa->id,
+                ]
+            );
+        }
+
         return redirect()
-            ->route('public.mahasiswa.menu', $nim)
+            ->route('public.prestasi.index', $nim)
             ->with(
                 'status',
                 'Prestasi berhasil dicatat. Terima kasih!'
             );
     }
-
     /**
      * Form isi Tracer Study
      * (hanya untuk mahasiswa berstatus lulus).

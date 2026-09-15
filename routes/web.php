@@ -122,17 +122,29 @@ Route::post('/login-mahasiswa', [PublicMahasiswaController::class, 'prosesCekNim
 Route::get('/mahasiswa-publik/{nim}/menu', [PublicMahasiswaController::class, 'menu'])
     ->name('public.mahasiswa.menu');
 
-Route::get('/mahasiswa-publik/{nim}/prestasi-saya', [PublicMahasiswaController::class, 'prestasiIndex'])
-    ->name('public.prestasi.index');
-
 Route::get('/mahasiswa-publik/{nim}/profil', [PublicMahasiswaController::class, 'profil'])
     ->name('public.profil');
+
+Route::get('/mahasiswa-publik/{nim}/prestasi-saya', [PublicMahasiswaController::class, 'prestasiIndex'])
+    ->name('public.prestasi.index');
 
 Route::get('/mahasiswa-publik/{nim}/prestasi/create', [PublicMahasiswaController::class, 'prestasiCreate'])
     ->name('public.prestasi.create');
 
 Route::post('/mahasiswa-publik/{nim}/prestasi', [PublicMahasiswaController::class, 'prestasiStore'])
     ->name('public.prestasi.store');
+
+Route::get('/mahasiswa-publik/{nim}/prestasi/{prestasi}', [\App\Http\Controllers\PublicMahasiswaController::class, 'prestasiShow'])
+   ->name('public.prestasi.show');
+
+Route::get('/mahasiswa-publik/{nim}/prestasi/{prestasi}/edit',[PublicMahasiswaController::class, 'prestasiEdit'])
+    ->name('public.prestasi.edit');
+
+Route::put('/mahasiswa-publik/{nim}/prestasi/{prestasi}',[PublicMahasiswaController::class, 'prestasiUpdate'])
+    ->name('public.prestasi.update');
+
+Route::delete('/mahasiswa-publik/{nim}/prestasi/{prestasi}',[PublicMahasiswaController::class, 'prestasiDestroy'])
+    ->name('public.prestasi.destroy');
 
 Route::get('/mahasiswa-publik/{nim}/tracer/create', [PublicMahasiswaController::class, 'tracerCreate'])
     ->name('public.tracer.create');
@@ -279,6 +291,72 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     
     Route::post('/prodi/{prodi}/kaprodi', [ProdiController::class, 'setKaprodi'])
         ->name('prodi.set-kaprodi');
+
+    /*
+    |--------------------------------------------------------------------------
+    | Prestasi Admin
+    |--------------------------------------------------------------------------
+    */
+
+    Route::get('/admin/prestasi/mahasiswa', function () {
+        $prestasiList = \App\Models\Prestasi::with([
+            'mahasiswa',
+            'tahunAkademik',
+        ])
+            ->latest()
+            ->get();
+
+        return view(
+            'admin.prestasi.mahasiswa',
+            compact('prestasiList')
+        );
+    })->name('admin.prestasi.mahasiswa');
+
+    Route::get('/admin/prestasi/mahasiswa/{prestasi}', function (\App\Models\Prestasi $prestasi) {
+        $prestasi->load([
+            'mahasiswa.prodi',
+            'tahunAkademik',
+            'dosenPembimbing',
+        ]);
+
+        return view(
+            'admin.prestasi.mahasiswa-show',
+            compact('prestasi')
+        );
+    })->name('admin.prestasi.mahasiswa.show');
+
+    Route::get('/admin/prestasi/dosen', function () {
+        $prestasiList = \App\Models\Prestasi::with([
+            'dosen',
+            'tahunAkademik',
+        ])
+            ->latest()
+            ->get();
+
+        return view(
+            'admin.prestasi.dosen',
+            compact('prestasiList')
+        );
+    })->name('admin.prestasi.dosen');
+
+    Route::get('/admin/prestasi/dosen/{prestasi}', function (\App\Models\Prestasi $prestasi) {
+
+        $prestasi->load([
+            'dosen.prodi',
+            'tahunAkademik',
+        ]);
+
+        // Pastikan prestasi memang memiliki data dosen.
+        if ($prestasi->dosen->isEmpty()) {
+            abort(404, 'Prestasi dosen tidak ditemukan.');
+        }
+
+        return view(
+            'admin.prestasi.dosen-show',
+            compact('prestasi')
+        );
+
+    })->name('admin.prestasi.dosen.show');
 });
 
 
@@ -549,6 +627,18 @@ Route::middleware(['auth', 'role:dosen,kaprodi'])->group(function () {
 
     Route::post('/prestasi-dosen', [PrestasiDosenController::class, 'store'])
         ->name('prestasi-dosen.store');
+    
+    Route::get('/prestasi-dosen/{prestasi}', [PrestasiDosenController::class, 'show'])
+        ->name('prestasi-dosen.show');
+
+    Route::get('/prestasi-dosen/{prestasi}/edit', [PrestasiDosenController::class, 'edit'])
+        ->name('prestasi-dosen.edit');
+
+    Route::delete('/prestasi-dosen/{prestasi}', [PrestasiDosenController::class, 'destroy'])
+        ->name('prestasi-dosen.destroy');
+
+    Route::put('/prestasi-dosen/{prestasi}', [PrestasiDosenController::class, 'update'])
+        ->name('prestasi-dosen.update');
 });
 
 
@@ -632,4 +722,143 @@ Route::middleware(['auth', 'role:admin,kaprodi'])->group(function () {
 
     Route::get('/kurikulum/{kurikulum}/mata-kuliah/{mataKuliah}', [MataKuliahDosenController::class, 'showFromKurikulum'])
         ->name('kurikulum.mata-kuliah.show');    
+});
+
+/*
+|--------------------------------------------------------------------------
+| KAPRODI - PRESTASI
+|--------------------------------------------------------------------------
+*/
+
+Route::middleware(['auth', 'role:kaprodi'])->group(function () {
+
+    Route::get('/kaprodi/prestasi/mahasiswa', function () {
+
+        $user = auth()->user();
+
+        $kaprodiPivot = $user->roles()
+            ->where('nama_role', 'kaprodi')
+            ->first()?->pivot;
+
+        $prodiId = $kaprodiPivot?->prodi_id;
+
+        if (! $prodiId) {
+            abort(403, 'Akun Kaprodi belum memiliki Program Studi.');
+        }
+
+        $prestasiList = \App\Models\Prestasi::with([
+            'mahasiswa',
+            'tahunAkademik',
+        ])
+            ->whereHas(
+                'mahasiswa',
+                fn ($q) => $q->where('prodi_id', $prodiId)
+            )
+            ->latest()
+            ->get();
+
+        return view(
+            'kaprodi.prestasi.mahasiswa',
+            compact('prestasiList')
+        );
+
+    })->name('kaprodi.prestasi.mahasiswa');
+
+    Route::get('/kaprodi/prestasi/mahasiswa/{prestasi}', function (\App\Models\Prestasi $prestasi) {
+        $user = auth()->user();
+        $kaprodiPivot = $user->roles()
+            ->where('nama_role', 'kaprodi')
+            ->first()?->pivot;
+        $prodiId = $kaprodiPivot?->prodi_id;
+        if (! $prodiId) {
+            abort(403, 'Akun Kaprodi belum memiliki Program Studi.');
+        }
+
+        // Pastikan prestasi memang milik mahasiswa dari Prodi Kaprodi
+        $prestasi->load([
+            'mahasiswa.prodi',
+            'tahunAkademik',
+            'dosenPembimbing',
+        ]);
+
+        $sesuaiProdi = $prestasi->mahasiswa
+            ->contains('prodi_id', $prodiId);
+
+        if (! $sesuaiProdi) {
+            abort(403, 'Anda tidak memiliki akses ke prestasi ini.');
+        }
+
+        return view(
+            'kaprodi.prestasi.mahasiswa-show',
+            compact('prestasi')
+        );
+
+    })->name('kaprodi.prestasi.mahasiswa.show');
+
+
+    Route::get('/kaprodi/prestasi/dosen', function () {
+
+        $user = auth()->user();
+
+        $kaprodiPivot = $user->roles()
+            ->where('nama_role', 'kaprodi')
+            ->first()?->pivot;
+
+        $prodiId = $kaprodiPivot?->prodi_id;
+
+        if (! $prodiId) {
+            abort(403, 'Akun Kaprodi belum memiliki Program Studi.');
+        }
+
+        $prestasiList = \App\Models\Prestasi::with([
+            'dosen',
+            'tahunAkademik',
+        ])
+            ->whereHas(
+                'dosen',
+                fn ($q) => $q->where('prodi_id', $prodiId)
+            )
+            ->latest()
+            ->get();
+
+        return view(
+            'kaprodi.prestasi.dosen',
+            compact('prestasiList')
+        );
+
+    })->name('kaprodi.prestasi.dosen');
+
+    Route::get('/kaprodi/prestasi/dosen/{prestasi}', function (\App\Models\Prestasi $prestasi) {
+
+        $user = auth()->user();
+
+        $kaprodiPivot = $user->roles()
+            ->where('nama_role', 'kaprodi')
+            ->first()?->pivot;
+
+        $prodiId = $kaprodiPivot?->prodi_id;
+
+        if (! $prodiId) {
+            abort(403, 'Akun Kaprodi belum memiliki Program Studi.');
+        }
+
+        $prestasi->load([
+            'dosen.prodi',
+            'tahunAkademik',
+        ]);
+
+        $sesuaiProdi = $prestasi->dosen
+            ->contains('prodi_id', $prodiId);
+
+        if (! $sesuaiProdi) {
+            abort(403, 'Anda tidak memiliki akses ke prestasi ini.');
+        }
+
+        return view(
+            'kaprodi.prestasi.dosen-show',
+            compact('prestasi')
+        );
+
+    })->name('kaprodi.prestasi.dosen.show');
+
 });

@@ -86,6 +86,25 @@
             ['route' => 'tahun-akademik.index', 'pattern' => 'tahun-akademik.*', 'label' => 'Tahun Akademik', 'icon' => $icons['calendar']],
             ['route' => 'kurikulum.index', 'pattern' => 'kurikulum.*', 'label' => 'Kurikulum & CPL', 'icon' => $icons['book']],
             ['route' => 'penelitian-pkm.verifikasi', 'pattern' => 'penelitian-pkm.verifikasi', 'label' => 'Verifikasi Penelitian', 'icon' => $icons['research']],
+            [
+                'group' => 'prestasi',
+                'label' => 'Prestasi',
+                'icon' => $icons['award'],
+                'items' => [
+                    [
+                        'route' => 'admin.prestasi.mahasiswa',
+                        'pattern' => 'admin.prestasi.mahasiswa',
+                        'label' => 'Prestasi Mahasiswa',
+                        'icon' => $icons['award'],
+                    ],
+                    [
+                        'route' => 'admin.prestasi.dosen',
+                        'pattern' => 'admin.prestasi.dosen',
+                        'label' => 'Prestasi Dosen',
+                        'icon' => $icons['award'],
+                    ],
+                ],
+            ],
             ['route' => 'report.index', 'pattern' => 'report.*', 'label' => 'Pusat Laporan', 'icon' => $icons['report']],
         ],
         'kaprodi' => [
@@ -106,6 +125,20 @@
                         'label' => 'Data Dosen',
                         'icon' => $icons['people'],
                     ],
+
+                    [
+                        'route' => 'kaprodi.prestasi.mahasiswa',
+                        'pattern' => 'kaprodi.prestasi.mahasiswa',
+                        'label' => 'Prestasi Mahasiswa',
+                        'icon' => $icons['award'],
+                    ],
+                    [
+                        'route' => 'kaprodi.prestasi.dosen',
+                        'pattern' => 'kaprodi.prestasi.dosen',
+                        'label' => 'Prestasi Dosen',
+                        'icon' => $icons['award'],
+                    ],
+
                     [
                         'route' => 'kurikulum.index',
                         'pattern' => 'kurikulum.*',

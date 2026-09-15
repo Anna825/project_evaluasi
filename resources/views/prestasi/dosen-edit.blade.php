@@ -1,52 +1,46 @@
-@extends('layouts.mahasiswa')
+@extends('layouts.app')
 
-@section('title', 'Tambah Prestasi - Evaluasi PBM')
-
-@section('page-title', 'Tambah Prestasi Mahasiswa')
-
-@section('page-desc', 'Catat capaian prestasi akademik maupun non-akademik.')
+@section('title', 'Edit Prestasi Dosen - Evaluasi PBM')
+@section('page-title', 'Edit Prestasi Dosen')
+@section('page-desc', 'Perbarui data prestasi yang telah Anda catat.')
 
 @section('content')
 
     <div class="w-full">
 
-        {{-- Header halaman --}}
         <div class="mb-6">
             <a
-                href="{{ route('public.prestasi.index', $mahasiswa->nim) }}"
+                href="{{ route('prestasi-dosen.show', $prestasi->id) }}"
                 class="inline-flex items-center gap-2 text-sm font-medium hover:underline"
                 style="color: var(--primary);"
             >
-                ← Kembali ke Prestasi Saya
+                ← Kembali ke Detail Prestasi
             </a>
         </div>
 
-        {{-- Form --}}
         <div
             class="rounded-2xl border overflow-hidden"
             style="background: var(--card); border-color: var(--border);"
         >
 
-            {{-- Header form --}}
             <div
                 class="px-6 py-5 border-b"
                 style="border-color: var(--border);"
             >
                 <h2 class="font-serif-display text-2xl">
-                    Isi Data Prestasi
+                    Edit Data Prestasi
                 </h2>
 
                 <p
                     class="text-sm mt-1"
                     style="color: var(--muted-foreground);"
                 >
-                    Lengkapi informasi prestasi yang pernah Anda raih.
+                    Perbarui informasi prestasi Anda.
                 </p>
             </div>
 
             <div class="p-6 md:p-8">
 
-                {{-- Error --}}
                 @if ($errors->any())
                     <div
                         class="mb-6 px-4 py-3 rounded-xl text-sm"
@@ -66,9 +60,10 @@
 
                 <form
                     method="POST"
-                    action="{{ route('public.prestasi.store', $mahasiswa->nim) }}"
+                    action="{{ route('prestasi-dosen.update', $prestasi->id) }}"
                 >
                     @csrf
+                    @method('PUT')
 
                     {{-- Nama Kegiatan --}}
                     <div class="mb-5">
@@ -76,23 +71,21 @@
                             for="nama_kegiatan"
                             class="block text-sm font-medium mb-1.5"
                         >
-                            Nama Kegiatan
-                            <span class="text-red-500">*</span>
+                            Nama Kegiatan <span class="text-red-500">*</span>
                         </label>
 
                         <input
                             type="text"
                             id="nama_kegiatan"
                             name="nama_kegiatan"
-                            value="{{ old('nama_kegiatan') }}"
-                            placeholder="Contoh: Lomba Inovasi Teknologi Nasional"
+                            value="{{ old('nama_kegiatan', $prestasi->nama_kegiatan) }}"
                             class="w-full rounded-xl border px-4 py-3 text-sm"
                             style="border-color: var(--border);"
                             required
                         >
                     </div>
 
-                    {{-- Tingkat + Jenis --}}
+                    {{-- Tingkat & Jenis --}}
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
 
                         <div>
@@ -107,7 +100,7 @@
                                 type="text"
                                 id="tingkat"
                                 name="tingkat"
-                                value="{{ old('tingkat') }}"
+                                value="{{ old('tingkat', $prestasi->tingkat) }}"
                                 placeholder="Lokal / Wilayah / Nasional / Internasional"
                                 class="w-full rounded-xl border px-4 py-3 text-sm"
                                 style="border-color: var(--border);"
@@ -126,7 +119,7 @@
                                 type="text"
                                 id="jenis"
                                 name="jenis"
-                                value="{{ old('jenis') }}"
+                                value="{{ old('jenis', $prestasi->jenis) }}"
                                 placeholder="Akademik / Non-Akademik"
                                 class="w-full rounded-xl border px-4 py-3 text-sm"
                                 style="border-color: var(--border);"
@@ -135,7 +128,7 @@
 
                     </div>
 
-                    {{-- Peringkat + Tempat Pelaksanaan --}}
+                    {{-- Peringkat & Tempat --}}
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
 
                         <div>
@@ -150,7 +143,7 @@
                                 type="text"
                                 id="peringkat"
                                 name="peringkat"
-                                value="{{ old('peringkat') }}"
+                                value="{{ old('peringkat', $prestasi->peringkat) }}"
                                 placeholder="Juara 1 / Finalis / Peserta"
                                 class="w-full rounded-xl border px-4 py-3 text-sm"
                                 style="border-color: var(--border);"
@@ -169,7 +162,7 @@
                                 type="text"
                                 id="tempat_pelaksanaan"
                                 name="tempat_pelaksanaan"
-                                value="{{ old('tempat_pelaksanaan') }}"
+                                value="{{ old('tempat_pelaksanaan', $prestasi->tempat_pelaksanaan) }}"
                                 placeholder="Contoh: Bandung / Jakarta / Online"
                                 class="w-full rounded-xl border px-4 py-3 text-sm"
                                 style="border-color: var(--border);"
@@ -180,6 +173,7 @@
 
                     {{-- Tanggal Penerimaan --}}
                     <div class="mb-5">
+
                         <label
                             for="tanggal_penerimaan"
                             class="block text-sm font-medium mb-1.5"
@@ -189,67 +183,26 @@
 
                         <input
                             type="date"
-                            name="tanggal_penerimaan"
                             id="tanggal_penerimaan"
-                            value="{{ old('tanggal_penerimaan') }}"
+                            name="tanggal_penerimaan"
+                            value="{{ old(
+                                'tanggal_penerimaan',
+                                $prestasi->tanggal_penerimaan?->format('Y-m-d')
+                            ) }}"
                             class="w-full rounded-xl border px-4 py-3 text-sm"
                             style="border-color: var(--border);"
                         >
 
-                        @error('tanggal_penerimaan')
-                            <p class="mt-1 text-sm text-red-600">
-                                {{ $message }}
-                            </p>
-                        @enderror
-                    </div>
-
-                    {{-- Dosen Pembimbing --}}
-                    <div class="mb-5">
-                        <label
-                            for="dosen_id"
-                            class="block text-sm font-medium mb-1.5"
-                        >
-                            Dosen Pembimbing
-                        </label>
-
-                        <select
-                            name="dosen_id"
-                            id="dosen_id"
-                            class="w-full rounded-xl border px-4 py-3 text-sm"
-                            style="border-color: var(--border);"
-                        >
-                            <option value="">
-                                -- Tidak Ada / Pilih Dosen Pembimbing --
-                            </option>
-
-                            @foreach ($dosenList as $dosen)
-                                <option
-                                    value="{{ $dosen->id }}"
-                                    {{ old('dosen_id') == $dosen->id ? 'selected' : '' }}
-                                >
-                                    {{ $dosen->nama }}
-                                    @if ($dosen->nidn)
-                                        — {{ $dosen->nidn }}
-                                    @endif
-                                </option>
-                            @endforeach
-                        </select>
-
-                        @error('dosen_id')
-                            <p class="mt-1 text-sm text-red-600">
-                                {{ $message }}
-                            </p>
-                        @enderror
                     </div>
 
                     {{-- Tahun Akademik --}}
                     <div class="mb-7">
+
                         <label
                             for="tahun_akademik_id"
                             class="block text-sm font-medium mb-1.5"
                         >
-                            Tahun Akademik
-                            <span class="text-red-500">*</span>
+                            Tahun Akademik <span class="text-red-500">*</span>
                         </label>
 
                         <select
@@ -259,25 +212,27 @@
                             style="border-color: var(--border);"
                             required
                         >
+
                             <option value="">
                                 -- Pilih Tahun Akademik --
                             </option>
 
                             @foreach ($tahunAkademikList as $ta)
+
                                 <option
                                     value="{{ $ta->id }}"
-                                    {{ old('tahun_akademik_id') == $ta->id ? 'selected' : '' }}
+                                    {{ old(
+                                        'tahun_akademik_id',
+                                        $prestasi->tahun_akademik_id
+                                    ) == $ta->id ? 'selected' : '' }}
                                 >
                                     {{ $ta->label }}
                                 </option>
+
                             @endforeach
+
                         </select>
 
-                        @error('tahun_akademik_id')
-                            <p class="mt-1 text-sm text-red-600">
-                                {{ $message }}
-                            </p>
-                        @enderror
                     </div>
 
                     {{-- Tombol --}}
@@ -287,7 +242,7 @@
                     >
 
                         <a
-                            href="{{ route('public.prestasi.index', $mahasiswa->nim) }}"
+                            href="{{ route('prestasi-dosen.show', $prestasi->id) }}"
                             class="inline-flex items-center justify-center px-5 py-2.5 rounded-xl text-sm font-medium"
                             style="background: var(--secondary); color: var(--foreground);"
                         >
@@ -299,7 +254,7 @@
                             class="inline-flex items-center justify-center px-6 py-2.5 rounded-xl text-sm font-semibold text-white hover:opacity-95 transition"
                             style="background: var(--primary);"
                         >
-                            Simpan Prestasi
+                            Simpan Perubahan
                         </button>
 
                     </div>
@@ -307,6 +262,7 @@
                 </form>
 
             </div>
+
         </div>
 
     </div>
