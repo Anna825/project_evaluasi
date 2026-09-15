@@ -23,11 +23,14 @@ use App\Http\Controllers\PenelitianPkmController;
 use App\Http\Controllers\LaporanAkhirPkmController;
 use App\Http\Controllers\HilirisasiPkmController;
 use App\Http\Controllers\PrestasiDosenController;
-use App\Http\Controllers\PublicMahasiswaController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\DosenProfileController;
-
+use App\Http\Controllers\Auth\AlumniRegisterController; 
+use App\Http\Controllers\Auth\AlumniLoginController;
+use App\Http\Controllers\Alumni\AlumniDashboardController;
+use App\Http\Controllers\PublicMahasiswaController;
+use App\Http\Controllers\Alumni\AlumniTracerController;
 
 /*
 |--------------------------------------------------------------------------
@@ -137,6 +140,46 @@ Route::get('/mahasiswa-publik/{nim}/tracer/create', [PublicMahasiswaController::
 Route::post('/mahasiswa-publik/{nim}/tracer', [PublicMahasiswaController::class, 'tracerStore'])
     ->name('public.tracer.store');
 
+/*
+|--------------------------------------------------------------------------
+| ALUMNI
+|--------------------------------------------------------------------------
+*/
+Route::get('/alumni/register', [AlumniRegisterController::class, 'create'])
+    ->name('alumni.register');
+
+Route::post('/alumni/register', [AlumniRegisterController::class, 'store'])
+    ->name('alumni.register.store');
+
+Route::post('/alumni/check-nim', [AlumniRegisterController::class, 'checkNim'])
+    ->name('alumni.check-nim');
+
+Route::post('/alumni/logout', [AlumniLoginController::class, 'destroy'])
+    ->name('alumni.logout');
+
+Route::get('/alumni/login', [AlumniLoginController::class, 'create'])
+    ->name('alumni.login');
+
+Route::post('/alumni/login', [AlumniLoginController::class, 'store'])
+    ->name('alumni.login.store');
+
+Route::get('/alumni/tracer-study', [AlumniTracerController::class, 'create'])
+    ->name('alumni.tracer.index');
+
+Route::post('/alumni/tracer-study', [AlumniTracerController::class, 'store'])
+    ->name('alumni.tracer.store');
+
+Route::middleware(['auth', 'role:alumni'])->group(function () {
+
+    Route::get('/alumni/dashboard', [AlumniDashboardController::class, 'index'])
+        ->name('alumni.dashboard');
+
+    Route::get('/alumni/tracer-study', [AlumniTracerController::class, 'create'])
+        ->name('alumni.tracer.index');
+
+    Route::post('/alumni/tracer-study', [AlumniTracerController::class, 'store'])
+        ->name('alumni.tracer.store');
+});
 
 /*
 |--------------------------------------------------------------------------
@@ -204,6 +247,18 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
 
     Route::get('/admin/users', [UserManagementController::class, 'index'])
         ->name('admin.users.index');
+    
+    Route::get('/admin/alumni', [UserManagementController::class, 'alumniIndex'])
+        ->name('admin.alumni.index');
+
+    Route::get('/admin/alumni/{user}', [UserManagementController::class, 'alumniShow'])
+        ->name('admin.alumni.show');
+
+    Route::patch('/admin/alumni/{user}/activate', [UserManagementController::class, 'alumniActivate'])
+        ->name('admin.alumni.activate');
+
+    Route::patch('/admin/alumni/{user}/deactivate', [UserManagementController::class, 'alumniDeactivate'])
+        ->name('admin.alumni.deactivate');
 
     Route::get('/admin/users/{user}', [UserManagementController::class, 'show'])
         ->name('admin.users.show');

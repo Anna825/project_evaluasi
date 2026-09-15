@@ -30,6 +30,11 @@ class Mahasiswa extends Model
         return $this->hasMany(MahasiswaStatusLog::class);
     }
 
+    public function userRoles(): HasMany
+    {
+        return $this->hasMany(UserRole::class);
+    }
+
     public function nilaiCpmk(): HasMany
     {
         return $this->hasMany(NilaiCpmk::class);

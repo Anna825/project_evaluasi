@@ -47,4 +47,90 @@ class UserManagementController extends Controller
 
         return back()->with('status', "Akun {$user->name} telah dinonaktifkan.");
     }
+        /**
+     * Tampilkan daftar akun Alumni.
+     */
+    public function alumniIndex()
+    {
+        $users = User::whereHas('roles', function ($query) {
+                $query->where('nama_role', 'alumni');
+            })
+            ->with([
+                'roles' => function ($query) {
+                    $query->where('nama_role', 'alumni');
+                },
+                'userRoles.mahasiswa.prodi',
+            ])
+            ->orderByRaw("CASE WHEN status = 'pending' THEN 0 ELSE 1 END")
+            ->latest()
+            ->get();
+
+        return view('admin.alumni.index', compact('users'));
+    }
+        /**
+     * Tampilkan detail akun Alumni.
+     */
+    public function alumniShow(User $user)
+    {
+        $user->load([
+            'roles' => function ($query) {
+                $query->where('nama_role', 'alumni');
+            },
+            'userRoles.mahasiswa.prodi',
+        ]);
+
+        $alumniRole = $user->roles->first();
+
+        if (! $alumniRole) {
+            abort(404);
+        }
+
+        return view('admin.alumni.show', compact('user'));
+    }
+
+    /**
+     * Aktifkan akun Alumni.
+     */
+    public function alumniActivate(User $user)
+    {
+        $isAlumni = $user->roles()
+            ->where('nama_role', 'alumni')
+            ->exists();
+
+        if (! $isAlumni) {
+            abort(404);
+        }
+
+        $user->update([
+            'status' => 'aktif',
+        ]);
+
+        return back()->with(
+            'status',
+            "Akun Alumni {$user->name} berhasil diaktifkan."
+        );
+    }
+
+    /**
+     * Nonaktifkan akun Alumni.
+     */
+    public function alumniDeactivate(User $user)
+    {
+        $isAlumni = $user->roles()
+            ->where('nama_role', 'alumni')
+            ->exists();
+
+        if (! $isAlumni) {
+            abort(404);
+        }
+
+        $user->update([
+            'status' => 'nonaktif',
+        ]);
+
+        return back()->with(
+            'status',
+            "Akun Alumni {$user->name} telah dinonaktifkan."
+        );
+    }
 }

@@ -9,6 +9,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class User extends Authenticatable
 {
@@ -58,12 +59,17 @@ class User extends Authenticatable
         return $this->hasOne(Dosen::class);
     }
 
+    public function userRoles(): HasMany
+    {
+        return $this->hasMany(UserRole::class);
+    }
+
     /**
      * Relasi many-to-many ke Role lewat tabel pivot user_roles.
      */
     public function roles(): BelongsToMany
     {
         return $this->belongsToMany(Role::class, 'user_roles')
-            ->withPivot('prodi_id');
+            ->withPivot('prodi_id', 'mahasiswa_id');
     }
 }

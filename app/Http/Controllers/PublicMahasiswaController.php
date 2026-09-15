@@ -49,6 +49,14 @@ class PublicMahasiswaController extends Controller
             ]);
         }
 
+        // Mahasiswa yang sudah lulus tidak boleh masuk melalui
+        // jalur dashboard mahasiswa aktif.
+        if ($mahasiswa->status === 'lulus') {
+            return back()->withErrors([
+                'nim' => 'Anda sudah berstatus lulus. Silakan mendaftar sebagai Alumni untuk mengakses Tracer Study.',
+            ]);
+        }
+
         return redirect()->route(
             'public.mahasiswa.menu',
             $mahasiswa->nim

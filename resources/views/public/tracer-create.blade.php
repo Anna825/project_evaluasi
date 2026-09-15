@@ -1,4 +1,4 @@
-@extends('layouts.mahasiswa')
+@extends('layouts.app')
 
 @section('title', 'Tracer Study - Evaluasi PBM')
 
@@ -15,7 +15,7 @@
     ========================================================== --}}
     <div class="mb-4 text-left">
         <a
-            href="{{ route('public.mahasiswa.menu', $mahasiswa->nim) }}"
+            href="{{ route('alumni.dashboard') }}"
             class="text-sm text-gray-600 underline hover:text-gray-900"
         >
             ← Kembali ke Dashboard
@@ -154,7 +154,7 @@
                     </div>
                 </div>
 
-                <form method="POST" action="{{ route('public.tracer.store', $mahasiswa->nim) }}" class="p-6 md:p-8">
+                <form method="POST" action="{{ route('alumni.tracer.store') }}" class="p-6 md:p-8">
                     @csrf
                     @if ($errors->any())
                         <div class="mb-6 px-4 py-4 rounded-xl text-sm" style="background: #fdecea; color: #a13d3d;">

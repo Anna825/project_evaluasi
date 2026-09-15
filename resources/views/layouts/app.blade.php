@@ -36,12 +36,34 @@
 <body style="background-color: var(--background); color: var(--foreground);">
 @php
     $roleNames = auth()->user()->roles()->pluck('nama_role')->toArray();
-    $activeRole = in_array('admin', $roleNames) ? 'admin' : (in_array('kaprodi', $roleNames) ? 'kaprodi' : 'dosen');
-
+    $activeRole = in_array('admin', $roleNames)
+        ? 'admin'
+        : (in_array('kaprodi', $roleNames)
+            ? 'kaprodi'
+            : (in_array('alumni', $roleNames)
+                ? 'alumni'
+                : 'dosen'));
     $pendingDosenCount = $activeRole === 'admin'? \App\Models\User::whereHas('dosen')->where('status', 'pending')->count(): 0;
 
-    $roleLabels = ['admin' => 'Administrator', 'kaprodi' => 'Ka. Program Studi', 'dosen' => 'Dosen'];
-    $roleColors = ['admin' => '#b8952a', 'kaprodi' => '#6a1b9a', 'dosen' => '#1565c0'];
+    $pendingAlumniCount = $activeRole === 'admin'
+    ? \App\Models\User::whereHas('roles', function ($query) {
+        $query->where('nama_role', 'alumni');
+    })->where('status', 'pending')->count()
+    : 0;
+
+    $roleLabels = [
+        'admin' => 'Administrator',
+        'kaprodi' => 'Ka. Program Studi',
+        'dosen' => 'Dosen',
+        'alumni' => 'Alumni',
+    ];
+
+    $roleColors = [
+        'admin' => '#b8952a',
+        'kaprodi' => '#6a1b9a',
+        'dosen' => '#1565c0',
+        'alumni' => '#2e7d32',
+    ];
 
     $icons = [
         'dashboard' => 'M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6',
@@ -58,6 +80,7 @@
         'admin' => [
             ['route' => 'admin.dashboard', 'pattern' => 'admin.dashboard', 'label' => 'Ringkasan', 'icon' => $icons['dashboard']],
             ['route' => 'admin.users.index', 'pattern' => 'admin.users.*', 'label' => 'Akun Dosen', 'icon' => $icons['people']],
+            ['route' => 'admin.alumni.index', 'pattern' => 'admin.alumni.*', 'label' => 'Akun Alumni', 'icon' => $icons['people']],
             ['route' => 'mahasiswa.index', 'pattern' => 'mahasiswa.*', 'label' => 'Data Mahasiswa', 'icon' => $icons['people']],
             ['route' => 'prodi.index', 'pattern' => 'prodi.*', 'label' => 'Program Studi', 'icon' => $icons['building']],
             ['route' => 'tahun-akademik.index', 'pattern' => 'tahun-akademik.*', 'label' => 'Tahun Akademik', 'icon' => $icons['calendar']],
@@ -143,6 +166,21 @@
             ['route' => 'prestasi-dosen.index', 'pattern' => 'prestasi-dosen.*', 'label' => 'Prestasi Saya', 'icon' => $icons['award']],
             ['route' => 'dosen.profil.show', 'pattern' => 'dosen.profil.*', 'label' => 'Profil Dosen', 'icon' => $icons['people']],
         ],
+
+        'alumni' => [
+            [
+                'route' => 'alumni.dashboard',
+                'pattern' => 'alumni.dashboard',
+                'label' => 'Ringkasan',
+                'icon' => $icons['dashboard'],
+            ],
+            [
+                'route' => 'alumni.tracer.index',
+                'pattern' => 'alumni.tracer.*',
+                'label' => 'Tracer Study',
+                'icon' => $icons['report'],
+            ],
+        ],
     ];
 
     $navItems = $navByRole[$activeRole];
@@ -218,6 +256,15 @@
                                         <span
                                             class="w-2.5 h-2.5 rounded-full bg-red-500 shrink-0"
                                             title="{{ $pendingDosenCount }} akun dosen menunggu verifikasi">
+                                        </span>
+
+                                    @endif
+
+                                    @if ($item['route'] === 'admin.alumni.index' && $pendingAlumniCount > 0)
+
+                                        <span
+                                            class="w-2.5 h-2.5 rounded-full bg-red-500 shrink-0"
+                                            title="{{ $pendingAlumniCount }} akun alumni menunggu verifikasi">
                                         </span>
 
                                     @endif

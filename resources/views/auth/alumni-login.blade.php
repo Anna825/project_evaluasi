@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Login - Evaluasi PBM LAM Teknik</title>
+    <title>Login Alumni - Tracer Study</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,600;0,700;1,400&family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -107,8 +107,10 @@
                 </div>
             </div>
 
-            <h2 class="text-3xl font-bold font-serif-display mb-2">Selamat Datang</h2>
-            <p class="text-sm mb-8" style="color: var(--muted-foreground);">Masuk ke akun Anda untuk mengakses sistem akreditasi</p>
+           <h2 class="text-3xl font-bold font-serif-display mb-2">Selamat Datang, Alumni</h2>
+            <p class="text-sm mb-8" style="color: var(--muted-foreground);">
+                Masuk ke akun Alumni Anda untuk mengakses sistem akreditasi
+            </p>
 
             @if (session('status'))
                 <div class="text-sm rounded-lg px-4 py-3 mb-5" style="background:#e8f5e9; color:#2e7d32;">
@@ -124,7 +126,7 @@
                 </div>
             @endif
 
-            <form method="POST" action="/login">
+            <form method="POST" action="{{ route('alumni.login.store') }}">
                 @csrf
 
                 <div class="mb-5">
@@ -152,13 +154,13 @@
 
                 <div class="flex flex-col gap-2 mt-6 text-center text-sm">
                     <p style="color: var(--muted-foreground);">
-                        Belum punya akun (Dosen)?
-                        <a href="/register" class="font-medium" style="color: var(--primary);">Daftar di sini</a>
+                        Belum punya akun Alumni?
+                        <a href="{{ route('alumni.register') }}" class="font-medium" style="color: var(--primary);">Daftar di sini</a>
                     </p>
                     <p style="color: var(--muted-foreground);">
-                        Alumni?
-                        <a href="{{ route('alumni.login') }}" class="font-medium" style="color: var(--primary);">
-                            Login Alumni
+                        Dosen?
+                        <a href="{{ route('login') }}" class="font-medium" style="color: var(--primary);">
+                            Login Dosen
                         </a>
                     </p>
                     <p style="color: var(--muted-foreground);">
