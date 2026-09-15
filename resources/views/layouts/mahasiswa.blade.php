@@ -49,7 +49,6 @@
     $navItems = [
         ['route' => 'public.mahasiswa.menu', 'pattern' => 'public.mahasiswa.menu', 'label' => 'Ringkasan', 'icon' => $icons['dashboard']],
         ['route' => 'public.prestasi.index', 'pattern' => 'public.prestasi.*', 'label' => 'Prestasi Saya', 'icon' => $icons['award']],
-        ['route' => 'public.tracer.create', 'pattern' => 'public.tracer.*', 'label' => 'Tracer Study', 'icon' => $icons['report']],
     ];
 @endphp
     <div class="flex h-screen overflow-hidden">

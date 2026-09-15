@@ -67,29 +67,31 @@ class PublicMahasiswaController extends Controller
      * Menu pilihan setelah NIM valid
      * (Isi Prestasi / Isi Tracer Study).
      */
-    public function menu(string $nim)
+   public function menu(string $nim)
     {
         $mahasiswa = Mahasiswa::with('prodi')
             ->where('nim', $nim)
             ->firstOrFail();
 
+        // Mahasiswa yang sudah lulus tidak boleh mengakses
+        // dashboard mahasiswa aktif melalui URL langsung.
+        if ($mahasiswa->status === 'lulus') {
+            return redirect()
+                ->route('mahasiswa.login')
+                ->withErrors([
+                    'nim' => 'Anda sudah berstatus lulus. Silakan mendaftar atau login melalui akun Alumni.',
+                ]);
+        }
+
         $prestasiCount = $mahasiswa->prestasi()->count();
-
-        $tracerStudy = $mahasiswa->tracerStudy()
-            ->latest()
-            ->first();
-
-        $tracerSudahIsi = $tracerStudy !== null;
 
         return view(
             'public.dashboard',
             compact(
                 'mahasiswa',
-                'prestasiCount',
-                'tracerStudy',
-                'tracerSudahIsi'
+                'prestasiCount'
             )
-        );    
+        );
     }
 
     /**

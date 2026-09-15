@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Alumni;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\PublicMahasiswaController;
 use Illuminate\Http\Request;
+use App\Models\TracerStudy;
 
 class AlumniTracerController extends Controller
 {
@@ -53,5 +54,20 @@ class AlumniTracerController extends Controller
 
         return app(PublicMahasiswaController::class)
             ->tracerStore($request, $nim);
+    }
+
+    public function destroy(TracerStudy $tracerStudy)
+    {
+        $nim = $this->getAlumniNim();
+
+        if ($tracerStudy->mahasiswa->nim !== $nim) {
+            abort(403);
+        }
+
+        $tracerStudy->delete();
+
+        return redirect()
+            ->route('alumni.tracer.index')
+            ->with('status', 'Riwayat Tracer Study berhasil dihapus.');
     }
 }

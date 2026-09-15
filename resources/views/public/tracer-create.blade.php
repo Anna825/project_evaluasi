@@ -94,7 +94,7 @@
                         <h2 class="font-serif-display text-xl md:text-2xl font-bold">Riwayat Tracer Study</h2>
                         <p class="text-sm mt-1" style="color: var(--muted-foreground);">Rekam jejak kondisi dan perjalanan karier Anda setelah lulus.</p>
                     </div>
-                    <button type="button" onclick="openTracerModal()" class="inline-flex items-center justify-center px-4 py-2 rounded-xl text-sm font-medium text-white" style="background: var(--mhs);">+ Tambah Riwayat</button>
+                    <button type="button" onclick="openTracerModal()" class="inline-flex items-center justify-center px-4 py-2 rounded-xl text-sm font-medium text-white" style="background: var(--primary);">+ Tambah Riwayat</button>
                 </div>
             </div>
             <div class="p-6 md:p-8">
@@ -170,15 +170,15 @@
                         </div>
 
                         <div class="mb-5">
-                            <label class="block text-sm font-medium mb-1.5">1. Nama Lengkap <span class="text-red-500">*</span></label>
+                            <label class="block text-sm font-medium mb-1.5">Nama Lengkap <span class="text-red-500">*</span></label>
                             <input type="text" name="nama_alumni" value="{{ old('nama_alumni', $mahasiswa->nama) }}" class="w-full rounded-xl border px-4 py-3 text-sm" style="border-color: var(--border);" required>
                         </div>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-                            <div><label class="block text-sm font-medium mb-1.5">2. Tahun Masuk Polman <span class="text-red-500">*</span></label><input type="number" name="tahun_masuk" value="{{ old('tahun_masuk') }}" placeholder="Contoh: 2023" min="1900" max="2100" class="w-full rounded-xl border px-4 py-3 text-sm" style="border-color: var(--border);" required></div>
-                            <div><label class="block text-sm font-medium mb-1.5">3. Tahun Lulus dari Polman <span class="text-red-500">*</span></label><input type="number" name="tahun_lulus" value="{{ old('tahun_lulus') }}" placeholder="Contoh: 2027" min="1900" max="2100" class="w-full rounded-xl border px-4 py-3 text-sm" style="border-color: var(--border);" required></div>
+                            <div><label class="block text-sm font-medium mb-1.5">Tahun Masuk Polman <span class="text-red-500">*</span></label><input type="number" name="tahun_masuk" value="{{ old('tahun_masuk') }}" placeholder="Contoh: 2023" min="1900" max="2100" class="w-full rounded-xl border px-4 py-3 text-sm" style="border-color: var(--border);" required></div>
+                            <div><label class="block text-sm font-medium mb-1.5">Tahun Lulus dari Polman <span class="text-red-500">*</span></label><input type="number" name="tahun_lulus" value="{{ old('tahun_lulus') }}" placeholder="Contoh: 2027" min="1900" max="2100" class="w-full rounded-xl border px-4 py-3 text-sm" style="border-color: var(--border);" required></div>
                         </div>
                         <div class="mt-5">
-                            <label class="block text-sm font-medium mb-1.5">4. Program Studi <span class="text-red-500">*</span></label>
+                            <label class="block text-sm font-medium mb-1.5">Program Studi <span class="text-red-500">*</span></label>
                             <select name="prodi_id" class="w-full rounded-xl border px-4 py-3 text-sm" style="border-color: var(--border);" required>
                                 <option value="">-- Pilih Program Studi --</option>
                                 @foreach ($prodiList as $prodi)<option value="{{ $prodi->id }}" {{ old('prodi_id', $mahasiswa->prodi_id) == $prodi->id ? 'selected' : '' }}>{{ $prodi->nama }}</option>@endforeach
@@ -188,9 +188,9 @@
                         <div class="mt-8 pt-6 border-t" style="border-color: var(--border);">
                             <h3 class="font-semibold text-lg mb-1">Pendidikan Lanjutan</h3>
                             <p class="text-sm mb-5" style="color: var(--muted-foreground);">Bagi yang melanjutkan ke jenjang Pendidikan S2, silakan lengkapi informasi berikut.</p>
-                            <div class="mb-5"><label class="block text-sm font-medium mb-1.5">5. Apakah saat ini sedang/sudah melanjutkan ke jenjang pendidikan S-2?</label><select name="melanjutkan_s2" class="w-full rounded-xl border px-4 py-3 text-sm" style="border-color: var(--border);"><option value="">-- Pilih Jawaban --</option><option value="Ya">Ya</option><option value="Tidak">Tidak</option></select></div>
+                            <div class="mb-5"><label class="block text-sm font-medium mb-1.5">Apakah saat ini sedang/sudah melanjutkan ke jenjang pendidikan S-2?</label><select name="melanjutkan_s2" class="w-full rounded-xl border px-4 py-3 text-sm" style="border-color: var(--border);"><option value="">-- Pilih Jawaban --</option><option value="Ya">Ya</option><option value="Tidak">Tidak</option></select></div>
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-                                <div><label class="block text-sm font-medium mb-1.5">6. Nama Perguruan Tinggi S2</label><input type="text" name="perguruan_tinggi_s2" value="{{ old('perguruan_tinggi_s2') }}" placeholder="Bagi yang melanjutkan ke jenjang Pendidikan S2" class="w-full rounded-xl border px-4 py-3 text-sm" style="border-color: var(--border);"></div>
+                                <div><label class="block text-sm font-medium mb-1.5">Nama Perguruan Tinggi S2</label><input type="text" name="perguruan_tinggi_s2" value="{{ old('perguruan_tinggi_s2') }}" placeholder="Bagi yang melanjutkan ke jenjang Pendidikan S2" class="w-full rounded-xl border px-4 py-3 text-sm" style="border-color: var(--border);"></div>
                                 <div><label class="block text-sm font-medium mb-1.5">Jurusan / Program Studi S2</label><input type="text" name="prodi_s2" value="{{ old('prodi_s2') }}" placeholder="Bagi yang melanjutkan ke jenjang Pendidikan S2" class="w-full rounded-xl border px-4 py-3 text-sm" style="border-color: var(--border);"></div>
                             </div>
                         </div>
@@ -198,37 +198,70 @@
                         <div class="mt-8 pt-6 border-t" style="border-color: var(--border);">
                             <h3 class="font-semibold text-lg mb-1">Riwayat Pekerjaan</h3>
                             <p class="text-sm mb-6" style="color: var(--muted-foreground);">Form yang diisi pertama kali setelah lulus.</p>
-                            <div class="mb-5"><label class="block text-sm font-medium mb-1.5">7. Berapa lama menunggu dari mulai lulus untuk mendapatkan pekerjaan pertama? <span class="text-red-500">*</span></label><select name="waktu_tunggu_kerja_pertama" class="w-full rounded-xl border px-4 py-3 text-sm" style="border-color: var(--border);" required><option value="">-- Pilih Jawaban --</option><option value="< 3 bulan">&lt; 3 bulan</option><option value="Antara 3–6 bulan">Antara 3–6 bulan</option><option value="> 6 bulan">&gt; 6 bulan</option></select></div>
-                            <div class="mb-5"><label class="block text-sm font-medium mb-1.5">8. Dari mana mendapatkan info lowongan kerja? <span class="text-red-500">*</span></label><select name="sumber_lowongan_pertama" id="sumber_lowongan_pertama" onchange="toggleOther('sumber_lowongan_pertama','sumber_lowongan_pertama_lainnya')" class="w-full rounded-xl border px-4 py-3 text-sm" style="border-color: var(--border);" required><option value="">-- Pilih Sumber --</option><option>Keluarga/saudara/teman</option><option>Iklan media cetak/koran</option><option>Iklan media elektronik (TV/radio)</option><option>Internet/on-line</option><option>Almamater/Ikatan Alumni/JCDC</option><option>Yang lain</option></select><input type="text" name="sumber_lowongan_pertama_lainnya" id="sumber_lowongan_pertama_lainnya" placeholder="Tuliskan sumber lainnya" class="hidden w-full rounded-xl border px-4 py-3 text-sm mt-3" style="border-color: var(--border);"></div>
-                            <div class="mb-5"><label class="block text-sm font-medium mb-1.5">9. Jenis pekerjaan pertama <span class="text-red-500">*</span></label><select name="jenis_pekerjaan_pertama" id="jenis_pekerjaan_pertama" onchange="toggleOther('jenis_pekerjaan_pertama','jenis_pekerjaan_pertama_lainnya')" class="w-full rounded-xl border px-4 py-3 text-sm" style="border-color: var(--border);" required><option value="">-- Pilih Jenis Pekerjaan --</option><option>PNS</option><option>Karyawan BUMN/BUMD</option><option>Karyawan swasta</option><option>Wiraswasta/wirausaha</option><option>Yang lain</option></select><input type="text" name="jenis_pekerjaan_pertama_lainnya" id="jenis_pekerjaan_pertama_lainnya" placeholder="Tuliskan jenis pekerjaan lainnya" class="hidden w-full rounded-xl border px-4 py-3 text-sm mt-3" style="border-color: var(--border);"></div>
+                            <div class="mb-5"><label class="block text-sm font-medium mb-1.5">Berapa lama menunggu dari mulai lulus untuk mendapatkan pekerjaan pertama? <span class="text-red-500">*</span></label><select name="waktu_tunggu_kerja_pertama" class="w-full rounded-xl border px-4 py-3 text-sm" style="border-color: var(--border);" required><option value="">-- Pilih Jawaban --</option><option value="< 3 bulan">&lt; 3 bulan</option><option value="Antara 3–6 bulan">Antara 3–6 bulan</option><option value="> 6 bulan">&gt; 6 bulan</option></select></div>
+                            <div class="mb-5"><label class="block text-sm font-medium mb-1.5">Dari mana mendapatkan info lowongan kerja? <span class="text-red-500">*</span></label><select name="sumber_lowongan_pertama" id="sumber_lowongan_pertama" onchange="toggleOther('sumber_lowongan_pertama','sumber_lowongan_pertama_lainnya')" class="w-full rounded-xl border px-4 py-3 text-sm" style="border-color: var(--border);" required><option value="">-- Pilih Sumber --</option><option>Keluarga/saudara/teman</option><option>Iklan media cetak/koran</option><option>Iklan media elektronik (TV/radio)</option><option>Internet/online</option><option>Almamater/Ikatan Alumni/JCDC</option><option>Yang lain</option></select><input type="text" name="sumber_lowongan_pertama_lainnya" id="sumber_lowongan_pertama_lainnya" placeholder="Tuliskan sumber lainnya" class="hidden w-full rounded-xl border px-4 py-3 text-sm mt-3" style="border-color: var(--border);"></div>
+                            <div class="mb-5"><label class="block text-sm font-medium mb-1.5">Jenis pekerjaan pertama <span class="text-red-500">*</span></label><select name="jenis_pekerjaan_pertama" id="jenis_pekerjaan_pertama" onchange="toggleOther('jenis_pekerjaan_pertama','jenis_pekerjaan_pertama_lainnya')" class="w-full rounded-xl border px-4 py-3 text-sm" style="border-color: var(--border);" required><option value="">-- Pilih Jenis Pekerjaan --</option><option>PNS</option><option>Karyawan BUMN/BUMD</option><option>Karyawan swasta</option><option>Wiraswasta/wirausaha</option><option>Yang lain</option></select><input type="text" name="jenis_pekerjaan_pertama_lainnya" id="jenis_pekerjaan_pertama_lainnya" placeholder="Tuliskan jenis pekerjaan lainnya" class="hidden w-full rounded-xl border px-4 py-3 text-sm mt-3" style="border-color: var(--border);"></div>
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-                                <div><label class="block text-sm font-medium mb-1.5">10. Nama instansi/perusahaan tempat kerja pertama <span class="text-red-500">*</span></label><input type="text" name="nama_instansi_pertama" value="{{ old('nama_instansi_pertama') }}" class="w-full rounded-xl border px-4 py-3 text-sm" style="border-color: var(--border);" required></div>
+                                <div><label class="block text-sm font-medium mb-1.5">Nama instansi/perusahaan tempat kerja pertama <span class="text-red-500">*</span></label><input type="text" name="nama_instansi_pertama" value="{{ old('nama_instansi_pertama') }}" class="w-full rounded-xl border px-4 py-3 text-sm" style="border-color: var(--border);" required></div>
                                 <div><label class="block text-sm font-medium mb-1.5">Tingkat Perusahaan <span class="text-red-500">*</span></label><select name="tingkat_perusahaan_pertama" class="w-full rounded-xl border px-4 py-3 text-sm" style="border-color: var(--border);" required><option value="">-- Pilih Tingkat --</option><option>Lokal/Wilayah</option><option>Nasional</option><option>Multinasional</option></select></div>
-                                <div><label class="block text-sm font-medium mb-1.5">11. Tingkat kesesuaian bidang pekerjaan pertama dengan jurusan/prodi <span class="text-red-500">*</span></label><select name="kesesuaian_bidang_pertama" class="w-full rounded-xl border px-4 py-3 text-sm" style="border-color: var(--border);" required><option value="">-- Pilih Tingkat --</option><option>Rendah</option><option>Sedang</option><option>Tinggi</option></select></div>
-                                <div><label class="block text-sm font-medium mb-1.5">12. Gaji pekerjaan pertama <span class="text-red-500">*</span></label><select name="gaji_pertama" class="w-full rounded-xl border px-4 py-3 text-sm" style="border-color: var(--border);" required><option value="">-- Pilih Gaji --</option><option>&lt; Rp 3.000.000</option><option>Rp 3.000.000 – Rp 4.000.000</option><option>Rp 4.000.000 – Rp 5.000.000</option><option>Rp 5.000.000 – Rp 6.000.000</option><option>&gt; Rp 6.000.000</option></select></div>
+                                <div><label class="block text-sm font-medium mb-1.5">Tingkat kesesuaian bidang pekerjaan pertama dengan jurusan/prodi <span class="text-red-500">*</span></label><select name="kesesuaian_bidang_pertama" class="w-full rounded-xl border px-4 py-3 text-sm" style="border-color: var(--border);" required><option value="">-- Pilih Tingkat --</option><option>Rendah</option><option>Sedang</option><option>Tinggi</option></select></div>
+                                <div><label class="block text-sm font-medium mb-1.5">Gaji pekerjaan pertama <span class="text-red-500">*</span></label><select name="gaji_pertama" class="w-full rounded-xl border px-4 py-3 text-sm" style="border-color: var(--border);" required><option value="">-- Pilih Gaji --</option><option>&lt; Rp 3.000.000</option><option>Rp 3.000.000 – Rp 4.000.000</option><option>Rp 4.000.000 – Rp 5.000.000</option><option>Rp 5.000.000 – Rp 6.000.000</option><option>&gt; Rp 6.000.000</option></select></div>
                             </div>
-                            <div class="mt-5"><label class="block text-sm font-medium mb-1.5">13. Posisi pada pekerjaan pertama <span class="text-red-500">*</span></label><input type="text" name="posisi_pertama" value="{{ old('posisi_pertama') }}" placeholder="Contoh: Junior Data Engineering" class="w-full rounded-xl border px-4 py-3 text-sm" style="border-color: var(--border);" required></div>
+                            <div class="mt-5"><label class="block text-sm font-medium mb-1.5">Posisi pada pekerjaan pertama <span class="text-red-500">*</span></label><input type="text" name="posisi_pertama" value="{{ old('posisi_pertama') }}" placeholder="Contoh: Junior Data Engineering" class="w-full rounded-xl border px-4 py-3 text-sm" style="border-color: var(--border);" required></div>
                         </div>
 
                     @else
-                        <div class="mb-8"><h3 class="font-semibold text-lg mb-1">Riwayat Pekerjaan Terakhir / Sekarang</h3><p class="text-sm" style="color: var(--muted-foreground);">Form ini diisi jika Anda berpindah pekerjaan/perusahaan. Riwayat sebelumnya tetap tersimpan.</p></div>
-                        <div class="mb-5"><label class="block text-sm font-medium mb-1.5">14. Jenis pekerjaan saat ini <span class="text-red-500">*</span></label><select name="jenis_pekerjaan_saat_ini" id="jenis_pekerjaan_saat_ini" onchange="toggleOther('jenis_pekerjaan_saat_ini','jenis_pekerjaan_saat_ini_lainnya')" class="w-full rounded-xl border px-4 py-3 text-sm" style="border-color: var(--border);" required><option value="">-- Pilih Jenis Pekerjaan --</option><option>PNS</option><option>Karyawan BUMN/BUMD</option><option>Karyawan swasta</option><option>Wiraswasta/wirausaha</option><option>Yang lain</option></select><input type="text" name="jenis_pekerjaan_saat_ini_lainnya" id="jenis_pekerjaan_saat_ini_lainnya" placeholder="Tuliskan jenis pekerjaan lainnya" class="hidden w-full rounded-xl border px-4 py-3 text-sm mt-3" style="border-color: var(--border);"></div>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-                            <div><label class="block text-sm font-medium mb-1.5">15. Nama instansi/perusahaan saat ini <span class="text-red-500">*</span></label><input type="text" name="nama_instansi_saat_ini" value="{{ old('nama_instansi_saat_ini') }}" class="w-full rounded-xl border px-4 py-3 text-sm" style="border-color: var(--border);" required></div>
-                            <div><label class="block text-sm font-medium mb-1.5">Tingkat Perusahaan <span class="text-red-500">*</span></label><select name="tingkat_perusahaan_saat_ini" class="w-full rounded-xl border px-4 py-3 text-sm" style="border-color: var(--border);" required><option value="">-- Pilih Tingkat --</option><option>Lokal/Wilayah</option><option>Nasional</option><option>Multinasional</option></select></div>
-                            <div><label class="block text-sm font-medium mb-1.5">16. Sudah berapa kali pindah pekerjaan/perusahaan? <span class="text-red-500">*</span></label><select name="jumlah_pindah_kerja" class="w-full rounded-xl border px-4 py-3 text-sm" style="border-color: var(--border);" required><option value="">-- Pilih Jumlah --</option><option>1 kali</option><option>2 kali</option><option>3 kali</option><option>&gt; 3 kali</option></select></div>
-                            <div><label class="block text-sm font-medium mb-1.5">17. Latar belakang pindah <span class="text-red-500">*</span></label><select name="alasan_pindah" id="alasan_pindah" onchange="toggleOther('alasan_pindah','alasan_pindah_lainnya')" class="w-full rounded-xl border px-4 py-3 text-sm" style="border-color: var(--border);" required><option value="">-- Pilih Alasan --</option><option>Gaji tidak memadai</option><option>Bidang pekerjaan tidak cocok</option><option>Suasana kerja tidak kondusif</option><option>Tidak ada jaminan hari tua</option><option>Masalah keluarga</option><option>Yang lain</option></select><input type="text" name="alasan_pindah_lainnya" id="alasan_pindah_lainnya" placeholder="Tuliskan alasan lainnya" class="hidden w-full rounded-xl border px-4 py-3 text-sm mt-3" style="border-color: var(--border);"></div>
+                        {{-- DATA ALUMNI TETAP DIISI PADA SETIAP RIWAYAT --}}
+                        <div class="mb-8">
+                            <h3 class="font-semibold text-lg mb-1">Data Alumni</h3>
+                            <p class="text-sm" style="color: var(--muted-foreground);">Data alumni tetap dicatat pada setiap riwayat agar setiap pengisian memiliki informasi yang lengkap.</p>
                         </div>
-                        <div class="mt-5"><label class="block text-sm font-medium mb-1.5">18. Sumber info lowongan pekerjaan <span class="text-red-500">*</span></label><select name="sumber_lowongan_saat_ini" id="sumber_lowongan_saat_ini" onchange="toggleOther('sumber_lowongan_saat_ini','sumber_lowongan_saat_ini_lainnya')" class="w-full rounded-xl border px-4 py-3 text-sm" style="border-color: var(--border);" required><option value="">-- Pilih Sumber --</option><option>Keluarga/saudara/teman</option><option>Media cetak/koran</option><option>Media elektronik TV/radio</option><option>Internet/on-line</option><option>Almamater/Ikatan Alumni/JCDC</option><option>Yang lain</option></select><input type="text" name="sumber_lowongan_saat_ini_lainnya" id="sumber_lowongan_saat_ini_lainnya" placeholder="Tuliskan sumber lainnya" class="hidden w-full rounded-xl border px-4 py-3 text-sm mt-3" style="border-color: var(--border);"></div>
+
+                        <div class="mb-5"><label class="block text-sm font-medium mb-1.5">Nama Lengkap <span class="text-red-500">*</span></label><input type="text" name="nama_alumni" value="{{ old('nama_alumni', $tracerStudies->first()->nama_alumni ?? $mahasiswa->nama) }}" class="w-full rounded-xl border px-4 py-3 text-sm" style="border-color: var(--border);" required></div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                            <div>
+                                <label class="block text-sm font-medium mb-1.5">Tahun Masuk Polman <span class="text-red-500">*</span></label>          
+                                <input type="number" name="tahun_masuk" value="{{ old('tahun_masuk', $tracerStudies->first()->tahun_masuk ?? '') }}"placeholder="Contoh: 2023" min="1900" max="2100" class="w-full rounded-xl border px-4 py-3 text-sm" style="border-color: var(--border);" required>
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-medium mb-1.5">Tahun Lulus dari Polman <span class="text-red-500">*</span></label>
+                                <input type="number" name="tahun_lulus" value="{{ old('tahun_lulus', $tracerStudies->first()->tahun_lulus ?? '') }}"placeholder="Contoh: 2027" min="1900" max="2100" class="w-full rounded-xl border px-4 py-3 text-sm" style="border-color: var(--border);" required>
+                            </div>
+                        </div>
+
+                        <div class="mt-5">
+                            <label class="block text-sm font-medium mb-1.5">Program Studi <span class="text-red-500">*</span></label>
+                            <select name="prodi_id" class="w-full rounded-xl border px-4 py-3 text-sm" style="border-color: var(--border);" required>
+                                <option value="">-- Pilih Program Studi --</option>
+
+                                @foreach ($prodiList as $prodi)
+                                    <option value="{{ $prodi->id }}" {{ old('prodi_id', $tracerStudies->first()->prodi_id ?? $mahasiswa->prodi_id) == $prodi->id ? 'selected' : '' }}>{{ $prodi->nama }}</option>                                @endforeach
+                            </select>
+                        </div>
+
+                        {{-- PEMISAH --}}
+                        <div class="mt-8 pt-6 border-t" style="border-color: var(--border);">
+                            <h3 class="font-semibold text-lg mb-1"> Riwayat Pekerjaan Terakhir / Sekarang</h3>
+                            <p class="text-sm" style="color: var(--muted-foreground);">Form ini diisi jika Anda berpindah pekerjaan/perusahaan. Riwayat sebelumnya tetap tersimpan.</p>
+                        </div>                        
+                        <div class="mb-5"><label class="block text-sm font-medium mb-1.5">Jenis pekerjaan saat ini <span class="text-red-500">*</span></label><select name="jenis_pekerjaan_saat_ini" id="jenis_pekerjaan_saat_ini" onchange="toggleOther('jenis_pekerjaan_saat_ini','jenis_pekerjaan_saat_ini_lainnya')" class="w-full rounded-xl border px-4 py-3 text-sm" style="border-color: var(--border);" required><option value="">-- Pilih Jenis Pekerjaan --</option><option>PNS</option><option>Karyawan BUMN/BUMD</option><option>Karyawan swasta</option><option>Wiraswasta/wirausaha</option><option>Yang lain</option></select><input type="text" name="jenis_pekerjaan_saat_ini_lainnya" id="jenis_pekerjaan_saat_ini_lainnya" placeholder="Tuliskan jenis pekerjaan lainnya" class="hidden w-full rounded-xl border px-4 py-3 text-sm mt-3" style="border-color: var(--border);"></div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                            <div><label class="block text-sm font-medium mb-1.5">Nama instansi/perusahaan saat ini <span class="text-red-500">*</span></label><input type="text" name="nama_instansi_saat_ini" value="{{ old('nama_instansi_saat_ini') }}" class="w-full rounded-xl border px-4 py-3 text-sm" style="border-color: var(--border);" required></div>
+                            <div><label class="block text-sm font-medium mb-1.5">Tingkat Perusahaan <span class="text-red-500">*</span></label><select name="tingkat_perusahaan_saat_ini" class="w-full rounded-xl border px-4 py-3 text-sm" style="border-color: var(--border);" required><option value="">-- Pilih Tingkat --</option><option>Lokal/Wilayah</option><option>Nasional</option><option>Multinasional</option></select></div>
+                            <div><label class="block text-sm font-medium mb-1.5">Sudah berapa kali pindah pekerjaan/perusahaan? <span class="text-red-500">*</span></label><select name="jumlah_pindah_kerja" class="w-full rounded-xl border px-4 py-3 text-sm" style="border-color: var(--border);" required><option value="">-- Pilih Jumlah --</option><option>1 kali</option><option>2 kali</option><option>3 kali</option><option>&gt; 3 kali</option></select></div>
+                            <div><label class="block text-sm font-medium mb-1.5">Latar belakang pindah <span class="text-red-500">*</span></label><select name="alasan_pindah" id="alasan_pindah" onchange="toggleOther('alasan_pindah','alasan_pindah_lainnya')" class="w-full rounded-xl border px-4 py-3 text-sm" style="border-color: var(--border);" required><option value="">-- Pilih Alasan --</option><option>Gaji tidak memadai</option><option>Bidang pekerjaan tidak cocok</option><option>Suasana kerja tidak kondusif</option><option>Tidak ada jaminan hari tua</option><option>Masalah keluarga</option><option>Yang lain</option></select><input type="text" name="alasan_pindah_lainnya" id="alasan_pindah_lainnya" placeholder="Tuliskan alasan lainnya" class="hidden w-full rounded-xl border px-4 py-3 text-sm mt-3" style="border-color: var(--border);"></div>
+                        </div>
+                        <div class="mt-5"><label class="block text-sm font-medium mb-1.5">Sumber info lowongan pekerjaan <span class="text-red-500">*</span></label><select name="sumber_lowongan_saat_ini" id="sumber_lowongan_saat_ini" onchange="toggleOther('sumber_lowongan_saat_ini','sumber_lowongan_saat_ini_lainnya')" class="w-full rounded-xl border px-4 py-3 text-sm" style="border-color: var(--border);" required><option value="">-- Pilih Sumber --</option><option>Keluarga/saudara/teman</option><option>Media cetak/koran</option><option>Media elektronik TV/radio</option><option>Internet/online</option><option>Almamater/Ikatan Alumni/JCDC</option><option>Yang lain</option></select><input type="text" name="sumber_lowongan_saat_ini_lainnya" id="sumber_lowongan_saat_ini_lainnya" placeholder="Tuliskan sumber lainnya" class="hidden w-full rounded-xl border px-4 py-3 text-sm mt-3" style="border-color: var(--border);"></div>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mt-5">
-                            <div><label class="block text-sm font-medium mb-1.5">19. Gaji saat ini <span class="text-red-500">*</span></label><select name="gaji_saat_ini" class="w-full rounded-xl border px-4 py-3 text-sm" style="border-color: var(--border);" required><option value="">-- Pilih Gaji --</option><option>&lt; Rp 3.000.000</option><option>Rp 3.000.000 – Rp 4.000.000</option><option>Rp 4.000.000 – Rp 5.000.000</option><option>Rp 5.000.000 – Rp 6.000.000</option><option>&gt; Rp 6.000.000</option></select></div>
-                            <div><label class="block text-sm font-medium mb-1.5">20. Posisi pekerjaan saat ini <span class="text-red-500">*</span></label><input type="text" name="posisi_saat_ini" value="{{ old('posisi_saat_ini') }}" placeholder="Contoh: Junior Data Engineering" class="w-full rounded-xl border px-4 py-3 text-sm" style="border-color: var(--border);" required></div>
+                            <div><label class="block text-sm font-medium mb-1.5">Gaji saat ini <span class="text-red-500">*</span></label><select name="gaji_saat_ini" class="w-full rounded-xl border px-4 py-3 text-sm" style="border-color: var(--border);" required><option value="">-- Pilih Gaji --</option><option>&lt; Rp 3.000.000</option><option>Rp 3.000.000 – Rp 4.000.000</option><option>Rp 4.000.000 – Rp 5.000.000</option><option>Rp 5.000.000 – Rp 6.000.000</option><option>&gt; Rp 6.000.000</option></select></div>
+                            <div><label class="block text-sm font-medium mb-1.5">Posisi pekerjaan saat ini <span class="text-red-500">*</span></label><input type="text" name="posisi_saat_ini" value="{{ old('posisi_saat_ini') }}" placeholder="Contoh: Junior Data Engineering" class="w-full rounded-xl border px-4 py-3 text-sm" style="border-color: var(--border);" required></div>
                         </div>
                     @endif
 
                     <div class="flex flex-col-reverse sm:flex-row sm:items-center sm:justify-between gap-3 pt-6 mt-8 border-t" style="border-color: var(--border);">
                         <button type="button" onclick="closeTracerModal()" class="inline-flex items-center justify-center px-5 py-2.5 rounded-xl text-sm font-medium" style="background: var(--secondary); color: var(--foreground);">Batal</button>
-                        <button type="submit" class="inline-flex items-center justify-center px-6 py-2.5 rounded-xl text-sm font-semibold text-white hover:opacity-95 transition" style="background: var(--mhs);">+ Simpan Riwayat</button>
+                        <button type="submit" class="inline-flex items-center justify-center px-6 py-2.5 rounded-xl text-sm font-semibold text-white hover:opacity-95 transition" style="background: var(--primary);">+ Simpan Riwayat</button>
                     </div>
                 </form>
             </div>
@@ -248,41 +281,208 @@
         @foreach ($tracerStudies as $tracer)
             <template id="detail-{{ $tracer->id }}">
                 <div class="space-y-6">
-                    <div><p class="text-xs uppercase tracking-wider" style="color: var(--muted-foreground);">{{ $tracer->jenis_pengisian === 'awal' ? 'Pengisian Awal' : 'Perubahan Karier' }}</p><h3 class="font-semibold text-xl mt-1">{{ $tracer->tanggal_pengisian?->format('d M Y') ?? '-' }}</h3></div>
+
+                    <div>
+                        <p
+                            class="text-xs uppercase tracking-wider"
+                            style="color: var(--muted-foreground);"
+                        >
+                            {{ $tracer->jenis_pengisian === 'awal' ? 'Pengisian Awal' : 'Perubahan Karier' }}
+                        </p>
+
+                        <h3 class="font-semibold text-xl mt-1">
+                            {{ $tracer->tanggal_pengisian?->format('d M Y') ?? '-' }}
+                        </h3>
+                    </div>
+
+                    {{-- DATA ALUMNI --}}
+                    <div>
+                        <h4 class="font-semibold mb-3">Data Alumni</h4>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <p class="text-xs" style="color:var(--muted-foreground);">Nama</p>
+                                <p class="font-medium">{{ $tracer->nama_alumni ?? '-' }}</p>
+                            </div>
+
+                            <div>
+                                <p class="text-xs" style="color:var(--muted-foreground);">Program Studi</p>
+                                <p class="font-medium">{{ $tracer->prodi->nama ?? '-' }}</p>
+                            </div>
+
+                            <div>
+                                <p class="text-xs" style="color:var(--muted-foreground);">Tahun Masuk</p>
+                                <p class="font-medium">{{ $tracer->tahun_masuk ?? '-' }}</p>
+                            </div>
+
+                            <div>
+                                <p class="text-xs" style="color:var(--muted-foreground);">Tahun Lulus</p>
+                                <p class="font-medium">{{ $tracer->tahun_lulus ?? '-' }}</p>
+                            </div>
+
+                            <div>
+                                <p class="text-xs" style="color:var(--muted-foreground);">Melanjutkan S2</p>
+                                <p class="font-medium">{{ $tracer->melanjutkan_s2 ?? '-' }}</p>
+                            </div>
+
+                            <div>
+                                <p class="text-xs" style="color:var(--muted-foreground);">Perguruan Tinggi S2</p>
+                                <p class="font-medium">{{ $tracer->perguruan_tinggi_s2 ?? '-' }}</p>
+                            </div>
+
+                            <div>
+                                <p class="text-xs" style="color:var(--muted-foreground);">Prodi S2</p>
+                                <p class="font-medium">{{ $tracer->prodi_s2 ?? '-' }}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    {{-- DETAIL PEKERJAAN --}}
                     @if ($tracer->jenis_pengisian === 'awal')
-                        <div><h4 class="font-semibold mb-3">Data Alumni</h4><div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div><p class="text-xs" style="color:var(--muted-foreground);">Nama</p><p class="font-medium">{{ $tracer->nama_alumni ?? '-' }}</p></div>
-                            <div><p class="text-xs" style="color:var(--muted-foreground);">Program Studi</p><p class="font-medium">{{ $tracer->prodi->nama ?? '-' }}</p></div>
-                            <div><p class="text-xs" style="color:var(--muted-foreground);">Tahun Masuk</p><p class="font-medium">{{ $tracer->tahun_masuk ?? '-' }}</p></div>
-                            <div><p class="text-xs" style="color:var(--muted-foreground);">Tahun Lulus</p><p class="font-medium">{{ $tracer->tahun_lulus ?? '-' }}</p></div>
-                            <div><p class="text-xs" style="color:var(--muted-foreground);">Melanjutkan S2</p><p class="font-medium">{{ $tracer->melanjutkan_s2 ?? '-' }}</p></div>
-                            <div><p class="text-xs" style="color:var(--muted-foreground);">Perguruan Tinggi S2</p><p class="font-medium">{{ $tracer->perguruan_tinggi_s2 ?? '-' }}</p></div>
-                            <div><p class="text-xs" style="color:var(--muted-foreground);">Prodi S2</p><p class="font-medium">{{ $tracer->prodi_s2 ?? '-' }}</p></div>
-                        </div></div>
-                        <div><h4 class="font-semibold mb-3">Pekerjaan Pertama</h4><div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            @php $firstSource = $tracer->sumber_lowongan_pertama === 'Yang lain' ? $tracer->sumber_lowongan_pertama_lainnya : $tracer->sumber_lowongan_pertama; $firstType = $tracer->jenis_pekerjaan_pertama === 'Yang lain' ? $tracer->jenis_pekerjaan_pertama_lainnya : $tracer->jenis_pekerjaan_pertama; @endphp
-                            <div><p class="text-xs" style="color:var(--muted-foreground);">Waktu Tunggu</p><p class="font-medium">{{ $tracer->waktu_tunggu_kerja_pertama ?? '-' }}</p></div>
-                            <div><p class="text-xs" style="color:var(--muted-foreground);">Sumber Lowongan</p><p class="font-medium">{{ $firstSource ?? '-' }}</p></div>
-                            <div><p class="text-xs" style="color:var(--muted-foreground);">Jenis Pekerjaan</p><p class="font-medium">{{ $firstType ?? '-' }}</p></div>
-                            <div><p class="text-xs" style="color:var(--muted-foreground);">Instansi / Perusahaan</p><p class="font-medium">{{ $tracer->nama_instansi_pertama ?? '-' }}</p></div>
-                            <div><p class="text-xs" style="color:var(--muted-foreground);">Tingkat Perusahaan</p><p class="font-medium">{{ $tracer->tingkat_perusahaan_pertama ?? '-' }}</p></div>
-                            <div><p class="text-xs" style="color:var(--muted-foreground);">Kesesuaian Bidang</p><p class="font-medium">{{ $tracer->kesesuaian_bidang_pertama ?? '-' }}</p></div>
-                            <div><p class="text-xs" style="color:var(--muted-foreground);">Gaji</p><p class="font-medium">{{ $tracer->gaji_pertama ?? '-' }}</p></div>
-                            <div><p class="text-xs" style="color:var(--muted-foreground);">Posisi</p><p class="font-medium">{{ $tracer->posisi_pertama ?? '-' }}</p></div>
-                        </div></div>
+
+                        <div>
+                            <h4 class="font-semibold mb-3">Pekerjaan Pertama</h4>
+
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                @php
+                                    $firstSource = $tracer->sumber_lowongan_pertama === 'Yang lain'
+                                        ? $tracer->sumber_lowongan_pertama_lainnya
+                                        : $tracer->sumber_lowongan_pertama;
+
+                                    $firstType = $tracer->jenis_pekerjaan_pertama === 'Yang lain'
+                                        ? $tracer->jenis_pekerjaan_pertama_lainnya
+                                        : $tracer->jenis_pekerjaan_pertama;
+                                @endphp
+
+                                <div>
+                                    <p class="text-xs" style="color:var(--muted-foreground);">Waktu Tunggu</p>
+                                    <p class="font-medium">{{ $tracer->waktu_tunggu_kerja_pertama ?? '-' }}</p>
+                                </div>
+
+                                <div>
+                                    <p class="text-xs" style="color:var(--muted-foreground);">Sumber Lowongan</p>
+                                    <p class="font-medium">{{ $firstSource ?? '-' }}</p>
+                                </div>
+
+                                <div>
+                                    <p class="text-xs" style="color:var(--muted-foreground);">Jenis Pekerjaan</p>
+                                    <p class="font-medium">{{ $firstType ?? '-' }}</p>
+                                </div>
+
+                                <div>
+                                    <p class="text-xs" style="color:var(--muted-foreground);">Instansi / Perusahaan</p>
+                                    <p class="font-medium">{{ $tracer->nama_instansi_pertama ?? '-' }}</p>
+                                </div>
+
+                                <div>
+                                    <p class="text-xs" style="color:var(--muted-foreground);">Tingkat Perusahaan</p>
+                                    <p class="font-medium">{{ $tracer->tingkat_perusahaan_pertama ?? '-' }}</p>
+                                </div>
+
+                                <div>
+                                    <p class="text-xs" style="color:var(--muted-foreground);">Kesesuaian Bidang</p>
+                                    <p class="font-medium">{{ $tracer->kesesuaian_bidang_pertama ?? '-' }}</p>
+                                </div>
+
+                                <div>
+                                    <p class="text-xs" style="color:var(--muted-foreground);">Gaji</p>
+                                    <p class="font-medium">{{ $tracer->gaji_pertama ?? '-' }}</p>
+                                </div>
+
+                                <div>
+                                    <p class="text-xs" style="color:var(--muted-foreground);">Posisi</p>
+                                    <p class="font-medium">{{ $tracer->posisi_pertama ?? '-' }}</p>
+                                </div>
+                            </div>
+                        </div>
+
                     @else
-                        <div><h4 class="font-semibold mb-3">Pekerjaan Saat Ini / Terakhir</h4><div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            @php $currentType = $tracer->jenis_pekerjaan_saat_ini === 'Yang lain' ? $tracer->jenis_pekerjaan_saat_ini_lainnya : $tracer->jenis_pekerjaan_saat_ini; $reason = $tracer->alasan_pindah === 'Yang lain' ? $tracer->alasan_pindah_lainnya : $tracer->alasan_pindah; $currentSource = $tracer->sumber_lowongan_saat_ini === 'Yang lain' ? $tracer->sumber_lowongan_saat_ini_lainnya : $tracer->sumber_lowongan_saat_ini; @endphp
-                            <div><p class="text-xs" style="color:var(--muted-foreground);">Jenis Pekerjaan</p><p class="font-medium">{{ $currentType ?? '-' }}</p></div>
-                            <div><p class="text-xs" style="color:var(--muted-foreground);">Instansi / Perusahaan</p><p class="font-medium">{{ $tracer->nama_instansi_saat_ini ?? '-' }}</p></div>
-                            <div><p class="text-xs" style="color:var(--muted-foreground);">Tingkat Perusahaan</p><p class="font-medium">{{ $tracer->tingkat_perusahaan_saat_ini ?? '-' }}</p></div>
-                            <div><p class="text-xs" style="color:var(--muted-foreground);">Jumlah Pindah</p><p class="font-medium">{{ $tracer->jumlah_pindah_kerja ?? '-' }}</p></div>
-                            <div><p class="text-xs" style="color:var(--muted-foreground);">Alasan Pindah</p><p class="font-medium">{{ $reason ?? '-' }}</p></div>
-                            <div><p class="text-xs" style="color:var(--muted-foreground);">Sumber Lowongan</p><p class="font-medium">{{ $currentSource ?? '-' }}</p></div>
-                            <div><p class="text-xs" style="color:var(--muted-foreground);">Gaji Saat Ini</p><p class="font-medium">{{ $tracer->gaji_saat_ini ?? '-' }}</p></div>
-                            <div><p class="text-xs" style="color:var(--muted-foreground);">Posisi Saat Ini</p><p class="font-medium">{{ $tracer->posisi_saat_ini ?? '-' }}</p></div>
-                        </div></div>
+
+                        <div>
+                            <h4 class="font-semibold mb-3">Pekerjaan Saat Ini / Terakhir</h4>
+
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                @php
+                                    $currentType = $tracer->jenis_pekerjaan_saat_ini === 'Yang lain'
+                                        ? $tracer->jenis_pekerjaan_saat_ini_lainnya
+                                        : $tracer->jenis_pekerjaan_saat_ini;
+
+                                    $reason = $tracer->alasan_pindah === 'Yang lain'
+                                        ? $tracer->alasan_pindah_lainnya
+                                        : $tracer->alasan_pindah;
+
+                                    $currentSource = $tracer->sumber_lowongan_saat_ini === 'Yang lain'
+                                        ? $tracer->sumber_lowongan_saat_ini_lainnya
+                                        : $tracer->sumber_lowongan_saat_ini;
+                                @endphp
+
+                                <div>
+                                    <p class="text-xs" style="color:var(--muted-foreground);">Jenis Pekerjaan</p>
+                                    <p class="font-medium">{{ $currentType ?? '-' }}</p>
+                                </div>
+
+                                <div>
+                                    <p class="text-xs" style="color:var(--muted-foreground);">Instansi / Perusahaan</p>
+                                    <p class="font-medium">{{ $tracer->nama_instansi_saat_ini ?? '-' }}</p>
+                                </div>
+
+                                <div>
+                                    <p class="text-xs" style="color:var(--muted-foreground);">Tingkat Perusahaan</p>
+                                    <p class="font-medium">{{ $tracer->tingkat_perusahaan_saat_ini ?? '-' }}</p>
+                                </div>
+
+                                <div>
+                                    <p class="text-xs" style="color:var(--muted-foreground);">Jumlah Pindah</p>
+                                    <p class="font-medium">{{ $tracer->jumlah_pindah_kerja ?? '-' }}</p>
+                                </div>
+
+                                <div>
+                                    <p class="text-xs" style="color:var(--muted-foreground);">Alasan Pindah</p>
+                                    <p class="font-medium">{{ $reason ?? '-' }}</p>
+                                </div>
+
+                                <div>
+                                    <p class="text-xs" style="color:var(--muted-foreground);">Sumber Lowongan</p>
+                                    <p class="font-medium">{{ $currentSource ?? '-' }}</p>
+                                </div>
+
+                                <div>
+                                    <p class="text-xs" style="color:var(--muted-foreground);">Gaji Saat Ini</p>
+                                    <p class="font-medium">{{ $tracer->gaji_saat_ini ?? '-' }}</p>
+                                </div>
+
+                                <div>
+                                    <p class="text-xs" style="color:var(--muted-foreground);">Posisi Saat Ini</p>
+                                    <p class="font-medium">{{ $tracer->posisi_saat_ini ?? '-' }}</p>
+                                </div>
+                            </div>
+                        </div>
+
                     @endif
+
+                    {{-- TOMBOL HAPUS --}}
+                    <div
+                        class="mt-6 pt-5 border-t"
+                        style="border-color: var(--border);"
+                    >
+                        <form
+                            method="POST"
+                            action="{{ route('alumni.tracer.destroy', $tracer->id) }}"
+                            onsubmit="return confirm('Yakin ingin menghapus riwayat Tracer Study ini? Data yang dihapus tidak dapat dikembalikan.');"
+                        >
+                            @csrf
+                            @method('DELETE')
+
+                            <button
+                                type="submit"
+                                class="w-full px-4 py-3 rounded-lg text-sm font-semibold"
+                                style="background: #dc2626; color: white;"
+                            >
+                                Hapus Riwayat Tracer Study
+                            </button>
+                        </form>
+                    </div>
+
                 </div>
             </template>
         @endforeach

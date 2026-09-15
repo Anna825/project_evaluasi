@@ -179,6 +179,8 @@ Route::middleware(['auth', 'role:alumni'])->group(function () {
 
     Route::post('/alumni/tracer-study', [AlumniTracerController::class, 'store'])
         ->name('alumni.tracer.store');
+    
+    Route::delete('/alumni/tracer-study/{tracerStudy}', [AlumniTracerController::class, 'destroy'])->name('alumni.tracer.destroy');
 });
 
 /*

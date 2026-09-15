@@ -14,7 +14,7 @@
     {{-- =========================
         RINGKASAN
     ========================== --}}
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-6">
+    <div class="grid grid-cols-1 md:grid-cols-1 gap-5 mb-6">
 
         {{-- Total Prestasi --}}
         <a
@@ -76,128 +76,6 @@
                 Lihat prestasi →
             </div>
         </a>
-
-        {{-- Tracer Study --}}
-        @if ($mahasiswa->status === 'lulus')
-
-            <a
-                href="{{ route('public.tracer.create', $mahasiswa->nim) }}"
-                class="group block rounded-2xl border p-5 card-hover"
-                style="background: var(--card); border-color: var(--border);"
-            >
-
-        @else
-
-            <div
-                class="rounded-2xl border p-5"
-                style="background: var(--card); border-color: var(--border);"
-            >
-
-        @endif
-
-                <div class="flex items-start justify-between gap-4">
-
-                    <div>
-                        <p
-                            class="text-xs font-semibold uppercase tracking-wider mb-2"
-                            style="color: var(--muted-foreground);"
-                        >
-                            Tracer Study
-                        </p>
-
-                        @if ($mahasiswa->status !== 'lulus')
-
-                            <p
-                                class="text-lg font-semibold"
-                                style="color: var(--muted-foreground);"
-                            >
-                                Belum tersedia
-                            </p>
-
-                            <p
-                                class="text-xs mt-2"
-                                style="color: var(--muted-foreground);"
-                            >
-                                Tersedia setelah mahasiswa berstatus lulus
-                            </p>
-
-                        @elseif ($tracerSudahIsi)
-
-                            <p
-                                class="text-lg font-semibold"
-                                style="color: var(--mhs);"
-                            >
-                                Sudah diisi
-                            </p>
-
-                            <p
-                                class="text-xs mt-2"
-                                style="color: var(--muted-foreground);"
-                            >
-                                Data tracer study sudah tersimpan
-                            </p>
-
-                        @else
-
-                            <p
-                                class="text-lg font-semibold"
-                                style="color: var(--accent);"
-                            >
-                                Belum diisi
-                            </p>
-
-                            <p
-                                class="text-xs mt-2"
-                                style="color: var(--muted-foreground);"
-                            >
-                                Silakan lengkapi data tracer study
-                            </p>
-
-                        @endif
-                    </div>
-
-                    <div
-                        class="w-11 h-11 rounded-xl flex items-center justify-center shrink-0"
-                        style="background: rgba(26,58,92,.08); color: var(--primary);"
-                    >
-                        <svg
-                            width="22"
-                            height="22"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
-                            stroke-width="1.8"
-                        >
-                            <path
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                d="M3 12a9 9 0 1018 0 9 9 0 00-18 0z"
-                            />
-                            <path
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                d="M12 7v5l3 2"
-                            />
-                        </svg>
-                    </div>
-
-                </div>
-
-                @if ($mahasiswa->status === 'lulus')
-                    <div
-                        class="mt-4 text-xs font-medium group-hover:underline"
-                        style="color: var(--primary);"
-                    >
-                        {{ $tracerSudahIsi ? 'Lihat / perbarui tracer →' : 'Isi tracer study →' }}
-                    </div>
-                @endif
-
-        @if ($mahasiswa->status === 'lulus')
-            </a>
-        @else
-            </div>
-        @endif
-
     </div>
 
 
