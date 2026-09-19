@@ -9,3 +9,132 @@
     --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
         'Segoe UI Symbol', 'Noto Color Emoji';
 }
+
+
+/* =========================================================
+   SI EVALUASI PBM — UI FOUNDATION
+   Shared visual rules for legacy pages. These rules are
+   intentionally additive so existing page logic is untouched.
+   ========================================================= */
+
+:root {
+    --ui-radius: 0.9rem;
+    --ui-shadow: 0 1px 2px rgba(15, 28, 46, .04), 0 8px 24px rgba(15, 28, 46, .05);
+    --ui-shadow-hover: 0 10px 28px rgba(15, 28, 46, .10);
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+}
+
+/* Consistent form controls across old/new forms. */
+input:not([type="checkbox"]):not([type="radio"]),
+select,
+textarea {
+    border-radius: .75rem;
+    border-color: var(--border, #c8d3e6);
+    background: var(--card, #fff);
+    color: var(--foreground, #0f1c2e);
+    transition: border-color .18s ease, box-shadow .18s ease, background-color .18s ease;
+}
+
+input:not([type="checkbox"]):not([type="radio"]):hover,
+select:hover,
+textarea:hover {
+    border-color: #aebdd2;
+}
+
+input:not([type="checkbox"]):not([type="radio"]):focus,
+select:focus,
+textarea:focus {
+    border-color: var(--primary, #1a3a5c) !important;
+    box-shadow: 0 0 0 3px rgba(26, 58, 92, .10) !important;
+}
+
+/* Consistent table readability. */
+table thead th { white-space: nowrap; }
+table tbody tr { transition: background-color .15s ease; }
+table tbody tr:hover { background: rgba(26, 58, 92, .025); }
+
+/* Action links/buttons that already use the project's rounded button patterns. */
+a[class*="rounded-xl"][class*="px-4"][class*="py-2"],
+a[class*="rounded-xl"][class*="px-5"][class*="py-2"],
+button:not(.sidebar-link)[class*="rounded-xl"][class*="px-4"][class*="py-2"],
+button:not(.sidebar-link)[class*="rounded-xl"][class*="px-5"][class*="py-2"] {
+    transition: transform .16s ease, box-shadow .16s ease, opacity .16s ease, background-color .16s ease;
+}
+
+a[class*="rounded-xl"][class*="px-4"][class*="py-2"]:hover,
+a[class*="rounded-xl"][class*="px-5"][class*="py-2"]:hover,
+button:not(.sidebar-link)[class*="rounded-xl"][class*="px-4"][class*="py-2"]:hover,
+button:not(.sidebar-link)[class*="rounded-xl"][class*="px-5"][class*="py-2"]:hover {
+    box-shadow: 0 5px 14px rgba(15, 28, 46, .09);
+}
+
+/* Standard utility classes for pages that are updated later. */
+.ui-card {
+    background: var(--card, #fff);
+    border: 1px solid var(--border, #c8d3e6);
+    border-radius: var(--ui-radius);
+    box-shadow: var(--ui-shadow);
+}
+
+.ui-card-hover {
+    transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+}
+
+.ui-card-hover:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--ui-shadow-hover);
+}
+
+.ui-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: .5rem;
+    min-height: 2.5rem;
+    padding: .625rem 1rem;
+    border-radius: .75rem;
+    font-size: .875rem;
+    font-weight: 600;
+    line-height: 1.25rem;
+    transition: transform .16s ease, box-shadow .16s ease, opacity .16s ease, background-color .16s ease;
+}
+
+.ui-btn:hover { transform: translateY(-1px); }
+.ui-btn:active { transform: translateY(0); }
+.ui-btn-primary { background: var(--primary, #1a3a5c); color: #fff; }
+.ui-btn-secondary { background: var(--secondary, #e8edf5); color: var(--foreground, #0f1c2e); }
+.ui-btn-outline { background: transparent; color: var(--primary, #1a3a5c); border: 1px solid var(--border, #c8d3e6); }
+.ui-btn-danger { background: #b91c1c; color: #fff; }
+
+.ui-back {
+    display: inline-flex;
+    align-items: center;
+    gap: .45rem;
+    color: var(--primary, #1a3a5c);
+    font-size: .875rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+
+.ui-back:hover { text-decoration: underline; }
+
+.ui-section-title {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding-bottom: .85rem;
+    margin-bottom: 1rem;
+    border-bottom: 1px solid var(--border, #c8d3e6);
+}
+
+@media (max-width: 768px) {
+    #appSidebar .sidebar-inner { width: 280px; }
+    main > div.p-6 { padding: 1rem; }
+}

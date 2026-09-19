@@ -114,6 +114,12 @@
                 'icon' => $icons['building'],
                 'items' => [
                     [
+                        'route' => 'kaprodi.manajemen-prodi',
+                        'pattern' => 'kaprodi.manajemen-prodi',
+                        'label' => 'Ringkasan Program Studi',
+                        'icon' => $icons['dashboard'],
+                    ],
+                    [
                         'route' => 'mahasiswa.index',
                         'pattern' => 'mahasiswa.*',
                         'label' => 'Data Mahasiswa',
@@ -165,6 +171,12 @@
                 'label' => 'Kegiatan Akademik Dosen',
                 'icon' => $icons['book'],
                 'items' => [
+                    [
+                        'route' => 'kaprodi.akademik-dosen',
+                        'pattern' => 'kaprodi.akademik-dosen',
+                        'label' => 'Ringkasan Kegiatan Akademik',
+                        'icon' => $icons['dashboard'],
+                    ],
                     [
                         'route' => 'mata-kuliah.index',
                         'pattern' => 'mata-kuliah.*',
@@ -319,7 +331,7 @@
 
                                 <button type="button"
                                         class="sidebar-link w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium"
-                                        style="color: rgba(255,255,255,0.65);"
+                                        style="color: {{ $groupActive ? '#fff' : 'rgba(255,255,255,0.65)' }}; background: {{ $groupActive ? 'rgba(255,255,255,0.08)' : 'transparent' }}; border-left: 3px solid {{ $groupActive ? $roleColor : 'transparent' }};"
                                         onclick="toggleSidebarGroup('{{ $item['group'] }}')">
 
                                     <svg width="18"
@@ -462,16 +474,25 @@
                 @endif
 
                     @if (View::hasSection('page-title'))
-                        <h1 class="font-serif-display text-2xl mb-1">
-                            @yield('page-title')
-                        </h1>
+                        <div class="flex flex-wrap items-start justify-between gap-4 mb-6">
+                            <div>
+                                <h1 class="font-serif-display text-2xl mb-1">
+                                    @yield('page-title')
+                                </h1>
 
-                        @if (View::hasSection('page-desc'))
-                            <p class="text-sm mb-5" style="color: var(--muted-foreground);">
-                                @yield('page-desc')
-                            </p>
-                        @endif
+                                @if (View::hasSection('page-desc'))
+                                    <p class="text-sm" style="color: var(--muted-foreground);">
+                                        @yield('page-desc')
+                                    </p>
+                                @endif
+                            </div>
 
+                            @hasSection('page-actions')
+                                <div class="flex flex-wrap items-center gap-2">
+                                    @yield('page-actions')
+                                </div>
+                            @endif
+                        </div>
                     @endif
                 @yield('content')
             </div>

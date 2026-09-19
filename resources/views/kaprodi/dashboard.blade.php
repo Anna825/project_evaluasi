@@ -43,15 +43,11 @@
                 {{ $stats['kurikulum_aktif'] }}
             </p>
         </a>
-        <div class="rounded-2xl p-5 border card-hover" style="background: var(--card); border-color: var(--border);">
+        <a href="{{ route('penelitian-pkm.verifikasi') }}" class="block rounded-2xl p-5 border card-hover" style="background: var(--card); border-color: var(--border);">
             <p class="text-xs font-medium uppercase tracking-wider mb-2" style="color: var(--muted-foreground);">Penelitian Menunggu Verifikasi</p>
             <p class="text-3xl font-bold mono" style="color: var(--accent);">{{ $stats['penelitian_pending'] }}</p>
-            <!-- @if ($stats['penelitian_pending'] > 0)
-                <a href="{{ route('penelitian-pkm.verifikasi') }}" class="text-xs mt-1 inline-block font-medium" style="color: var(--primary);">Tinjau sekarang &rarr;</a>
-            @else
-                <p class="text-xs mt-1" style="color: var(--muted-foreground);">Semua sudah ditinjau</p>
-            @endif -->
-        </div>
+            <p class="text-xs mt-2" style="color: var(--muted-foreground);">{{ $stats['penelitian_pending'] > 0 ? 'Tinjau sekarang →' : 'Buka verifikasi penelitian →' }}</p>
+        </a>
     </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">

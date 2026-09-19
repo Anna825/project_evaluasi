@@ -477,6 +477,53 @@ Route::middleware(['auth', 'role:kaprodi'])->group(function () {
 
     })->name('kaprodi.dashboard');
 
+    Route::get('/kaprodi/manajemen-prodi', function () {
+        $user = auth()->user();
+        $kaprodiPivot = $user->roles()->where('nama_role', 'kaprodi')->first()?->pivot;
+        $prodiId = $kaprodiPivot?->prodi_id;
+
+        if (! $prodiId) {
+            abort(403, 'Akun Kaprodi belum memiliki Program Studi.');
+        }
+
+        $prodi = \App\Models\Prodi::find($prodiId);
+        $stats = [
+            'mahasiswa' => \App\Models\Mahasiswa::where('prodi_id', $prodiId)->count(),
+            'mahasiswa_aktif' => \App\Models\Mahasiswa::where('prodi_id', $prodiId)->where('status', 'aktif')->count(),
+            'dosen' => \App\Models\Dosen::where('prodi_id', $prodiId)->count(),
+            'kurikulum' => \App\Models\Kurikulum::where('prodi_id', $prodiId)->count(),
+            'kurikulum_aktif' => \App\Models\Kurikulum::where('prodi_id', $prodiId)->where('status', 'aktif')->count(),
+            'prestasi_mahasiswa' => \App\Models\Prestasi::whereHas('mahasiswa', fn ($q) => $q->where('prodi_id', $prodiId))->count(),
+            'prestasi_dosen' => \App\Models\Prestasi::whereHas('dosen', fn ($q) => $q->where('prodi_id', $prodiId))->count(),
+            'penelitian' => \App\Models\PenelitianPkm::whereHas('dosen', fn ($q) => $q->where('prodi_id', $prodiId))->count(),
+        ];
+
+        return view('kaprodi.manajemen-prodi', compact('prodi', 'stats'));
+    })->name('kaprodi.manajemen-prodi');
+
+    Route::get('/kaprodi/akademik-dosen', function () {
+        $user = auth()->user();
+        $kaprodiPivot = $user->roles()->where('nama_role', 'kaprodi')->first()?->pivot;
+        $prodiId = $kaprodiPivot?->prodi_id;
+
+        if (! $prodiId) {
+            abort(403, 'Akun Kaprodi belum memiliki Program Studi.');
+        }
+
+        $prodi = \App\Models\Prodi::find($prodiId);
+        $dosenIds = \App\Models\Dosen::where('prodi_id', $prodiId)->pluck('id');
+
+        $stats = [
+            'dosen' => $dosenIds->count(),
+            'kelas' => \App\Models\Kelas::whereIn('dosen_pengampu_id', $dosenIds)->count(),
+            'mata_kuliah' => \App\Models\Kelas::whereIn('dosen_pengampu_id', $dosenIds)->distinct('mata_kuliah_id')->count('mata_kuliah_id'),
+            'penelitian' => \App\Models\PenelitianPkm::whereHas('dosen', fn ($q) => $q->where('prodi_id', $prodiId))->count(),
+            'prestasi_dosen' => \App\Models\Prestasi::whereHas('dosen', fn ($q) => $q->where('prodi_id', $prodiId))->count(),
+        ];
+
+        return view('kaprodi.akademik-dosen', compact('prodi', 'stats'));
+    })->name('kaprodi.akademik-dosen');
+
 
     /*
     |--------------------------------------------------------------------------
