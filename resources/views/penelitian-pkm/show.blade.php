@@ -19,8 +19,10 @@
         <span class="px-2 py-1 rounded-full text-xs font-medium" style="background: var(--secondary);">{{ ucfirst($penelitianPkm->status) }}</span>
         <div class="mt-3">
             <p class="text-sm font-medium mb-1">Tim</p>
-            @foreach ($penelitianPkm->dosen as $d)
-                <p class="text-sm" style="color: var(--muted-foreground);">{{ $d->nama }} ({{ $d->pivot->peran }})</p>
+            @foreach ($penelitianPkm->dosen->sortByDesc(function ($d) {return $d->pivot->peran === 'Ketua';}) as $d)
+                <p class="text-sm" style="color: var(--muted-foreground);">
+                    {{ $d->nama }} ({{ $d->pivot->peran }})
+                </p>
             @endforeach
         </div>
     </div>

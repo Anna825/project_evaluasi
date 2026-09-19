@@ -17,9 +17,12 @@ class NilaiCpmkController extends Controller
         $kelas->load('mataKuliah.cpmk', 'mataKuliah.kurikulum');
     
         // Ambil mahasiswa yang pernah dapat nilai di kelas ini, ATAU sesuai prodi mata kuliah
-        $mahasiswaList = \App\Models\Mahasiswa::where('prodi_id', $kelas->mataKuliah->kurikulum->prodi_id)
-            ->orderBy('nama')
-            ->get();
+        $kelasMahasiswa = \App\Models\KelasMahasiswa::where('nama_kelas',$kelas->nama)
+            ->first();
+
+        $mahasiswaList = $kelasMahasiswa
+            ? $kelasMahasiswa->mahasiswa()->orderBy('nama')->get()
+            : collect();
 
         $cpmkList = $kelas->mataKuliah->cpmk;
 

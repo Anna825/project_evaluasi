@@ -6,6 +6,7 @@ use App\Models\Kelas;
 use App\Models\Kurikulum;
 use App\Models\MataKuliah;
 use App\Models\Semester;
+use App\Models\KelasMahasiswa;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -92,7 +93,7 @@ class MataKuliahDosenController extends Controller
         /*
          * Ambil kurikulum yang sesuai dengan prodi dosen.
          */
-        $kurikulumList = Kurikulum::where('prodi_id', $dosen->prodi_id)
+        $kurikulumList = Kurikulum::with('prodi')
             ->latest()
             ->get();
 

@@ -27,6 +27,24 @@ class PenelitianPkmController extends Controller
     }
 
     /**
+     * Pastikan hanya Ketua yang boleh mengubah
+     * atau menghapus Penelitian/PKM.
+     */
+    private function pastikanKetuaTim(PenelitianPkm $penelitianPkm): void
+    {
+        $dosenId = Auth::user()->dosen->id;
+
+        $isKetua = $penelitianPkm->dosen()
+            ->where('dosen_id', $dosenId)
+            ->wherePivot('peran', 'Ketua')
+            ->exists();
+
+        if (! $isKetua) {
+            abort(403, 'Hanya Ketua penelitian/PKM yang dapat mengubah data tim.');
+        }
+    }
+
+    /**
      * Pastikan Admin boleh mengakses semua data,
      * sedangkan Kaprodi hanya boleh mengakses
      * Penelitian/PKM yang Ketua-nya berasal dari Prodi sendiri.
@@ -57,13 +75,12 @@ class PenelitianPkmController extends Controller
 
         // Penelitian/PKM dianggap milik Prodi
         // berdasarkan Dosen yang berperan sebagai Ketua.
-        $ketuaDariProdiIni = $penelitianPkm->dosen()
-            ->where('penelitian_pkm_dosen.peran', 'Ketua')
+        $dosenDariProdiIni = $penelitianPkm->dosen()
             ->where('dosen.prodi_id', $prodiId)
             ->exists();
 
-        if (! $ketuaDariProdiIni) {
-            abort(403, 'Anda tidak memiliki akses ke Penelitian/PKM Program Studi lain.');
+        if (! $dosenDariProdiIni) {
+            abort(403, 'Anda tidak memiliki akses ke Penelitian/PKM yang tidak memiliki Dosen dari Program Studi Anda.');
         }
     }
 
@@ -144,7 +161,7 @@ class PenelitianPkmController extends Controller
 
     public function edit(PenelitianPkm $penelitianPkm)
     {
-        $this->pastikanAnggotaTim($penelitianPkm);
+        $this->pastikanKetuaTim($penelitianPkm);
 
         $tahunAkademikList = TahunAkademik::all();
 
@@ -168,7 +185,7 @@ class PenelitianPkmController extends Controller
         StorePenelitianPkmRequest $request,
         PenelitianPkm $penelitianPkm
     ) {
-        $this->pastikanAnggotaTim($penelitianPkm);
+        $this->pastikanKetuaTim($penelitianPkm);
 
         // Update data utama penelitian/PKM.
         $penelitianPkm->update(
@@ -205,8 +222,7 @@ class PenelitianPkmController extends Controller
 
     public function destroy(PenelitianPkm $penelitianPkm)
     {
-        $this->pastikanAnggotaTim($penelitianPkm);
-
+        $this->pastikanKetuaTim($penelitianPkm);
         $penelitianPkm->delete();
 
         return redirect()
@@ -252,9 +268,7 @@ class PenelitianPkmController extends Controller
                 'tahunAkademik'
             )
                 ->whereHas('dosen', function ($query) use ($prodiId) {
-                    $query
-                        ->where('dosen.prodi_id', $prodiId)
-                        ->where('penelitian_pkm_dosen.peran', 'Ketua');
+                    $query->where('dosen.prodi_id', $prodiId);
                 })
                 ->latest()
                 ->get();

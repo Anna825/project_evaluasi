@@ -17,11 +17,7 @@
     <div class="grid grid-cols-1 md:grid-cols-1 gap-5 mb-6">
 
         {{-- Total Prestasi --}}
-        <a
-            href="{{ route('public.prestasi.index', $mahasiswa->nim) }}"
-            class="group block rounded-2xl border p-5 card-hover"
-            style="background: var(--card); border-color: var(--border);"
-        >
+        <a href="{{ route('public.prestasi.index', $mahasiswa->nim) }}" class="group block rounded-2xl border p-5 card-hover" style="background: var(--card); border-color: var(--border);">
             <div class="flex items-start justify-between gap-4">
 
                 <div>

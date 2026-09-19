@@ -6,8 +6,7 @@
 
 @section('content')
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-        <a href="{{ route('mahasiswa.index') }}"
-        class="rounded-2xl p-5 border card-hover block"
+        <a href="{{ route('mahasiswa.index') }}" class="rounded-2xl p-5 border card-hover block"
         style="background: var(--card); border-color: var(--border);">
             <p class="text-xs font-medium uppercase tracking-wider mb-2"
             style="color: var(--muted-foreground);">

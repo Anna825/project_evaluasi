@@ -48,38 +48,19 @@
 
 
             {{-- Kurikulum --}}
-            <div class="mb-5">
-
-                <label
-                    for="kurikulum_id"
-                    class="block text-sm font-medium mb-2"
-                >
-                    Kurikulum
-                </label>
-
-                <select
-                    name="kurikulum_id"
-                    id="kurikulum_id"
-                    class="w-full rounded-xl border px-4 py-3"
-                    style="background: var(--background); border-color: var(--border);"
-                    required
-                >
-
+            <div class="mb-6">
+                <label for="kurikulum_id" class="block text-sm font-medium text-slate-900 mb-2">Kurikulum <span class="text-red-500">*</span></label>
+                <select name="kurikulum_id" id="kurikulum_id" required class="w-full rounded-xl border border-slate-300 bg-slate-50 px-4 py-3 text-slate-900 focus:border-blue-800 focus:outline-none focus:ring-1 focus:ring-blue-800 @error('kurikulum_id') border-red-500 @enderror">
                     <option value="">-- Pilih Kurikulum --</option>
-
                     @foreach ($kurikulumList as $kurikulum)
-                        <option
-                            value="{{ $kurikulum->id }}"
-                            {{ old('kurikulum_id') == $kurikulum->id ? 'selected' : '' }}
-                        >
-                            {{ $kurikulum->nama ?? $kurikulum->kode ?? 'Kurikulum #' . $kurikulum->id }}
-                        </option>
+                        <option value="{{ $kurikulum->id }}" {{ old('kurikulum_id') == $kurikulum->id ? 'selected' : '' }}>{{ $kurikulum->nama }}— {{ $kurikulum->prodi->nama ?? 'Prodi tidak tersedia' }}</option>
                     @endforeach
-
                 </select>
 
+                @error('kurikulum_id')
+                    <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
+                @enderror
             </div>
-
 
             {{-- Kode Mata Kuliah --}}
             <div class="mb-5">
