@@ -15,6 +15,7 @@ class Cpmk extends Model
         'mata_kuliah_id',
         'kode',
         'deskripsi',
+        'created_by',
     ];
 
     public function mataKuliah(): BelongsTo
@@ -22,9 +23,17 @@ class Cpmk extends Model
         return $this->belongsTo(MataKuliah::class);
     }
 
+    public function pembuat(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
+
     public function cpl(): BelongsToMany
     {
-        return $this->belongsToMany(Cpl::class, 'cpmk_cpl_map')->withPivot('bobot');
+        return $this->belongsToMany(
+            Cpl::class,
+            'cpmk_cpl_map'
+        )->withPivot('bobot');
     }
 
     public function nilaiCpmk(): HasMany

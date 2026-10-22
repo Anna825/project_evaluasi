@@ -13,13 +13,15 @@
                 Daftar Mata Kuliah
             </h2>
             <p class="text-sm mt-1" style="color: var(--muted-foreground);">
-                Mata kuliah yang sedang Anda ampu.
+                Kelola CPMK dan RPS untuk mata kuliah yang tersedia.
             </p>
         </div>
-        {{-- Tombol Tambah Mata Kuliah --}}
-        <a href="{{ route('mata-kuliah.create') }}" class="inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-medium text-white" style="background: var(--primary);">
+
+        <a href="{{ route('cpmk.create') }}"
+        class="inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-medium text-white"
+        style="background: var(--primary);">
             <span class="text-lg leading-none">+</span>
-            Tambah Mata Kuliah
+            Tambah CPMK
         </a>
     </div>
 
@@ -105,31 +107,15 @@
                         </tr>
                     @empty
                         <tr>
-                            <td
-                                colspan="4"
-                                class="p-10 text-center"
-                            >
+                            <td colspan="4" class="p-10 text-center">
                                 <div class="space-y-2">
                                     <p class="font-medium">
-                                        Anda belum mengampu mata kuliah apa pun.
+                                        Belum ada mata kuliah yang ditugaskan kepada Anda.
                                     </p>
-                                    <p
-                                        class="text-sm"
-                                        style="color: var(--muted-foreground);"
-                                    >
-                                        Silakan tambahkan mata kuliah yang Anda ampu.
+                                    <p class="text-sm" style="color: var(--muted-foreground);">
+                                        Hubungi administrator atau Kaprodi untuk memastikan
+                                        penugasan kelas dan mata kuliah Anda sudah tersedia.
                                     </p>
-
-                                    <div class="pt-2">
-                                        <a
-                                            href="{{ route('mata-kuliah.create') }}"
-                                            class="inline-flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-medium text-white"
-                                            style="background: var(--primary);"
-                                        >
-                                            <span class="text-lg leading-none">+</span>
-                                            Tambah Mata Kuliah
-                                        </a>
-                                    </div>
                                 </div>
                             </td>
                         </tr>

@@ -26,4 +26,12 @@ class KelasMahasiswa extends Model
     {
         return $this->hasMany(Mahasiswa::class, 'kelas_mahasiswa_id');
     }
+
+    public function riwayatPenempatan(): HasMany
+    {
+        return $this->hasMany(
+            RiwayatPenempatanKelas::class,
+            'kelas_mahasiswa_id'
+        );
+    }
 }

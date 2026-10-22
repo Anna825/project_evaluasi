@@ -48,6 +48,7 @@ class MahasiswaImport implements
             'kelas_mahasiswa_id' => $kelasMahasiswa->id,
             'nim' => trim((string) $row['nim']),
             'nama' => trim((string) $row['nama']),
+            'angkatan_masuk' => $angkatan,
             'status' => strtolower(trim((string) ($row['status'] ?? 'aktif'))),
         ]);
     }

@@ -13,9 +13,6 @@ class Role extends Model
         'nama_role',
     ];
 
-    /**
-     * Relasi many-to-many ke User lewat tabel pivot user_roles.
-     */
     public function users(): BelongsToMany
     {
         return $this->belongsToMany(User::class, 'user_roles');

@@ -17,7 +17,6 @@ class LoginController extends Controller
         $stats = [
             'mahasiswa' => \App\Models\Mahasiswa::count(),
             'dosen' => \App\Models\Dosen::count(),
-            'akreditasi' => 'A',
         ];
 
         return response()

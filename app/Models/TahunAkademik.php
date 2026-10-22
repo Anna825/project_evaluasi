@@ -13,9 +13,6 @@ class TahunAkademik extends Model
         'label',
     ];
 
-    /**
-     * Satu tahun akademik punya banyak semester.
-     */
     public function semester(): HasMany
     {
         return $this->hasMany(Semester::class);

@@ -108,7 +108,11 @@ class KurikulumController extends Controller
     {
         $this->authorizeKurikulumAccess($kurikulum);
 
-        $kurikulum->load('prodi', 'cpl', 'mataKuliah');
+        $kurikulum->load([
+            'prodi',
+            'cpl',
+            'mataKuliah.cpmk.cpl',
+        ]);
 
         return view('kurikulum.show', compact('kurikulum'));
     }

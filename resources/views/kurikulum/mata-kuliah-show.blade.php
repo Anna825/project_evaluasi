@@ -103,13 +103,15 @@
         class="w-full rounded-2xl border overflow-hidden mb-6"
         style="background: var(--card); border-color: var(--border);"
     >
-        <div
-            class="px-6 py-4 border-b"
-            style="border-color: var(--border);"
-        >
-            <h2 class="font-serif-display text-lg">
-                CPMK
-            </h2>
+        <div class="px-6 py-4 border-b flex items-center justify-between gap-4"
+            style="border-color: var(--border);">
+            <h2 class="font-serif-display text-lg">CPMK</h2>
+
+            <a href="{{ route('cpmk.create', $mataKuliah) }}"
+            class="px-3 py-2 rounded-lg text-sm font-medium text-white shrink-0"
+            style="background: var(--primary);">
+                + Tambah CPMK
+            </a>
         </div>
 
         <div class="p-2">
@@ -164,12 +166,20 @@
         style="background: var(--card); border-color: var(--border);"
     >
         <div
-            class="px-6 py-4 border-b"
+            class="px-6 py-4 border-b flex items-center justify-between gap-4"
             style="border-color: var(--border);"
         >
             <h2 class="font-serif-display text-lg">
                 RPS
             </h2>
+
+            <a
+                href="{{ route('rps.create', $mataKuliah) }}"
+                class="px-3 py-2 rounded-lg text-sm font-medium text-white shrink-0"
+                style="background: var(--primary);"
+            >
+                + Tambah RPS
+            </a>
         </div>
 
         <div class="p-2">

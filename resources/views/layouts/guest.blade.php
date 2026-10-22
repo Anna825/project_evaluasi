@@ -26,14 +26,8 @@
 <body style="background-color: var(--background); color: var(--foreground);">
     <div class="min-h-screen flex flex-col items-center justify-center px-4 py-10">
         <div class="flex items-center gap-3 mb-6">
-            <div class="w-10 h-10 rounded-xl flex items-center justify-center" style="background: var(--accent);">
-                <svg width="20" height="20" viewBox="0 0 44 44" fill="none">
-                    <path d="M22 4L38 14v8H6v-8L22 4z" fill="white" opacity="0.9" />
-                    <rect x="8" y="22" width="4" height="14" fill="white" opacity="0.85" />
-                    <rect x="20" y="22" width="4" height="14" fill="white" opacity="0.85" />
-                    <rect x="32" y="22" width="4" height="14" fill="white" opacity="0.85" />
-                    <rect x="4" y="36" width="36" height="3" rx="1.5" fill="white" opacity="0.9" />
-                </svg>
+            <div class="w-12 h-12 shrink-0 flex items-center justify-center">
+                <img src="{{ asset('images/logo-polman.png') }}" alt="Logo Politeknik Manufaktur Bandung" class="w-full h-full object-contain">
             </div>
             <div>
                 <p class="text-xs" style="color: var(--muted-foreground);">Polman Bandung</p>

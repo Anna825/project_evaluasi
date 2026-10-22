@@ -73,20 +73,138 @@
             @endforelse
         </div>
     </div>
-
+    
     <div class="rounded-2xl border overflow-hidden" style="background: var(--card); border-color: var(--border);">
-        <div class="px-6 py-4 border-b" style="border-color: var(--border);">
+        <div class="px-6 py-4 border-b flex items-center justify-between" style="border-color: var(--border);">
             <h2 class="font-serif-display text-lg">Kelas &amp; Input Nilai</h2>
+
+            <button
+                type="button"
+                onclick="document.getElementById('form-tambah-kelas').classList.toggle('hidden')"
+                class="px-3 py-1.5 rounded-lg text-xs font-medium text-white"
+                style="background: var(--primary);"
+            >
+                + Tambah Kelas
+            </button>
         </div>
+
+        @if (session('status'))
+            <div class="mx-4 mt-4 rounded-lg p-3 text-sm" style="background: var(--card); color: var(--primary);">
+                {{ session('status') }}
+            </div>
+        @endif
+
+        @if ($errors->any())
+            <div class="mx-4 mt-4 rounded-lg p-3 text-sm" style="background: var(--card); color: #a13d3d;">
+                <ul class="list-disc pl-5">
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+
+        <div id="form-tambah-kelas" class="hidden p-4 border-b" style="border-color: var(--border);">
+            <form method="POST" action="{{ route('mata-kuliah.kelas.store', $mataKuliah) }}" class="space-y-4">
+                @csrf
+                <div>
+                    <label for="kelas_mahasiswa_id" class="block text-sm font-medium mb-1">
+                        Rombongan Kelas Mahasiswa
+                    </label>
+
+                    <select
+                        id="kelas_mahasiswa_id"
+                        name="kelas_mahasiswa_id"
+                        required
+                        class="w-full rounded-lg border px-3 py-2 text-sm"
+                        style="background: var(--card); border-color: var(--border); color: var(--foreground);"
+                    >
+                        <option value="">Pilih rombongan kelas</option>
+
+                        @foreach (\App\Models\KelasMahasiswa::where('status_kelas', 'aktif')->orderBy('nama_kelas')->get() as $kelasMahasiswa)
+                            <option
+                                value="{{ $kelasMahasiswa->id }}"
+                                @selected(old('kelas_mahasiswa_id') == $kelasMahasiswa->id)
+                            >
+                                {{ $kelasMahasiswa->nama_kelas }}
+                                — Angkatan {{ $kelasMahasiswa->angkatan }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div>
+                    <label for="semester_id" class="block text-sm font-medium mb-1">
+                        Semester Akademik
+                    </label>
+
+                    <select
+                        id="semester_id"
+                        name="semester_id"
+                        required
+                        class="w-full rounded-lg border px-3 py-2 text-sm"
+                        style="background: var(--card); border-color: var(--border); color: var(--foreground);"
+                    >
+                        <option value="">Pilih semester</option>
+
+                        @foreach (\App\Models\Semester::with('tahunAkademik')->orderBy('tanggal_mulai')->get() as $semester)
+                            <option
+                                value="{{ $semester->id }}"
+                                @selected(old('semester_id') == $semester->id)
+                            >
+                                {{ ucfirst($semester->jenis) }} — {{ $semester->tahunAkademik->label ?? '-' }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div class="flex gap-2">
+                    <button
+                        type="submit"
+                        class="px-4 py-2 rounded-lg text-sm font-medium text-white"
+                        style="background: var(--primary);"
+                    >
+                        Simpan Kelas
+                    </button>
+
+                    <button
+                        type="button"
+                        onclick="document.getElementById('form-tambah-kelas').classList.add('hidden')"
+                        class="px-4 py-2 rounded-lg border text-sm"
+                        style="border-color: var(--border);"
+                    >
+                        Batal
+                    </button>
+                </div>
+            </form>
+
+        </div>
+
         <div class="p-2">
             @forelse ($mataKuliah->kelas as $kls)
                 <div class="p-4 border-b last:border-b-0 flex justify-between items-center" style="border-color: var(--border);">
-                    <span class="text-sm">{{ $kls->nama }}</span>
-                    <a href="{{ route('nilai-cpmk.create', $kls) }}" class="text-sm hover:underline" style="color: var(--primary);">Input Nilai CPMK</a>
+                    <div>
+                        <p class="text-sm font-medium">{{ $kls->nama }}</p>
+                        <p class="text-xs mt-1" style="color: var(--muted-foreground);">
+                            {{ ucfirst($kls->semester->jenis ?? '-') }}
+                            — {{ $kls->semester->tahunAkademik->label ?? '-' }}
+                        </p>
+                    </div>
+
+                    <a
+                        href="{{ route('nilai-cpmk.create', $kls) }}"
+                        class="text-sm hover:underline"
+                        style="color: var(--primary);"
+                    >
+                        Input Nilai CPMK
+                    </a>
                 </div>
             @empty
-                <p class="p-6 text-center text-sm" style="color: var(--muted-foreground);">Belum ada kelas.</p>
+                <p class="p-6 text-center text-sm" style="color: var(--muted-foreground);">
+                    Belum ada kelas.
+                </p>
             @endforelse
         </div>
     </div>
+
 @endsection

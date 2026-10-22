@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Mahasiswa extends Model
 {
@@ -18,6 +19,7 @@ class Mahasiswa extends Model
         'nama',
         'ipk_terakhir',
         'status',
+        'angkatan_masuk',
     ];
     
     public function prodi(): BelongsTo
@@ -55,9 +57,19 @@ class Mahasiswa extends Model
         return $this->belongsTo(KelasMahasiswa::class, 'kelas_mahasiswa_id');
     }
 
+    public function riwayatPenempatanKelas(): HasMany
+    {
+        return $this->hasMany(RiwayatPenempatanKelas::class);
+    }
+
+    public function progresStudi(): HasOne
+    {
+        return $this->hasOne(ProgresStudiMahasiswa::class);
+    }
+
     public function getAngkatanAttribute()
     {
-        return $this->kelasMahasiswa?->angkatan;
+        return $this->angkatan_masuk;
     }
 
     public function prestasiDibimbing(): BelongsToMany

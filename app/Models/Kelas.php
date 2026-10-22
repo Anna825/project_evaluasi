@@ -12,6 +12,7 @@ class Kelas extends Model
 
     protected $fillable = [
         'mata_kuliah_id',
+        'kelas_mahasiswa_id',
         'semester_id',
         'dosen_pengampu_id',
         'nama',
@@ -30,6 +31,14 @@ class Kelas extends Model
     public function dosenPengampu(): BelongsTo
     {
         return $this->belongsTo(Dosen::class, 'dosen_pengampu_id');
+    }
+
+    public function kelasMahasiswa(): BelongsTo
+    {
+        return $this->belongsTo(
+            KelasMahasiswa::class,
+            'kelas_mahasiswa_id'
+        );
     }
 
     public function nilaiCpmk(): HasMany

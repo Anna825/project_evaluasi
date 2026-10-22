@@ -33,6 +33,11 @@
         #appSidebar { transition: width .25s ease; }
         #appSidebar.sidebar-collapsed { width: 0 !important; }
         #appSidebar .sidebar-inner { width: 260px; }
+        .sidebar-nav {min-height: 0;overflow-y: auto;overflow-x: hidden;scrollbar-width: thin;scrollbar-color: rgba(255,255,255,0.25) transparent;}
+        .sidebar-nav::-webkit-scrollbar {width: 5px;}
+        .sidebar-nav::-webkit-scrollbar-track {background: transparent;}
+        .sidebar-nav::-webkit-scrollbar-thumb {background: rgba(255,255,255,0.25);border-radius: 999px;}
+        .sidebar-nav::-webkit-scrollbar-thumb:hover {background: rgba(255,255,255,0.4);}
     </style>
 </head>
 <body style="background-color: var(--background); color: var(--foreground);">
@@ -56,14 +61,12 @@
             <div class="sidebar-inner flex flex-col h-full">
                 <div class="px-5 py-5 border-b" style="border-color: rgba(255,255,255,0.12);">
                     <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 rounded-xl flex items-center justify-center shrink-0" style="background: var(--accent);">
-                            <svg width="20" height="20" viewBox="0 0 44 44" fill="none">
-                                <path d="M22 4L38 14v8H6v-8L22 4z" fill="white" opacity="0.9" />
-                                <rect x="8" y="22" width="4" height="14" fill="white" opacity="0.85" />
-                                <rect x="20" y="22" width="4" height="14" fill="white" opacity="0.85" />
-                                <rect x="32" y="22" width="4" height="14" fill="white" opacity="0.85" />
-                                <rect x="4" y="36" width="36" height="3" rx="1.5" fill="white" opacity="0.9" />
-                            </svg>
+                        <div class="w-12 h-12 shrink-0 flex items-center justify-center">
+                            <img
+                                src="{{ asset('images/logo-polman.png') }}"
+                                alt="Logo Politeknik Manufaktur Bandung"
+                                class="w-full h-full object-contain"
+                            >
                         </div>
                         <div>
                             <p class="text-white text-xs opacity-60 leading-none mb-1">Polman Bandung</p>
@@ -85,7 +88,7 @@
                     <p class="text-xs opacity-50 text-white mt-2 mono">NIM: {{ $mahasiswa->nim }}</p>
                 </div>
 
-                <nav class="px-3 mt-3 flex-1 overflow-y-auto">
+                <nav class="sidebar-nav px-3 mt-3 flex-1">
                     <p class="text-xs uppercase tracking-widest mb-2 px-2" style="color: rgba(255,255,255,0.35);">Menu Utama</p>
                     <ul class="space-y-0.5">
                         @foreach ($navItems as $item)
@@ -101,29 +104,52 @@
                             </li>
                         @endforeach
                     </ul>
-
-                    <p class="text-xs uppercase tracking-widest mb-2 px-2 mt-6" style="color: rgba(255,255,255,0.35);">Akun</p>
-                    <ul class="space-y-0.5">
-                        <li>
-                            <a href="{{ route('public.profil', $mahasiswa->nim) }}"
-                                class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium {{ request()->routeIs('public.profil') ? 'active' : '' }}"
-                                style="color: {{ request()->routeIs('public.profil') ? '#fff' : 'rgba(255,255,255,0.65)' }}; border-left: 3px solid {{ request()->routeIs('public.profil') ? $roleColor : 'transparent' }};">
-                                <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" class="shrink-0">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="{{ $icons['user'] }}" />
-                                </svg>
-                                <span class="truncate">Profil Saya</span>
-                            </a>
-                        </li>
-                    </ul>
                 </nav>
 
-                <div class="p-4">
-                    <a href="{{ route('public.cek-nim') }}" class="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl text-sm font-medium hover:opacity-90 block text-center" style="background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.8);">
-                        <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                <div class="p-4 space-y-2 border-t" style="border-color: rgba(255,255,255,0.12);">
+                    {{-- Profil Saya --}}
+                    <a href="{{ route('public.profil', $mahasiswa->nim) }}"
+                    class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium"
+                    style="color: {{ request()->routeIs('public.profil') ? '#fff' : 'rgba(255,255,255,0.65)' }};
+                            background: {{ request()->routeIs('public.profil') ? 'rgba(255,255,255,0.18)' : 'transparent' }};
+                            border-left: 3px solid {{ request()->routeIs('public.profil') ? $roleColor : 'transparent' }};">
+
+                        <svg width="18" height="18"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                            stroke-width="1.8"
+                            class="shrink-0">
+
+                            <path stroke-linecap="round"
+                                stroke-linejoin="round"
+                                d="{{ $icons['user'] }}" />
                         </svg>
+
+                        <span class="truncate">Profil Saya</span>
+                    </a>
+
+                    {{-- Keluar --}}
+                    <a href="{{ route('public.cek-nim') }}"
+                    class="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl text-sm font-medium hover:opacity-90"
+                    style="background: rgba(255,255,255,0.1);
+                            color: rgba(255,255,255,0.8);">
+
+                        <svg width="16"
+                            height="16"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                            stroke-width="2">
+
+                            <path stroke-linecap="round"
+                                stroke-linejoin="round"
+                                d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                        </svg>
+
                         Keluar
                     </a>
+
                 </div>
             </div>
         </aside>

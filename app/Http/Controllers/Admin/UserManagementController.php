@@ -77,6 +77,7 @@ class UserManagementController extends Controller
                 $query->where('nama_role', 'alumni');
             },
             'userRoles.mahasiswa.prodi',
+            'userRoles.mahasiswa.tracerStudy',
         ]);
 
         $alumniRole = $user->roles->first();
@@ -85,7 +86,23 @@ class UserManagementController extends Controller
             abort(404);
         }
 
-        return view('admin.alumni.show', compact('user'));
+        $mahasiswa = $user->userRoles
+            ->firstWhere('mahasiswa_id', $alumniRole->pivot->mahasiswa_id)
+            ?->mahasiswa;
+
+        /*
+        * Tahun lulus diambil dari data Tracer Study terakhir.
+        * Data tracer menyimpan tahun_lulus yang diinput oleh alumni.
+        */
+        $tahunLulus = $mahasiswa?->tracerStudy
+            ?->sortByDesc('tanggal_pengisian')
+            ?->first()
+            ?->tahun_lulus;
+
+        return view('admin.alumni.show', compact(
+            'user',
+            'tahunLulus'
+        ));
     }
 
     /**

@@ -6,94 +6,119 @@ use App\Http\Requests\StoreCpmkRequest;
 use App\Models\Cpmk;
 use App\Models\MataKuliah;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class CpmkController extends Controller
 {
     /**
      * Pastikan mata kuliah ini benar-benar diampu oleh dosen yang login.
      */
-    private function pastikanDiampu(MataKuliah $mataKuliah): void
+    
+    private function pastikanPembuat(Cpmk $cpmk): void
     {
         $user = Auth::user();
 
-        if (! $user->dosen) {
-            abort(403, 'Akun Anda tidak terhubung ke data dosen.');
+        // Kaprodi hanya boleh melihat CPMK, bukan mengedit atau menghapus.
+        if ($user->roles()->where('nama_role', 'kaprodi')->exists()) {
+            abort(403, 'Kaprodi hanya dapat melihat CPMK dan pemetaan CPL.');
         }
 
-        /*
-        * Jika user adalah Kaprodi,
-        * akses berdasarkan Program Studi Kaprodi.
-        */
-        $isKaprodi = $user->roles()
-            ->where('nama_role', 'kaprodi')
-            ->exists();
-
-        if ($isKaprodi) {
-            $kaprodiPivot = $user->roles()
-                ->where('nama_role', 'kaprodi')
-                ->first()?->pivot;
-
-            $prodiId = $kaprodiPivot?->prodi_id;
-
-            if (! $prodiId) {
-                abort(403, 'Akun Kaprodi belum memiliki Program Studi.');
-            }
-
-            $mataKuliah->loadMissing('kurikulum');
-
-            if (
-                ! $mataKuliah->kurikulum ||
-                (int) $mataKuliah->kurikulum->prodi_id !== (int) $prodiId
-            ) {
-                abort(403, 'Anda tidak memiliki akses ke CPMK Program Studi lain.');
-            }
-
-            return;
-        }
-
-        /*
-        * Jika user adalah Dosen biasa,
-        * tetap gunakan aturan lama:
-        * hanya boleh mengakses mata kuliah yang diampu.
-        */
-        $dosenId = $user->dosen->id;
-
-        $diampu = $mataKuliah->kelas()
-            ->where('dosen_pengampu_id', $dosenId)
-            ->exists();
-
-        if (! $diampu) {
-            abort(403, 'Anda tidak mengampu mata kuliah ini.');
+        // Hanya Dosen yang membuat CPMK yang boleh mengubahnya.
+        if (
+            ! $user->roles()->where('nama_role', 'dosen')->exists()
+            || (int) $cpmk->created_by !== (int) $user->id
+        ) {
+            abort(403, 'Anda hanya dapat mengubah CPMK yang Anda buat sendiri.');
         }
     }
 
-    public function create(MataKuliah $mataKuliah)
+    public function create()
     {
-        $this->pastikanDiampu($mataKuliah);
+        $mataKuliahList = MataKuliah::with('kurikulum.cpl')
+            ->orderBy('nama')
+            ->get();
 
-        return view('cpmk.create', compact('mataKuliah'));
+        $cplList = collect();
+
+        return view('cpmk.create', compact(
+            'mataKuliahList',
+            'cplList'
+        ));
     }
 
     public function store(StoreCpmkRequest $request)
     {
-        $mataKuliah = MataKuliah::findOrFail($request->mata_kuliah_id);
-        $this->pastikanDiampu($mataKuliah);
+        $data = $request->validated();
 
-        $cpmk = Cpmk::create($request->validated());
+        $mataKuliah = MataKuliah::with('kurikulum.cpl')
+            ->findOrFail($data['mata_kuliah_id']);
 
-        return redirect()->route('mata-kuliah.show', $cpmk->mata_kuliah_id)->with('status', 'CPMK berhasil ditambahkan.');
+        $cplIds = collect($data['cpl_ids'])
+            ->map(fn ($id) => (int) $id)
+            ->unique()
+            ->values();
+
+        // Pastikan semua CPL berasal dari kurikulum
+        // mata kuliah yang dipilih.
+        $cplValidIds = $mataKuliah->kurikulum
+            ? $mataKuliah->kurikulum->cpl()
+                ->whereIn('cpl.id', $cplIds)
+                ->pluck('cpl.id')
+                ->map(fn ($id) => (int) $id)
+            : collect();
+
+        if ($cplValidIds->count() !== $cplIds->count()) {
+            return back()
+                ->withInput()
+                ->withErrors([
+                    'cpl_ids' => 'CPL harus berasal dari kurikulum mata kuliah yang dipilih.',
+                ]);
+        }
+
+        // Pastikan bobot tersedia untuk setiap CPL terpilih.
+        foreach ($cplIds as $cplId) {
+            if (! isset($data['bobot'][$cplId])) {
+                return back()
+                    ->withInput()
+                    ->withErrors([
+                        'bobot' => 'Bobot wajib diisi untuk setiap CPL yang dipilih.',
+                    ]);
+            }
+        }
+
+        DB::transaction(function () use ($data, $mataKuliah, $cplIds) {
+            $cpmk = Cpmk::create([
+                'mata_kuliah_id' => $mataKuliah->id,
+                'kode' => $data['kode'],
+                'deskripsi' => $data['deskripsi'],
+                'created_by' => Auth::id(),
+            ]);
+            $pemetaan = [];
+
+            foreach ($cplIds as $cplId) {
+                $pemetaan[$cplId] = [
+                    'bobot' => $data['bobot'][$cplId],
+                ];
+            }
+
+            $cpmk->cpl()->sync($pemetaan);
+        });
+
+        return redirect()
+            ->route('mata-kuliah.show', $mataKuliah)
+            ->with('status', 'CPMK dan pemetaan CPL berhasil disimpan.');
     }
 
     public function edit(Cpmk $cpmk)
     {
-        $this->pastikanDiampu($cpmk->mataKuliah);
+        $this->pastikanPembuat($cpmk);
 
         return view('cpmk.edit', compact('cpmk'));
     }
 
     public function update(StoreCpmkRequest $request, Cpmk $cpmk)
     {
-        $this->pastikanDiampu($cpmk->mataKuliah);
+        $this->pastikanPembuat($cpmk);
 
         $cpmk->update($request->validated());
 
@@ -102,7 +127,7 @@ class CpmkController extends Controller
 
     public function destroy(Cpmk $cpmk)
     {
-        $this->pastikanDiampu($cpmk->mataKuliah);
+        $this->pastikanPembuat($cpmk);
 
         $mataKuliahId = $cpmk->mata_kuliah_id;
         $cpmk->delete();

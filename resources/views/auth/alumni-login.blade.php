@@ -42,10 +42,12 @@
 
         <div class="relative z-10">
             <div class="flex items-center gap-3 mb-14">
-                <div class="w-12 h-12 rounded-xl flex items-center justify-center shrink-0" style="background: var(--accent);">
-                    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8">
-                        <path d="M3 21h18M4 21V8l8-5 8 5v13M9 21v-6h6v6M9 12h.01M15 12h.01M9 9h.01M15 9h.01" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
+                <div class="w-16 h-16 rounded-2xl bg-white/10 flex items-center justify-center overflow-hidden">
+                    <img
+                        src="{{ asset('images/logo-polman.png') }}"
+                        alt="Logo Politeknik Manufaktur Bandung"
+                        class="w-full h-full object-contain p-1"
+                    >
                 </div>
                 <div class="text-white leading-tight">
                     <p class="text-xs uppercase tracking-wider" style="color: rgba(255,255,255,0.65);">Politeknnik Manufaktur Bandung</p>
@@ -61,7 +63,7 @@
                 </p>
             </div>
 
-            <div class="grid grid-cols-3 gap-4 max-w-md">
+            <div class="grid grid-cols-2 gap-4 max-w-md">
                 <div class="rounded-xl p-4 text-center" style="background: rgba(255,255,255,0.08);">
                     <p class="text-2xl font-bold text-white mono">{{ number_format($stats['mahasiswa']) }}</p>
                     <p class="text-xs mt-1" style="color: rgba(255,255,255,0.65);">Mahasiswa Aktif</p>
@@ -69,10 +71,6 @@
                 <div class="rounded-xl p-4 text-center" style="background: rgba(255,255,255,0.08);">
                     <p class="text-2xl font-bold text-white mono">{{ number_format($stats['dosen']) }}</p>
                     <p class="text-xs mt-1" style="color: rgba(255,255,255,0.65);">Dosen Tetap</p>
-                </div>
-                <div class="rounded-xl p-4 text-center" style="background: rgba(255,255,255,0.08);">
-                    <p class="text-2xl font-bold text-white mono">{{ $stats['akreditasi'] }}</p>
-                    <p class="text-xs mt-1" style="color: rgba(255,255,255,0.65);">Akreditasi</p>
                 </div>
             </div>
         </div>
@@ -82,11 +80,6 @@
                 <span class="w-2 h-2 rounded-full" style="background:#4ade80;"></span>
                 Sistem aktif — Tahun Akademik {{ now()->month >= 8 ? now()->year . '/' . (now()->year + 1) : (now()->year - 1) . '/' . now()->year }}
             </p>
-            <!-- <div class="flex items-center gap-4">
-                <span>Beranda</span>
-                <span>Tentang</span>
-                <a href="{{ route('public.cek-nim') }}" class="hover:underline">Bantuan</a>
-            </div> -->
         </div>
     </div>
 
@@ -109,7 +102,7 @@
 
            <h2 class="text-3xl font-bold font-serif-display mb-2">Selamat Datang, Alumni</h2>
             <p class="text-sm mb-8" style="color: var(--muted-foreground);">
-                Masuk ke akun Alumni Anda untuk mengakses sistem akreditasi
+                Masuk ke akun Alumni Anda untuk mengakses sistem Tracer Study
             </p>
 
             @if (session('status'))

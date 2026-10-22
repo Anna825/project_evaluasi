@@ -12,15 +12,11 @@ use App\Models\Prodi;
 
 class PublicMahasiswaController extends Controller
 {
-    /**
-     * Form input NIM untuk masuk ke halaman self-service.
-     */
     public function cekNim()
     {
         $stats = [
             'mahasiswa' => Mahasiswa::count(),
             'dosen' => Dosen::count(),
-            'akreditasi' => 'A',
         ];
 
         return response()
@@ -32,9 +28,6 @@ class PublicMahasiswaController extends Controller
             ->header('Pragma', 'no-cache');
     }
 
-    /**
-     * Proses cek NIM, arahkan ke halaman yang sesuai.
-     */
     public function prosesCekNim(Request $request)
     {
         $request->validate([
@@ -49,8 +42,6 @@ class PublicMahasiswaController extends Controller
             ]);
         }
 
-        // Mahasiswa yang sudah lulus tidak boleh masuk melalui
-        // jalur dashboard mahasiswa aktif.
         if ($mahasiswa->status === 'lulus') {
             return back()->withErrors([
                 'nim' => 'Anda sudah berstatus lulus. Silakan mendaftar sebagai Alumni untuk mengakses Tracer Study.',
@@ -63,18 +54,11 @@ class PublicMahasiswaController extends Controller
         );
     }
 
-    /**
-     * Menu pilihan setelah NIM valid
-     * (Isi Prestasi / Isi Tracer Study).
-     */
    public function menu(string $nim)
     {
         $mahasiswa = Mahasiswa::with('prodi')
             ->where('nim', $nim)
             ->firstOrFail();
-
-        // Mahasiswa yang sudah lulus tidak boleh mengakses
-        // dashboard mahasiswa aktif melalui URL langsung.
         if ($mahasiswa->status === 'lulus') {
             return redirect()
                 ->route('mahasiswa.login')
@@ -84,7 +68,6 @@ class PublicMahasiswaController extends Controller
         }
 
         $prestasiCount = $mahasiswa->prestasi()->count();
-
         return view(
             'public.dashboard',
             compact(
@@ -94,9 +77,6 @@ class PublicMahasiswaController extends Controller
         );
     }
 
-    /**
-     * Form isi Prestasi.
-     */
     public function prestasiIndex(string $nim)
     {
         $mahasiswa = Mahasiswa::where('nim', $nim)->firstOrFail();
@@ -116,19 +96,14 @@ class PublicMahasiswaController extends Controller
     public function prestasiShow(string $nim, Prestasi $prestasi)
     {
         $mahasiswa = Mahasiswa::where('nim', $nim)->firstOrFail();
-
-        // Pastikan prestasi tersebut memang milik mahasiswa yang sedang dibuka
         if (! $prestasi->mahasiswa()->whereKey($mahasiswa->id)->exists()) {
             abort(403, 'Anda tidak memiliki akses ke prestasi ini.');
         }
-
-        // Ambil data dosen pembimbing
         $prestasi->load([
             'mahasiswa',
             'tahunAkademik',
             'dosenPembimbing',
         ]);
-
         return view(
             'public.prestasi-show',
             compact(
@@ -141,21 +116,15 @@ class PublicMahasiswaController extends Controller
     public function prestasiEdit(string $nim, Prestasi $prestasi)
     {
         $mahasiswa = Mahasiswa::where('nim', $nim)->firstOrFail();
-
-        // Pastikan prestasi milik mahasiswa ini
         if (! $prestasi->mahasiswa()->whereKey($mahasiswa->id)->exists()) {
             abort(403, 'Anda tidak memiliki akses ke prestasi ini.');
         }
-
         $tahunAkademikList = TahunAkademik::all();
-
         $dosenList = Dosen::orderBy('nama')->get();
-
         $prestasi->load([
             'dosenPembimbing',
             'tahunAkademik',
         ]);
-
         return view(
             'public.prestasi-edit',
             compact(
@@ -170,12 +139,9 @@ class PublicMahasiswaController extends Controller
     public function prestasiUpdate(Request $request, string $nim, Prestasi $prestasi)
     {
         $mahasiswa = Mahasiswa::where('nim', $nim)->firstOrFail();
-
-        // Pastikan prestasi milik mahasiswa ini
         if (! $prestasi->mahasiswa()->whereKey($mahasiswa->id)->exists()) {
             abort(403, 'Anda tidak memiliki akses ke prestasi ini.');
         }
-
         $validated = $request->validate([
             'nama_kegiatan' => [
                 'required',
@@ -224,15 +190,9 @@ class PublicMahasiswaController extends Controller
         ]);
 
         $dosenId = $validated['dosen_id'] ?? null;
-
         unset($validated['dosen_id']);
-
-        // Update data utama prestasi
         $prestasi->update($validated);
-
-        // Update dosen pembimbing
         $prestasi->dosenPembimbing()->detach();
-
         if ($dosenId) {
             $prestasi->dosenPembimbing()->attach(
                 $dosenId,
@@ -241,7 +201,6 @@ class PublicMahasiswaController extends Controller
                 ]
             );
         }
-
         return redirect()
             ->route('public.prestasi.show', [
                 $mahasiswa->nim,
@@ -255,24 +214,15 @@ class PublicMahasiswaController extends Controller
 
     public function prestasiDestroy(string $nim, Prestasi $prestasi)
     {
-        $mahasiswa = Mahasiswa::where('nim', $nim)->firstOrFail();
-
-        // Pastikan prestasi milik mahasiswa ini
+        $mahasiswa = Mahasiswa::where('nim', $nim)->firstOrFail();        // Pastikan prestasi milik mahasiswa ini
         if (! $prestasi->mahasiswa()->whereKey($mahasiswa->id)->exists()) {
             abort(403, 'Anda tidak memiliki akses ke prestasi ini.');
         }
-
-        // Hapus relasi mahasiswa
         $prestasi->mahasiswa()->detach($mahasiswa->id);
-
-        // Hapus relasi dosen pembimbing untuk mahasiswa ini
         $prestasi->dosenPembimbing()
             ->wherePivot('mahasiswa_id', $mahasiswa->id)
             ->detach();
-
-        // Hapus data prestasi
         $prestasi->delete();
-
         return redirect()
             ->route('public.prestasi.index', $mahasiswa->nim)
             ->with(
@@ -281,32 +231,22 @@ class PublicMahasiswaController extends Controller
             );
     }
 
-    /**
-     * Menampilkan profil mahasiswa.
-     */
     public function profil(string $nim)
     {
         $mahasiswa = Mahasiswa::with('prodi')
             ->where('nim', $nim)
             ->firstOrFail();
-
         return view(
             'public.profil',
             compact('mahasiswa')
         );
     }
 
-    /**
-     * Form input Prestasi.
-     */
     public function prestasiCreate(string $nim)
     {
         $mahasiswa = Mahasiswa::where('nim', $nim)->firstOrFail();
-
         $tahunAkademikList = TahunAkademik::all();
-
         $dosenList = Dosen::orderBy('nama')->get();
-
         return view(
             'public.prestasi-create',
             compact(
@@ -317,9 +257,6 @@ class PublicMahasiswaController extends Controller
         );
     }
 
-    /**
-     * Menyimpan data Prestasi.
-     */
     public function prestasiStore(Request $request, string $nim)
     {
         $mahasiswa = Mahasiswa::where('nim', $nim)->firstOrFail();
@@ -370,20 +307,10 @@ class PublicMahasiswaController extends Controller
                 'exists:dosen,id',
             ],
         ]);
-
-        // Simpan ID dosen pembimbing secara terpisah
         $dosenId = $validated['dosen_id'] ?? null;
-
         unset($validated['dosen_id']);
-
-        // Simpan data utama prestasi
         $prestasi = Prestasi::create($validated);
-
-        // Hubungkan prestasi dengan mahasiswa yang menginput
         $prestasi->mahasiswa()->attach($mahasiswa->id);
-
-        // Jika memilih dosen pembimbing,
-        // simpan ke tabel khusus prestasi_mahasiswa_dosen
         if ($dosenId) {
             $prestasi->dosenPembimbing()->attach(
                 $dosenId,
@@ -400,10 +327,6 @@ class PublicMahasiswaController extends Controller
                 'Prestasi berhasil dicatat. Terima kasih!'
             );
     }
-    /**
-     * Form isi Tracer Study
-     * (hanya untuk mahasiswa berstatus lulus).
-     */
     public function tracerCreate(string $nim)
     {
         $mahasiswa = Mahasiswa::with('prodi')
@@ -437,9 +360,6 @@ class PublicMahasiswaController extends Controller
         );
     }
 
-    /**
-     * Menyimpan data Tracer Study.
-     */
     public function tracerStore(Request $request, string $nim)
     {
         $mahasiswa = Mahasiswa::with('prodi')
@@ -453,16 +373,6 @@ class PublicMahasiswaController extends Controller
             );
         }
 
-        /*
-        |--------------------------------------------------------------------------
-        | Tentukan jenis pengisian
-        |--------------------------------------------------------------------------
-        |
-        | Belum pernah mengisi  → Pengisian Awal
-        | Sudah pernah mengisi  → Perubahan Karier
-        |
-        */
-
         $sudahPernahIsi = $mahasiswa
             ->tracerStudy()
             ->exists();
@@ -470,12 +380,6 @@ class PublicMahasiswaController extends Controller
         $jenisPengisian = $sudahPernahIsi
             ? 'perubahan_karier'
             : 'awal';
-
-        /*
-        |--------------------------------------------------------------------------
-        | Validasi data
-        |--------------------------------------------------------------------------
-        */
 
         if ($jenisPengisian === 'awal') {
 
@@ -652,7 +556,6 @@ class PublicMahasiswaController extends Controller
                     'string',
                     'max:255',
                 ],
-
                 'posisi_saat_ini' => [
                     'required',
                     'string',
@@ -661,23 +564,15 @@ class PublicMahasiswaController extends Controller
             ]);
         }
 
-        /*
-        |--------------------------------------------------------------------------
-        | Data yang otomatis berasal dari mahasiswa
-        |--------------------------------------------------------------------------
-        */
-
         $validated['mahasiswa_id'] = $mahasiswa->id;
         $validated['tanggal_pengisian'] = now()->toDateString();
         $validated['jenis_pengisian'] = $jenisPengisian;
 
-        // Jika perubahan karier, gunakan snapshot data dari pengisian awal
         if ($jenisPengisian === 'perubahan_karier') {
             $tracerAwal = $mahasiswa->tracerStudy()
                 ->where('jenis_pengisian', 'awal')
                 ->latest('tanggal_pengisian')
                 ->first();
-
             if (! $tracerAwal) {
                 return back()
                     ->withInput()
@@ -685,34 +580,13 @@ class PublicMahasiswaController extends Controller
                         'tracer' => 'Data Tracer Study awal belum ditemukan.',
                     ]);
             }
-
             $validated['nama_alumni'] = $tracerAwal->nama_alumni;
             $validated['tahun_masuk'] = $tracerAwal->tahun_masuk;
             $validated['tahun_lulus'] = $tracerAwal->tahun_lulus;
             $validated['prodi_id'] = $tracerAwal->prodi_id;
         }
-
-        /*
-        |--------------------------------------------------------------------------
-        | Periode pelacakan
-        |--------------------------------------------------------------------------
-        */
-
         $validated['periode_pelacakan'] = now()->format('Y');
-
-        /*
-        |--------------------------------------------------------------------------
-        | Jika pengisian awal, simpan snapshot data alumni
-        |--------------------------------------------------------------------------
-        */
-
         if ($jenisPengisian === 'awal') {
-
-            /*
-            | Untuk keamanan, Prodi yang dikirim dari form harus sama
-            | dengan Prodi mahasiswa.
-            */
-
             if ((int) $validated['prodi_id'] !== (int) $mahasiswa->prodi_id) {
                 return back()
                     ->withInput()
@@ -722,41 +596,22 @@ class PublicMahasiswaController extends Controller
                     ]);
             }
         }
-
-        /*
-        |--------------------------------------------------------------------------
-        | Simpan sebagai record BARU
-        |--------------------------------------------------------------------------
-        |
-        | Tidak ada update terhadap tracer lama.
-        | Setiap pengisian menghasilkan satu riwayat baru.
-        |
-        */
-
         TracerStudy::create($validated);
-
         $message = $jenisPengisian === 'awal'
             ? 'Tracer Study berhasil dicatat. Terima kasih!'
             : 'Riwayat perubahan pekerjaan berhasil ditambahkan. Terima kasih!';
-
         return redirect()
             ->route('public.tracer.create', $nim)
             ->with('status', $message);
     }
-    /**
-     * Menghapus satu riwayat Tracer Study.
-     */
     public function tracerDestroy(string $nim, TracerStudy $tracer)
     {
         $mahasiswa = Mahasiswa::where('nim', $nim)->firstOrFail();
-
         // Pastikan riwayat yang dihapus benar-benar milik mahasiswa tersebut.
         if ($tracer->mahasiswa_id !== $mahasiswa->id) {
             abort(403);
         }
-
         $tracer->delete();
-
         return redirect()
             ->route('public.tracer.create', $nim)
             ->with('status', 'Riwayat Tracer Study berhasil dihapus.');

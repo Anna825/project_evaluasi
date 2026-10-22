@@ -1,7 +1,6 @@
 <?php
 
 namespace App\Http\Controllers;
-
 use App\Http\Requests\StoreProdiRequest;
 use App\Models\Jurusan;
 use App\Models\Prodi;
@@ -25,11 +24,8 @@ class ProdiController extends Controller
             'jurusan',
             'dosen.user',
         ])->latest()->get();
-
         $kaprodiRole = Role::where('nama_role', 'kaprodi')->first();
-
         $kaprodiUsers = collect();
-
         if ($kaprodiRole) {
             $kaprodiUsers = User::with('dosen')
                 ->whereHas('roles', function ($query) use ($kaprodiRole) {
@@ -37,7 +33,6 @@ class ProdiController extends Controller
                 })
                 ->get();
         }
-
         // Ambil hanya Dosen yang akun User-nya aktif,
         // lalu kelompokkan berdasarkan Prodi.
         $dosenAktifPerProdi = \App\Models\Dosen::with('user')
@@ -46,7 +41,6 @@ class ProdiController extends Controller
             })
             ->get()
             ->groupBy('prodi_id');
-
         return view('prodi.index', compact(
             'prodi',
             'kaprodiUsers',
@@ -57,7 +51,6 @@ class ProdiController extends Controller
     {
         $this->pastikanAdmin();
         $jurusanList = Jurusan::all();
-
         return view('prodi.create', compact('jurusanList'));
     }
 
@@ -65,7 +58,6 @@ class ProdiController extends Controller
     {
         $this->pastikanAdmin();
         Prodi::create($request->validated());
-
         return redirect()->route('prodi.index')->with('status', 'Prodi berhasil ditambahkan.');
     }
 
@@ -73,7 +65,6 @@ class ProdiController extends Controller
     {
         $this->pastikanAdmin();
         $jurusanList = Jurusan::all();
-
         return view('prodi.edit', compact('prodi', 'jurusanList'));
     }
 
@@ -81,7 +72,6 @@ class ProdiController extends Controller
     {
         $this->pastikanAdmin();
         $prodi->update($request->validated());
-
         return redirect()->route('prodi.index')->with('status', 'Prodi berhasil diperbarui.');
     }
 
@@ -91,9 +81,7 @@ class ProdiController extends Controller
         $validated = $request->validate([
             'dosen_id' => ['required', 'exists:dosen,id'],
         ]);
-
         $dosen = \App\Models\Dosen::with('user')->findOrFail($validated['dosen_id']);
-
         // Pastikan Dosen memiliki akun User
         if (! $dosen->user) {
             return back()
@@ -102,7 +90,6 @@ class ProdiController extends Controller
                 ])
                 ->withInput();
         }
-
         // Pastikan Dosen berasal dari Prodi yang sedang diatur
         if ((int) $dosen->prodi_id !== (int) $prodi->id) {
             return back()
@@ -111,7 +98,6 @@ class ProdiController extends Controller
                 ])
                 ->withInput();
         }
-
         // Pastikan akun Dosen aktif
         if ($dosen->user->status !== 'aktif') {
             return back()
@@ -120,18 +106,14 @@ class ProdiController extends Controller
                 ])
                 ->withInput();
         }
-
         // Cari role Kaprodi
         $kaprodiRole = Role::where('nama_role', 'kaprodi')->first();
-
         if (! $kaprodiRole) {
             return back()->withErrors([
                 'dosen_id' => 'Role Kaprodi belum tersedia di sistem.',
             ]);
         }
-
         DB::transaction(function () use ($prodi, $dosen, $kaprodiRole) {
-
             /*
             * Hapus penugasan Kaprodi lama
             * yang berada pada Prodi ini.
@@ -140,7 +122,6 @@ class ProdiController extends Controller
                 ->where('role_id', $kaprodiRole->id)
                 ->where('prodi_id', $prodi->id)
                 ->delete();
-
             /*
             * Cek apakah Dosen yang dipilih
             * sudah menjadi Kaprodi di Prodi lain.
@@ -151,13 +132,11 @@ class ProdiController extends Controller
                 ->whereNotNull('prodi_id')
                 ->where('prodi_id', '!=', $prodi->id)
                 ->exists();
-
             if ($kaprodiDiProdiLain) {
                 throw \Illuminate\Validation\ValidationException::withMessages([
                     'dosen_id' => 'Dosen tersebut sudah ditetapkan sebagai Kaprodi di Program Studi lain.',
                 ]);
             }
-
             /*
             * Cek apakah Dosen sudah memiliki role Kaprodi.
             */
@@ -165,9 +144,7 @@ class ProdiController extends Controller
                 ->where('user_id', $dosen->user->id)
                 ->where('role_id', $kaprodiRole->id)
                 ->first();
-
             if ($existingRole) {
-
                 // Jika sudah punya role Kaprodi,
                 // hubungkan role tersebut dengan Prodi ini.
                 DB::table('user_roles')
@@ -176,9 +153,7 @@ class ProdiController extends Controller
                         'prodi_id' => $prodi->id,
                         'updated_at' => now(),
                     ]);
-
             } else {
-
                 // Jika belum punya role Kaprodi,
                 // tambahkan role Kaprodi.
                 DB::table('user_roles')->insert([
@@ -190,7 +165,6 @@ class ProdiController extends Controller
                 ]);
             }
         });
-
         return back()->with(
             'status',
             "Sdr/i {$dosen->nama} berhasil ditetapkan sebagai Kaprodi {$prodi->nama}."
@@ -201,7 +175,6 @@ class ProdiController extends Controller
     {
         $this->pastikanAdmin();
         $prodi->delete();
-
         return redirect()->route('prodi.index')->with('status', 'Prodi berhasil dihapus.');
     }
 }

@@ -17,27 +17,26 @@ class Semester extends Model
         'tanggal_selesai',
     ];
 
-    /**
-     * Setiap semester dimiliki oleh satu tahun akademik.
-     */
     public function tahunAkademik(): BelongsTo
     {
         return $this->belongsTo(TahunAkademik::class);
     }
 
-    /**
-     * Satu semester punya banyak kelas.
-     */
     public function kelas(): HasMany
     {
         return $this->hasMany(Kelas::class);
     }
 
-    /**
-     * Satu semester punya banyak mahasiswa_status_log.
-     */
     public function mahasiswaStatusLog(): HasMany
     {
         return $this->hasMany(MahasiswaStatusLog::class);
+    }
+
+    public function riwayatPenempatan(): HasMany
+    {
+        return $this->hasMany(
+            RiwayatPenempatanKelas::class,
+            'semester_id'
+        );
     }
 }

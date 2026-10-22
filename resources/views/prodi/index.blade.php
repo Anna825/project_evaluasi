@@ -285,14 +285,9 @@
     @endforeach
 
 
-    {{-- =========================================================
-         JAVASCRIPT MODAL
-         ========================================================= --}}
-
+    {{-- =======JAVASCRIPT MODAL======= --}}
     <script>
-
         function openKaprodiModal(prodiId) {
-
             const modal = document.getElementById(
                 'kaprodi-modal-' + prodiId
             );
@@ -300,45 +295,29 @@
             if (!modal) {
                 return;
             }
-
             modal.classList.remove('hidden');
             modal.classList.add('flex');
-
         }
 
-
         function closeKaprodiModal(prodiId) {
-
             const modal = document.getElementById(
                 'kaprodi-modal-' + prodiId
             );
-
             if (!modal) {
                 return;
             }
-
             modal.classList.add('hidden');
             modal.classList.remove('flex');
-
         }
-
-
         // Tekan tombol Escape untuk menutup modal
         document.addEventListener('keydown', function (event) {
-
             if (event.key !== 'Escape') {
                 return;
             }
-
             document.querySelectorAll('[id^="kaprodi-modal-"]').forEach(function (modal) {
-
                 modal.classList.add('hidden');
                 modal.classList.remove('flex');
-
             });
-
         });
-
     </script>
-
 @endsection

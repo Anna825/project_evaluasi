@@ -32,17 +32,11 @@
 
             <div class="space-y-1">
                 @forelse ($kurikulumList as $k)
-                    <a
-                        href="{{ route('report.laporan-cpl.pdf', $k) }}"
-                        class="block text-sm hover:underline"
-                        style="color: var(--primary);"
-                    >
+                    <a href="{{ route('report.laporan-cpl.pdf', $k) }}" class="block text-sm hover:underline" style="color: var(--primary);">
                         {{ $k->nama }} — Download PDF
                     </a>
                 @empty
-                    <p class="text-sm" style="color: var(--muted-foreground);">
-                        Belum ada kurikulum.
-                    </p>
+                    <p class="text-sm" style="color: var(--muted-foreground);">Belum ada kurikulum.</p>
                 @endforelse
             </div>
         </div>
