@@ -81,12 +81,12 @@
 
                     <p class="text-xs"
                        style="color: var(--muted-foreground);">
-                        Angkatan
+                        Tingkat
                     </p>
 
                     <p class="text-lg font-semibold mt-1"
                        style="color: var(--foreground);">
-                        {{ $kelas->angkatan }}
+                        {{ $kelas->tingkat }}
                     </p>
 
                 </div>
@@ -166,7 +166,7 @@
 
                             <th class="px-5 py-3 text-left font-medium"
                                 style="color: var(--foreground);">
-                                Status
+                                Angkatan Masuk
                             </th>
 
                             <th class="px-5 py-3 text-left font-medium"
@@ -208,7 +208,7 @@
                                     <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium"
                                           style="background: var(--secondary);
                                                  color: var(--foreground);">
-                                        {{ ucfirst($mhs->status) }}
+                                        {{ $mhs->angkatan_masuk }}
                                     </span>
 
                                 </td>
