@@ -24,7 +24,7 @@ class UpdateMahasiswaRequest extends FormRequest
             'prodi_id' => ['required', 'exists:prodi,id'],
             'nim' => ['required', 'string', Rule::unique('mahasiswa', 'nim')->ignore($this->route('mahasiswa'))],
             'nama' => ['required', 'string', 'max:255'],
-            'angkatan' => ['required', 'integer', 'min:2000', 'max:' . date('Y')],
+            'angkatan' => ['required', 'integer', 'min:2000', 'max:' . (date('Y') + 1)],
             'ipk_terakhir' => ['nullable', 'numeric', 'min:0', 'max:4'],
             'status' => ['required', 'in:aktif,cuti,lulus,DO'],
         ];
