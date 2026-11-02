@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Kaprodi;
 use App\Http\Controllers\Controller;
 use App\Models\KelasMahasiswa;
 use App\Models\Mahasiswa;
+use App\Models\ProgresStudiMahasiswa;
 use App\Models\Semester;
 use App\Services\AcademicProgressCalculator;
 use App\Models\RiwayatAksiAkademik;
@@ -139,7 +140,7 @@ class KenaikanKelasController extends Controller
 
             $rencana = [];
             foreach ($mahasiswaList as $mahasiswa) {
-                $semesterBerikutnya = $mahasiswa->progresStudi?->semester_berikutnya;
+                $semesterBerikutnya = app(AcademicProgressCalculator::class)->semesterBerjalan($mahasiswa, $semesterTujuan);
                 if (! $semesterBerikutnya) {
                     throw ValidationException::withMessages([
                         'kelas_asal_id' => 'Progres semester mahasiswa ' . $mahasiswa->nim . ' belum tersedia. Proses dibatalkan tanpa mengubah data.',
@@ -181,16 +182,19 @@ class KenaikanKelasController extends Controller
                 $progres = $mahasiswa->progresStudi;
                 $before = [
                     'kelas_mahasiswa_id' => $mahasiswa->kelas_mahasiswa_id,
-                    'semester_berikutnya' => $progres->semester_berikutnya,
+                    'semester_berikutnya' => $item['semesterBerikutnya'],
                 ];
 
                 $mahasiswa->update(['kelas_mahasiswa_id' => $kelasTujuan->id]);
-                $progres->update([
-                    'semester_terakhir_selesai' => max((int) $progres->semester_terakhir_selesai, (int) $progres->semester_berikutnya),
-                    'semester_berikutnya' => (int) $progres->semester_berikutnya + 1,
+                ProgresStudiMahasiswa::updateOrCreate(
+                    ['mahasiswa_id' => $mahasiswa->id],
+                    [
+                    'semester_terakhir_selesai' => max((int) ($progres?->semester_terakhir_selesai ?? 0), (int) $item['semesterBerikutnya']),
+                    'semester_berikutnya' => (int) $item['semesterBerikutnya'] + 1,
                     'semester_terakhir_id' => $semesterGenapSebelumnya->id,
                     'status_progres' => 'berjalan',
-                ]);
+                    ]
+                );
 
                 RiwayatPenempatanKelas::updateOrCreate(
                     ['mahasiswa_id' => $mahasiswa->id, 'semester_id' => $semesterTujuan->id],
@@ -203,7 +207,7 @@ class KenaikanKelasController extends Controller
                     'data_sebelum' => $before,
                     'data_sesudah' => [
                         'kelas_mahasiswa_id' => $kelasTujuan->id,
-                        'semester_berikutnya' => $progres->semester_berikutnya,
+                        'semester_berikutnya' => (int) $item['semesterBerikutnya'] + 1,
                     ],
                     'alasan' => 'Kenaikan kelas terkonfirmasi untuk periode ' . ($semesterTujuan->tahunAkademik?->label ?? $semesterTujuan->id) . ' Ganjil.',
                     'dilakukan_oleh' => auth()->id(),
