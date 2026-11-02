@@ -94,6 +94,19 @@
                 </table>
             </div>
         </div>
+
+        @if($preview->isNotEmpty() && $warnings->isEmpty())
+            <form method="POST" action="{{ route('kaprodi.kenaikan-kelas.store') }}" class="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-blue-200 bg-blue-50 p-5">
+                @csrf
+                <input type="hidden" name="kelas_asal_id" value="{{ $kelasAsalTerpilih->id }}">
+                <input type="hidden" name="semester_id" value="{{ $semesterTujuan->id }}">
+                <div class="text-sm text-blue-900">
+                    <p class="font-semibold">Semua mahasiswa pada pratinjau lolos validasi awal.</p>
+                    <p class="mt-1">Perubahan hanya dilakukan setelah konfirmasi Kaprodi.</p>
+                </div>
+                <button type="submit" onclick="return confirm('Konfirmasi kenaikan untuk seluruh mahasiswa Aktif di kelas ini?')" class="rounded-lg bg-blue-700 px-5 py-2.5 text-sm font-semibold text-white">Konfirmasi Kenaikan Kelas</button>
+            </form>
+        @endif
     @endif
 </div>
 @endsection
