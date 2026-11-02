@@ -136,6 +136,18 @@ class MahasiswaController extends Controller
 
         $statusSebelum = $mahasiswa->status;
         $statusSesudah = $data['status'];
+
+        if ($statusSebelum === 'cuti' && $statusSesudah === 'aktif') {
+            return back()->withInput()->withErrors([
+                'status' => 'Mahasiswa Cuti harus diproses melalui menu Penempatan Mahasiswa agar semester dan kelas kembali tercatat dengan benar.',
+            ]);
+        }
+
+        if ($statusSebelum !== 'lulus' && $statusSesudah === 'lulus') {
+            return back()->withInput()->withErrors([
+                'status' => 'Penetapan Lulus harus dilakukan melalui menu Penetapan Kelulusan Kaprodi.',
+            ]);
+        }
         $snapshotSebelum = [
             'status' => $mahasiswa->status,
             'kelas_mahasiswa_id' => $mahasiswa->kelas_mahasiswa_id,
