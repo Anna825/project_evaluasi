@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\KelasMahasiswa;
 use App\Models\Mahasiswa;
 use App\Models\Semester;
+use App\Services\AcademicProgressCalculator;
 use App\Models\RiwayatAksiAkademik;
 use App\Models\RiwayatPenempatanKelas;
 use Illuminate\Support\Facades\DB;
@@ -53,7 +54,7 @@ class KenaikanKelasController extends Controller
                 ->where('status', 'aktif')->orderBy('nim')->get();
 
             foreach ($mahasiswaList as $mahasiswa) {
-                $semesterBerikutnya = $mahasiswa->progresStudi?->semester_berikutnya;
+                $semesterBerikutnya = app(AcademicProgressCalculator::class)->semesterBerjalan($mahasiswa, $semesterTujuan);
                 if (! $semesterBerikutnya) {
                     $warnings->push([
                         'nim' => $mahasiswa->nim, 'nama' => $mahasiswa->nama,
