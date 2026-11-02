@@ -7,6 +7,10 @@ use App\Http\Requests\UpdateMahasiswaRequest;
 use App\Models\KelasMahasiswa;
 use App\Models\Mahasiswa;
 use App\Models\Prodi;
+use App\Models\Semester;
+use App\Models\RiwayatAksiAkademik;
+use App\Models\RiwayatCutiMahasiswa;
+use Illuminate\Support\Facades\DB;
 
 class MahasiswaController extends Controller
 {
