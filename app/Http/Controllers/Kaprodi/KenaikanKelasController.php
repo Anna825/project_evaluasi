@@ -1,12 +1,12 @@
 <?php
 
-namespace App\\Http\\Controllers\\Kaprodi;
+namespace App\Http\Controllers\Kaprodi;
 
-use App\\Http\\Controllers\\Controller;
-use App\\Models\\KelasMahasiswa;
-use App\\Models\\Mahasiswa;
-use App\\Models\\Semester;
-use Illuminate\\Http\\Request;
+use App\Http\Controllers\Controller;
+use App\Models\KelasMahasiswa;
+use App\Models\Mahasiswa;
+use App\Models\Semester;
+use Illuminate\Http\Request;
 
 class KenaikanKelasController extends Controller
 {
@@ -71,7 +71,7 @@ class KenaikanKelasController extends Controller
                 $semesterAktif = (int) $semesterBerikutnya;
 
                 if ($semesterAktif % 2 === 0) {
-                    $namaTujuan = preg_replace('/^\\d+/', (string) ($tingkatAsal + 1), $namaTujuan, 1);
+                    $namaTujuan = preg_replace('/^\d+/', (string) ($tingkatAsal + 1), $namaTujuan, 1);
                 }
 
                 $kelasTujuan = KelasMahasiswa::where('prodi_id', $prodi->id)
