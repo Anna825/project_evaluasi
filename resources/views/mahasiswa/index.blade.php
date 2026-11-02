@@ -102,6 +102,10 @@
                         {{ $kelas->prodi->nama ?? '-' }}
                     </p>
 
+                    <p class="text-xs mt-2 font-medium" style="color: var(--muted-foreground);">
+                        Angkatan mayoritas: {{ $kelas->angkatan_mayoritas ?? 'Belum tersedia' }}
+                    </p>
+
                     <div class="flex items-center justify-between mt-5 pt-4 border-t"
                          style="border-color: var(--border);">
 
