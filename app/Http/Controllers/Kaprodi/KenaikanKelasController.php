@@ -112,7 +112,7 @@ class KenaikanKelasController extends Controller
             ]);
         }
 
-        DB::transaction(function () use ($data, $prodi, $kelasAsal, $semesterTujuan) {
+        DB::transaction(function () use ($data, $prodi, $kelasAsal, $semesterTujuan, $semesterGenapSebelumnya) {
             if (DB::table('riwayat_batch_kenaikan_kelas')
                 ->where('kelas_asal_id', $kelasAsal->id)
                 ->where('semester_tujuan_id', $semesterTujuan->id)->exists()) {
