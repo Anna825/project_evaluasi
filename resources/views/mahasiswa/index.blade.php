@@ -95,15 +95,14 @@
 
                     <h3 class="text-lg font-semibold">
                         {{ $kelas->nama_kelas }}
+                        @if ($kelas->angkatan_mayoritas)
+                            <span class="font-normal">({{ $kelas->angkatan_mayoritas }})</span>
+                        @endif
                     </h3>
 
                     <p class="text-sm mt-1"
                        style="color: var(--muted-foreground);">
                         {{ $kelas->prodi->nama ?? '-' }}
-                    </p>
-
-                    <p class="text-xs mt-2 font-medium" style="color: var(--muted-foreground);">
-                        Angkatan mayoritas: {{ $kelas->angkatan_mayoritas ?? 'Belum tersedia' }}
                     </p>
 
                     <div class="flex items-center justify-between mt-5 pt-4 border-t"
