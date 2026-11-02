@@ -49,13 +49,20 @@ class KenaikanKelasController extends Controller
         }
 
         if ($kelasAsalTerpilih && $semesterTujuan) {
+            $semesterPerhitungan = $semesterTujuan;
+            if ($semesterTujuan->jenis === 'ganjil') {
+                $semesterPerhitungan = Semester::where('jenis', 'genap')
+                    ->where('tanggal_selesai', '<', $semesterTujuan->tanggal_mulai)
+                    ->orderByDesc('tanggal_selesai')->first() ?? $semesterTujuan;
+            }
+
             $mahasiswaList = Mahasiswa::with(['kelasMahasiswa', 'progresStudi'])
                 ->where('prodi_id', $prodi->id)
                 ->where('kelas_mahasiswa_id', $kelasAsalTerpilih->id)
                 ->where('status', 'aktif')->orderBy('nim')->get();
 
             foreach ($mahasiswaList as $mahasiswa) {
-                $semesterBerikutnya = app(AcademicProgressCalculator::class)->semesterBerjalan($mahasiswa, $semesterTujuan);
+                $semesterBerikutnya = app(AcademicProgressCalculator::class)->semesterBerjalan($mahasiswa, $semesterPerhitungan);
                 if (! $semesterBerikutnya) {
                     $warnings->push([
                         'nim' => $mahasiswa->nim, 'nama' => $mahasiswa->nama,
@@ -140,7 +147,7 @@ class KenaikanKelasController extends Controller
 
             $rencana = [];
             foreach ($mahasiswaList as $mahasiswa) {
-                $semesterBerikutnya = app(AcademicProgressCalculator::class)->semesterBerjalan($mahasiswa, $semesterTujuan);
+                $semesterBerikutnya = app(AcademicProgressCalculator::class)->semesterBerjalan($mahasiswa, $semesterGenapSebelumnya);
                 if (! $semesterBerikutnya) {
                     throw ValidationException::withMessages([
                         'kelas_asal_id' => 'Progres semester mahasiswa ' . $mahasiswa->nim . ' belum tersedia. Proses dibatalkan tanpa mengubah data.',
