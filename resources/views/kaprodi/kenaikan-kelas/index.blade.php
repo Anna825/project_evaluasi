@@ -4,7 +4,7 @@
 <div class="w-full space-y-6">
     <div>
         <h1 class="text-2xl font-bold text-slate-800">Kenaikan Kelas Mahasiswa</h1>
-        <p class="mt-1 text-sm text-slate-500">Pratinjau kenaikan semester dan tingkat kelas berdasarkan angkatan masuk.</p>
+        <p class="mt-1 text-sm text-slate-500">Pratinjau kenaikan semester dan tingkat kelas berdasarkan kelas asal.</p>
         <div class="mt-3 inline-flex rounded-lg bg-blue-50 px-3 py-2 text-sm font-medium text-blue-700">
             Program Studi: {{ $prodi->nama_prodi ?? $prodi->nama }}
         </div>
@@ -13,11 +13,11 @@
     <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
         <form method="GET" action="{{ route('kaprodi.kenaikan-kelas.index') }}" class="grid grid-cols-1 gap-4 md:grid-cols-12">
             <div class="md:col-span-4">
-                <label class="mb-2 block text-sm font-medium">Angkatan masuk</label>
-                <select name="angkatan" required class="w-full rounded-lg border border-slate-300 bg-white px-4 py-2.5 text-sm">
-                    <option value="">Pilih angkatan</option>
-                    @foreach($angkatanList as $item)
-                        <option value="{{ $item }}" @selected((string) $angkatan === (string) $item)>{{ $item }}</option>
+                <label class="mb-2 block text-sm font-medium">Kelas asal</label>
+                <select name="kelas_asal_id" required class="w-full rounded-lg border border-slate-300 bg-white px-4 py-2.5 text-sm">
+                    <option value="">Pilih kelas</option>
+                    @foreach($kelasList as $item)
+                        <option value="{{ $item->id }}" @selected((string) request('kelas_asal_id') === (string) $item->id)>{{ $item->nama_kelas }}</option>
                     @endforeach
                 </select>
             </div>
@@ -39,9 +39,9 @@
         </form>
     </div>
 
-    @if($semesterTujuan)
+    @if($semesterTujuan && $kelasAsalTerpilih)
         <div class="rounded-xl border border-blue-200 bg-blue-50 p-4 text-sm text-blue-800">
-            Pratinjau ini belum mengubah data mahasiswa. Semester tujuan dipilih sebagai periode pencatatan; semester berikutnya setiap mahasiswa ditentukan dari data progres studinya.
+            Kelas asal: {{ $kelasAsalTerpilih->nama_kelas }}. Pratinjau ini belum mengubah data mahasiswa. Mahasiswa Cuti dan Lulus tidak ditampilkan.
         </div>
 
         <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
@@ -54,7 +54,7 @@
             <div class="rounded-xl border border-amber-200 bg-amber-50 p-5">
                 <h2 class="font-semibold text-amber-800">Peringatan yang perlu ditindaklanjuti</h2>
                 <ul class="mt-2 list-disc space-y-1 pl-5 text-sm text-amber-800">
-                    @foreach($warnings as $warning)<li>{{ $warning }}</li>@endforeach
+                    @foreach($warnings as $warning)<li>{{ $warning['nim'] }} - {{ $warning['nama'] }}: {{ $warning['alasan'] }}</li>@endforeach
                 </ul>
             </div>
         @endif
