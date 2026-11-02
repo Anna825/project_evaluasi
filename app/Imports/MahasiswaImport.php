@@ -1,15 +1,15 @@
 <?php
 
-namespace App\\Imports;
+namespace App\Imports;
 
-use App\\Models\\KelasMahasiswa;
-use App\\Models\\Mahasiswa;
-use App\\Models\\Prodi;
-use Maatwebsite\\Excel\\Concerns\\SkipsOnFailure;
-use Maatwebsite\\Excel\\Concerns\\SkipsFailures;
-use Maatwebsite\\Excel\\Concerns\\ToModel;
-use Maatwebsite\\Excel\\Concerns\\WithHeadingRow;
-use Maatwebsite\\Excel\\Concerns\\WithValidation;
+use App\Models\KelasMahasiswa;
+use App\Models\Mahasiswa;
+use App\Models\Prodi;
+use Maatwebsite\Excel\Concerns\SkipsOnFailure;
+use Maatwebsite\Excel\Concerns\SkipsFailures;
+use Maatwebsite\Excel\Concerns\ToModel;
+use Maatwebsite\Excel\Concerns\WithHeadingRow;
+use Maatwebsite\Excel\Concerns\WithValidation;
 
 class MahasiswaImport implements ToModel, WithHeadingRow, WithValidation, SkipsOnFailure
 {
@@ -58,7 +58,7 @@ class MahasiswaImport implements ToModel, WithHeadingRow, WithValidation, SkipsO
                 function ($attribute, $value, $fail) {
                     try {
                         KelasMahasiswa::tingkatDariNama((string) $value);
-                    } catch (\\InvalidArgumentException $exception) {
+                    } catch (\InvalidArgumentException $exception) {
                         $fail('Kode kelas harus diawali angka tingkat, misalnya 1AEA-1.');
                     }
                 },
