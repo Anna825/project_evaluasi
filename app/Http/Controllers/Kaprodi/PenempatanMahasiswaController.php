@@ -11,6 +11,7 @@ use App\Models\RiwayatPenempatanKelas;
 use App\Models\RiwayatCutiMahasiswa;
 use App\Models\RiwayatAksiAkademik;
 use App\Models\Semester;
+use App\Services\AcademicProgressCalculator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
@@ -83,12 +84,10 @@ class PenempatanMahasiswaController extends Controller
         }
 
         $data = $request->validate([
-            'kelas_tujuan_id' => ['required', 'integer', 'exists:kelas_mahasiswa,id'],
             'semester_id' => ['required', 'integer', 'exists:semester,id'],
-            'semester_berikutnya' => ['required', 'integer', 'min:1', 'max:14'],
             'catatan' => ['nullable', 'string', 'max:1000'],
         ]);
-        $kelasTujuan = KelasMahasiswa::where('id', $data['kelas_tujuan_id'])
+        $kelasTujuan = KelasMahasiswa::where('id', $mahasiswa->kelas_mahasiswa_id)
             ->where('prodi_id', $prodi->id)->where('status_kelas', 'aktif')->firstOrFail();
 
         DB::transaction(function () use ($mahasiswa, $data, $kelasTujuan) {
@@ -97,6 +96,10 @@ class PenempatanMahasiswaController extends Controller
                 throw ValidationException::withMessages(['mahasiswa' => 'Status mahasiswa sudah berubah. Muat ulang halaman.']);
             }
             $semester = Semester::findOrFail($data['semester_id']);
+            $semesterBerikutnya = app(AcademicProgressCalculator::class)->semesterBerjalan($mahasiswa, $semester, true);
+            if (! $semesterBerikutnya) {
+                throw ValidationException::withMessages(['semester_id' => 'Semester studi tidak dapat dihitung dari angkatan, kalender akademik, dan riwayat Cuti. Periksa data historis mahasiswa.']);
+            }
             $riwayatCuti = RiwayatCutiMahasiswa::where('mahasiswa_id', $mahasiswa->id)
                 ->whereNull('tanggal_selesai')->latest('tanggal_mulai')->first();
 
@@ -120,7 +123,7 @@ class PenempatanMahasiswaController extends Controller
                 'data_sesudah' => [
                     'status' => 'aktif',
                     'kelas_mahasiswa_id' => $kelasTujuan->id,
-                    'semester_berikutnya' => $data['semester_berikutnya'],
+                    'semester_berikutnya' => $semesterBerikutnya,
                     'semester_id' => $semester->id,
                 ],
                 'alasan' => $data['catatan'] ?? 'Penempatan kembali setelah cuti.',
@@ -130,8 +133,8 @@ class PenempatanMahasiswaController extends Controller
             ProgresStudiMahasiswa::updateOrCreate(
                 ['mahasiswa_id' => $mahasiswa->id],
                 [
-                    'semester_terakhir_selesai' => max(0, $data['semester_berikutnya'] - 1),
-                    'semester_berikutnya' => $data['semester_berikutnya'],
+                    'semester_terakhir_selesai' => max(0, $semesterBerikutnya - 1),
+                    'semester_berikutnya' => $semesterBerikutnya,
                     'semester_terakhir_id' => null,
                     'status_progres' => 'berjalan',
                     'catatan' => $data['catatan'] ?? 'Penempatan kembali setelah cuti.',
