@@ -1,10 +1,10 @@
 <?php
 
-namespace App\\Models;
+namespace App\Models;
 
-use Illuminate\\Database\\Eloquent\\Model;
-use Illuminate\\Database\\Eloquent\\Relations\\BelongsTo;
-use Illuminate\\Database\\Eloquent\\Relations\\HasMany;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class KelasMahasiswa extends Model
 {
@@ -20,8 +20,8 @@ class KelasMahasiswa extends Model
 
     public static function tingkatDariNama(string $namaKelas): int
     {
-        if (!preg_match('/^(\\d+)/', trim($namaKelas), $matches)) {
-            throw new \\InvalidArgumentException('Nama kelas harus diawali angka tingkat, misalnya 1AEA-1.');
+        if (!preg_match('/^(\d+)/', trim($namaKelas), $matches)) {
+            throw new \InvalidArgumentException('Nama kelas harus diawali angka tingkat, misalnya 1AEA-1.');
         }
 
         return (int) $matches[1];
