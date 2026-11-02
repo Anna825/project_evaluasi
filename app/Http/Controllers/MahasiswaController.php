@@ -130,7 +130,66 @@ class MahasiswaController extends Controller
         $data['angkatan_masuk'] = (int) $data['angkatan'];
         unset($data['angkatan']);
 
-        $mahasiswa->update($data);
+        $statusSebelum = $mahasiswa->status;
+        $statusSesudah = $data['status'];
+        $snapshotSebelum = [
+            'status' => $mahasiswa->status,
+            'kelas_mahasiswa_id' => $mahasiswa->kelas_mahasiswa_id,
+            'prodi_id' => $mahasiswa->prodi_id,
+            'angkatan_masuk' => $mahasiswa->angkatan_masuk,
+        ];
+
+        DB::transaction(function () use ($mahasiswa, $data, $statusSebelum, $statusSesudah, $snapshotSebelum) {
+            if ($statusSebelum !== $statusSesudah && $statusSebelum === 'aktif' && $statusSesudah === 'cuti') {
+                $semesterBerjalan = Semester::whereDate('tanggal_mulai', '<=', today())
+                    ->whereDate('tanggal_selesai', '>=', today())
+                    ->first();
+
+                RiwayatCutiMahasiswa::create([
+                    'mahasiswa_id' => $mahasiswa->id,
+                    'semester_mulai_id' => $semesterBerjalan?->id,
+                    'tanggal_mulai' => today(),
+                    'catatan' => 'Perubahan status menjadi Cuti.',
+                    'dicatat_oleh' => auth()->id(),
+                ]);
+            }
+
+            if ($statusSebelum === 'cuti' && $statusSesudah === 'aktif') {
+                $riwayatCuti = RiwayatCutiMahasiswa::where('mahasiswa_id', $mahasiswa->id)
+                    ->whereNull('tanggal_selesai')
+                    ->latest('tanggal_mulai')
+                    ->first();
+
+                if ($riwayatCuti) {
+                    $semesterBerjalan = Semester::whereDate('tanggal_mulai', '<=', today())
+                        ->whereDate('tanggal_selesai', '>=', today())
+                        ->first();
+
+                    $riwayatCuti->update([
+                        'tanggal_selesai' => today(),
+                        'semester_selesai_id' => $semesterBerjalan?->id,
+                    ]);
+                }
+            }
+
+            $mahasiswa->update($data);
+
+            if ($statusSebelum !== $statusSesudah) {
+                RiwayatAksiAkademik::create([
+                    'mahasiswa_id' => $mahasiswa->id,
+                    'jenis_aksi' => 'perubahan_status',
+                    'data_sebelum' => $snapshotSebelum,
+                    'data_sesudah' => [
+                        'status' => $mahasiswa->status,
+                        'kelas_mahasiswa_id' => $mahasiswa->kelas_mahasiswa_id,
+                        'prodi_id' => $mahasiswa->prodi_id,
+                        'angkatan_masuk' => $mahasiswa->angkatan_masuk,
+                    ],
+                    'alasan' => 'Perubahan status melalui formulir edit data mahasiswa.',
+                    'dilakukan_oleh' => auth()->id(),
+                ]);
+            }
+        });
 
         return redirect()->route('mahasiswa.index')
             ->with('status', 'Data mahasiswa berhasil diperbarui.');
