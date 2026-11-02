@@ -64,7 +64,7 @@ class PenempatanMahasiswaController extends Controller
                 ->with('status', 'Hanya mahasiswa berstatus Cuti yang dapat diproses melalui penempatan kembali.');
         }
 
-        $mahasiswa->load(['kelasMahasiswa', 'progresStudi', 'riwayatPenempatan.semester', 'statusLog.semester']);
+        $mahasiswa->load(['kelasMahasiswa', 'progresStudi', 'riwayatPenempatanKelas.semester', 'statusLog.semester']);
         $kelasList = KelasMahasiswa::where('prodi_id', $prodi->id)
             ->where('status_kelas', 'aktif')->orderBy('tingkat')->orderBy('nama_kelas')->get();
         $semesterList = Semester::with('tahunAkademik')->orderByDesc('tanggal_mulai')->get();
