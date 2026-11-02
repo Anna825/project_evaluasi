@@ -63,6 +63,11 @@ class Mahasiswa extends Model
         return $this->hasMany(RiwayatPenempatanKelas::class);
     }
 
+    public function riwayatAksiAkademik(): HasMany
+    {
+        return $this->hasMany(RiwayatAksiAkademik::class, 'mahasiswa_id')->latest();
+    }
+
     public function riwayatCuti(): HasMany
     {
         return $this->hasMany(RiwayatCutiMahasiswa::class, 'mahasiswa_id');
