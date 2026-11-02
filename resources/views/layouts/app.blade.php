@@ -145,6 +145,12 @@
                         'icon' => $icons['people'],
                     ],
                     [
+                        'route' => 'kaprodi.kelulusan.index',
+                        'pattern' => 'kaprodi.kelulusan.*',
+                        'label' => 'Penetapan Kelulusan',
+                        'icon' => $icons['award'],
+                    ],
+                    [
                         'route' => 'kaprodi.dosen.index',
                         'pattern' => 'kaprodi.dosen.*',
                         'label' => 'Data Dosen',
