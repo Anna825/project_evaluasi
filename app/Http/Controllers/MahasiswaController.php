@@ -12,12 +12,34 @@ class MahasiswaController extends Controller
 {
     public function index()
     {
-        $kelasMahasiswa = KelasMahasiswa::with('prodi')
+        $kelasMahasiswa = KelasMahasiswa::with([
+            'prodi',
+            'mahasiswa:id,kelas_mahasiswa_id,angkatan_masuk',
+        ])
             ->withCount('mahasiswa')
             ->orderBy('prodi_id')
             ->orderBy('tingkat')
             ->orderBy('nama_kelas')
             ->get();
+
+        // Angkatan pada kartu kelas adalah angkatan mayoritas mahasiswa,
+        // bukan identitas kelas. Jika jumlah sama, pilih tahun yang lebih baru.
+        $kelasMahasiswa->each(function ($kelas) {
+            $kelas->angkatan_mayoritas = $kelas->mahasiswa
+                ->pluck('angkatan_masuk')
+                ->filter(fn ($tahun) => $tahun !== null && $tahun !== '')
+                ->countBy()
+                ->sort(function ($jumlahA, $jumlahB) {
+                    return $jumlahB <=> $jumlahA;
+                });
+
+            $frekuensi = $kelas->angkatan_mayoritas;
+            $tahunMayoritas = $frekuensi->isEmpty()
+                ? null
+                : $frekuensi->sortKeysDesc()->sortByDesc(fn ($jumlah) => $jumlah)->keys()->first();
+
+            $kelas->angkatan_mayoritas = $tahunMayoritas;
+        });
 
         return view('mahasiswa.index', compact('kelasMahasiswa'));
     }
