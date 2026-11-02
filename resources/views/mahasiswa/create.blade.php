@@ -122,9 +122,9 @@
                                 -- Pilih Kelas --
                             </option>
                             @foreach (($kelasList ?? collect()) as $kelas)
-                                <option value="{{ $kelas->id }}"
+                                <option data-prodi="{{ $kelas->prodi_id }}" value="{{ $kelas->id }}"
                                     {{ old('kelas_mahasiswa_id') == $kelas->id ? 'selected' : '' }}>
-                                    {{ $kelas->nama_kelas }}
+                                    {{ $kelas->nama_kelas }} — {{ $kelas->prodi->nama ?? 'Prodi' }}
                                 </option>
                             @endforeach
                             <option value="baru"
@@ -145,7 +145,7 @@
                             <input type="text"name="kelas_baru"id="kelas_baru"value="{{ old('kelas_baru') }}"placeholder="Contoh: 4AEC-1"class="w-full rounded-xl px-4 py-2.5 text-sm border transition focus:ring-2 focus:ring-blue-500"style="background: var(--card); border-color: var(--border);">
                             <p class="text-[11px] mt-1"style="color: var(--muted-foreground);">
                                 Sistem akan membuat kelas baru berdasarkan
-                                Program Studi dan Angkatan yang dipilih.
+                                Program Studi yang dipilih. Angkatan masuk mahasiswa tetap dicatat terpisah.
                             </p>
                         </div>
                     </div>
@@ -281,6 +281,8 @@
         const kelasSelect = document.getElementById('kelas_mahasiswa_id');
         const kelasBaruWrapper = document.getElementById('kelas-baru-wrapper');
         const kelasBaruInput = document.getElementById('kelas_baru');
+        const prodiSelect = document.querySelector('select[name="prodi_id"]');
+        const classOptions = Array.from(kelasSelect.options);
 
         function toggleKelasBaru() {
             if (kelasSelect.value === 'baru') {
@@ -292,7 +294,18 @@
                 kelasBaruInput.value = '';
             }
         }
+        function filterKelasByProdi() {
+            const selectedProdi = prodiSelect.value;
+            classOptions.forEach(option => {
+                if (!option.dataset.prodi) return;
+                option.hidden = selectedProdi !== '' && option.dataset.prodi !== selectedProdi;
+                if (option.hidden && option.selected) kelasSelect.value = '';
+            });
+        }
+
+        prodiSelect.addEventListener('change', filterKelasByProdi);
         kelasSelect.addEventListener('change', toggleKelasBaru);
+        filterKelasByProdi();
         toggleKelasBaru();
     });
 </script>
