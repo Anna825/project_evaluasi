@@ -94,7 +94,7 @@
                 <div class="mt-5">
 
                     <h3 class="text-lg font-semibold">
-                        {{ $kelas->nama_kelas }} ({{ $kelas->angkatan }})
+                        {{ $kelas->nama_kelas }}
                     </h3>
 
                     <p class="text-sm mt-1"
@@ -108,11 +108,11 @@
                         <div>
                             <p class="text-xs"
                                style="color: var(--muted-foreground);">
-                                Angkatan
+                                Tingkat
                             </p>
 
                             <p class="text-sm font-semibold mt-0.5">
-                                {{ $kelas->angkatan }}
+                                {{ $kelas->tingkat }}
                             </p>
                         </div>
 
