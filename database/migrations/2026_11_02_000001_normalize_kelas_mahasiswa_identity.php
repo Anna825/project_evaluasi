@@ -1,9 +1,9 @@
 <?php
 
-use Illuminate\\Database\\Migrations\\Migration;
-use Illuminate\\Database\\Schema\\Blueprint;
-use Illuminate\\Support\\Facades\\DB;
-use Illuminate\\Support\\Facades\\Schema;
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
@@ -17,7 +17,7 @@ return new class extends Migration
             $classes = DB::table('kelas_mahasiswa')->orderBy('id')->get();
 
             foreach ($classes as $class) {
-                if (!preg_match('/^(\\d+)/', $class->nama_kelas, $matches)) {
+                if (!preg_match('/^(\d+)/', $class->nama_kelas, $matches)) {
                     throw new RuntimeException("Kode kelas {$class->nama_kelas} tidak diawali angka tingkat.");
                 }
 
