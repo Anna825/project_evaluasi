@@ -116,7 +116,7 @@ class MahasiswaController extends Controller
 
     public function show(Mahasiswa $mahasiswa)
     {
-        $mahasiswa->load('prodi', 'tracerStudy', 'prestasi');
+        $mahasiswa->load('prodi', 'tracerStudy', 'prestasi', 'riwayatAksiAkademik.pelaksana');
 
         return view('mahasiswa.show', compact('mahasiswa'));
     }
