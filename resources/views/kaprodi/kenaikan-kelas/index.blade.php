@@ -2,6 +2,8 @@
 
 @section('content')
 <div class="w-full space-y-6">
+    @if(session('status'))<div class="rounded-lg border border-green-200 bg-green-50 p-4 text-sm text-green-800">{{ session('status') }}</div>@endif
+    @if($errors->any())<div class="rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-700"><ul class="list-disc pl-5">@foreach($errors->all() as $error)<li>{{ $error }}</li>@endforeach</ul></div>@endif
     <div>
         <h1 class="text-2xl font-bold text-slate-800">Kenaikan Kelas Mahasiswa</h1>
         <p class="mt-1 text-sm text-slate-500">Pratinjau kenaikan semester dan tingkat kelas berdasarkan kelas asal.</p>
