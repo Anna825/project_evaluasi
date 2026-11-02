@@ -12,7 +12,7 @@ class AcademicProgressCalculator
      * Menghitung semester studi berjalan dari kalender akademik dan periode Cuti.
      * Mengembalikan null jika angkatan atau kalender tidak cukup untuk dihitung.
      */
-    public function semesterBerjalan(Mahasiswa $mahasiswa, ?Semester $semesterAcuan = null): ?int
+    public function semesterBerjalan(Mahasiswa $mahasiswa, ?Semester $semesterAcuan = null, bool $sedangKembaliDariCuti = false): ?int
     {
         if (! $mahasiswa->angkatan_masuk) {
             return null;
@@ -54,7 +54,9 @@ class AcademicProgressCalculator
                 }
 
                 $start = (int) $riwayat->semester_mulai_id;
-                $end = $riwayat->semester_selesai_id ? (int) $riwayat->semester_selesai_id : null;
+                $end = $riwayat->semester_selesai_id
+                    ? (int) $riwayat->semester_selesai_id
+                    : ($sedangKembaliDariCuti ? (int) $semesterAcuan->id : null);
                 $orderedIds = Semester::orderBy('tanggal_mulai')->pluck('id')->values();
                 $semesterIds = $orderedIds->all();
                 $startPosition = array_search($start, $semesterIds, true);
