@@ -1,12 +1,12 @@
 <?php
 
-namespace App\\Http\\Controllers;
+namespace App\Http\Controllers;
 
-use App\\Http\\Requests\\StoreMahasiswaRequest;
-use App\\Http\\Requests\\UpdateMahasiswaRequest;
-use App\\Models\\KelasMahasiswa;
-use App\\Models\\Mahasiswa;
-use App\\Models\\Prodi;
+use App\Http\Requests\StoreMahasiswaRequest;
+use App\Http\Requests\UpdateMahasiswaRequest;
+use App\Models\KelasMahasiswa;
+use App\Models\Mahasiswa;
+use App\Models\Prodi;
 
 class MahasiswaController extends Controller
 {
