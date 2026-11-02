@@ -4,7 +4,6 @@ namespace App\Services;
 
 use App\Models\Mahasiswa;
 use App\Models\Semester;
-use Illuminate\Support\Collection;
 
 class AcademicProgressCalculator
 {
@@ -47,7 +46,7 @@ class AcademicProgressCalculator
         $semesterAktifTerhitung = 0;
 
         foreach ($semesters as $semester) {
-            $mulaiCuti = $cuti->contains(function ($riwayat) use ($semester) {
+            $mulaiCuti = $cuti->contains(function ($riwayat) use ($semester, $semesterAcuan, $sedangKembaliDariCuti) {
                 if (! $riwayat->semester_mulai_id) {
                     return $riwayat->tanggal_mulai && $riwayat->tanggal_mulai <= $semester->tanggal_selesai
                         && (! $riwayat->tanggal_selesai || $riwayat->tanggal_selesai >= $semester->tanggal_mulai);
