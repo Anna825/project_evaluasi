@@ -133,6 +133,12 @@
                         'icon' => $icons['people'],
                     ],
                     [
+                        'route' => 'kaprodi.kenaikan-kelas.index',
+                        'pattern' => 'kaprodi.kenaikan-kelas.*',
+                        'label' => 'Kenaikan Kelas',
+                        'icon' => $icons['people'],
+                    ],
+                    [
                         'route' => 'kaprodi.penempatan.index',
                         'pattern' => 'kaprodi.penempatan.*',
                         'label' => 'Penempatan Mahasiswa',
