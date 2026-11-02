@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use App\Models\UsulanPenempatanMahasiswa;
 
 class Mahasiswa extends Model
 {
@@ -78,5 +79,10 @@ class Mahasiswa extends Model
             Prestasi::class,
             'prestasi_mahasiswa_dosen'
         )->withPivot('dosen_id');
+    }
+
+    public function usulanPenempatan(): HasMany
+    {
+        return $this->hasMany(UsulanPenempatanMahasiswa::class, 'mahasiswa_id');
     }
 }

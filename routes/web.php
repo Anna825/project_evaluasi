@@ -33,6 +33,7 @@ use App\Http\Controllers\PublicMahasiswaController;
 use App\Http\Controllers\Alumni\AlumniTracerController;
 use App\Http\Controllers\Kaprodi\TracerStudyController;
 use App\Http\Controllers\JurusanController;
+use App\Http\Controllers\Kaprodi\PenempatanMahasiswaController;
 
 /*
 |--------------------------------------------------------------------------
@@ -446,6 +447,11 @@ Route::middleware(['auth', 'role:kaprodi'])->group(function () {
     ->name('kaprodi.dosen.show');
     Route::get('/kaprodi/mata-kuliah/{mataKuliah}', [MataKuliahDosenController::class, 'showKaprodi'])
     ->name('kaprodi.mata-kuliah.show');
+
+    Route::get(
+        '/kaprodi/penempatan-mahasiswa',
+        [PenempatanMahasiswaController::class, 'index']
+    )->name('kaprodi.penempatan.index');
 });
 
 /*

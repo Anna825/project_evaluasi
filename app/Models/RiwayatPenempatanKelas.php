@@ -14,23 +14,26 @@ class RiwayatPenempatanKelas extends Model
         'kelas_mahasiswa_id',
         'semester_id',
         'alasan_penempatan',
+        'dilakukan_oleh',
     ];
 
     public function mahasiswa(): BelongsTo
     {
-        return $this->belongsTo(Mahasiswa::class);
+        return $this->belongsTo(Mahasiswa::class, 'mahasiswa_id');
     }
 
     public function kelasMahasiswa(): BelongsTo
     {
-        return $this->belongsTo(
-            KelasMahasiswa::class,
-            'kelas_mahasiswa_id'
-        );
+        return $this->belongsTo(KelasMahasiswa::class, 'kelas_mahasiswa_id');
     }
 
     public function semester(): BelongsTo
     {
-        return $this->belongsTo(Semester::class);
+        return $this->belongsTo(Semester::class, 'semester_id');
+    }
+
+    public function pelaksana(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'dilakukan_oleh');
     }
 }

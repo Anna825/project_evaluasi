@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use App\Models\UsulanPenempatanMahasiswa;
 
 class Semester extends Model
 {
@@ -38,5 +39,10 @@ class Semester extends Model
             RiwayatPenempatanKelas::class,
             'semester_id'
         );
+    }
+
+    public function usulanPenempatan(): HasMany
+    {
+        return $this->hasMany(UsulanPenempatanMahasiswa::class, 'semester_id');
     }
 }
