@@ -1,22 +1,17 @@
 <?php
 
-namespace App\Imports;
+namespace App\\Imports;
 
-use App\Models\KelasMahasiswa;
-use App\Models\Mahasiswa;
-use App\Models\Prodi;
-use Illuminate\Support\Str;
-use Maatwebsite\Excel\Concerns\SkipsOnFailure;
-use Maatwebsite\Excel\Concerns\SkipsFailures;
-use Maatwebsite\Excel\Concerns\ToModel;
-use Maatwebsite\Excel\Concerns\WithHeadingRow;
-use Maatwebsite\Excel\Concerns\WithValidation;
+use App\\Models\\KelasMahasiswa;
+use App\\Models\\Mahasiswa;
+use App\\Models\\Prodi;
+use Maatwebsite\\Excel\\Concerns\\SkipsOnFailure;
+use Maatwebsite\\Excel\\Concerns\\SkipsFailures;
+use Maatwebsite\\Excel\\Concerns\\ToModel;
+use Maatwebsite\\Excel\\Concerns\\WithHeadingRow;
+use Maatwebsite\\Excel\\Concerns\\WithValidation;
 
-class MahasiswaImport implements
-    ToModel,
-    WithHeadingRow,
-    WithValidation,
-    SkipsOnFailure
+class MahasiswaImport implements ToModel, WithHeadingRow, WithValidation, SkipsOnFailure
 {
     use SkipsFailures;
 
@@ -24,7 +19,7 @@ class MahasiswaImport implements
     {
         $prodiNama = trim((string) ($row['program_studi'] ?? ''));
         $namaKelas = trim((string) ($row['kelas'] ?? ''));
-        $angkatan = (int) $row['angkatan'];
+        $angkatanMasuk = (int) $row['angkatan'];
 
         $prodi = Prodi::where('nama', $prodiNama)->first();
 
@@ -33,13 +28,11 @@ class MahasiswaImport implements
         }
 
         $kelasMahasiswa = KelasMahasiswa::firstOrCreate(
+            ['prodi_id' => $prodi->id, 'nama_kelas' => $namaKelas],
             [
-                'prodi_id' => $prodi->id,
-                'nama_kelas' => $namaKelas,
-                'angkatan' => $angkatan,
-            ],
-            [
+                'tingkat' => KelasMahasiswa::tingkatDariNama($namaKelas),
                 'status_kelas' => 'aktif',
+                'angkatan' => $angkatanMasuk,
             ]
         );
 
@@ -48,7 +41,7 @@ class MahasiswaImport implements
             'kelas_mahasiswa_id' => $kelasMahasiswa->id,
             'nim' => trim((string) $row['nim']),
             'nama' => trim((string) $row['nama']),
-            'angkatan_masuk' => $angkatan,
+            'angkatan_masuk' => $angkatanMasuk,
             'status' => strtolower(trim((string) ($row['status'] ?? 'aktif'))),
         ]);
     }
@@ -56,42 +49,29 @@ class MahasiswaImport implements
     public function rules(): array
     {
         return [
-            'nim' => [
-                'required',
-                'distinct',
-                'unique:mahasiswa,nim',
-            ],
-
-            'nama' => [
-                'required',
-                'string',
-            ],
-
-            'program_studi' => [
-                'required',
-                'exists:prodi,nama',
-            ],
-
+            'nim' => ['required', 'distinct', 'unique:mahasiswa,nim'],
+            'nama' => ['required', 'string'],
+            'program_studi' => ['required', 'exists:prodi,nama'],
             'kelas' => [
                 'required',
                 'string',
+                function ($attribute, $value, $fail) {
+                    try {
+                        KelasMahasiswa::tingkatDariNama((string) $value);
+                    } catch (\\InvalidArgumentException $exception) {
+                        $fail('Kode kelas harus diawali angka tingkat, misalnya 1AEA-1.');
+                    }
+                },
             ],
-
             'status' => [
                 'required',
                 function ($attribute, $value, $fail) {
-                    $status = strtolower(trim((string) $value));
-
-                    if (!in_array($status, ['aktif', 'cuti', 'lulus', 'do'])) {
+                    if (!in_array(strtolower(trim((string) $value)), ['aktif', 'cuti', 'lulus', 'do'])) {
                         $fail('Status mahasiswa harus Aktif, Cuti, Lulus, atau DO.');
                     }
                 },
             ],
-
-            'angkatan' => [
-                'required',
-                'integer',
-            ],
+            'angkatan' => ['required', 'integer', 'min:2000'],
         ];
     }
 
@@ -101,16 +81,11 @@ class MahasiswaImport implements
             'nim.required' => 'NIM wajib diisi.',
             'nim.unique' => 'NIM sudah terdaftar di sistem.',
             'nim.distinct' => 'Terdapat NIM duplikat di dalam file.',
-
             'nama.required' => 'Nama mahasiswa wajib diisi.',
-
             'program_studi.required' => 'Program Studi wajib diisi.',
             'program_studi.exists' => 'Nama Program Studi tidak ditemukan di sistem.',
-
             'kelas.required' => 'Kelas mahasiswa wajib diisi.',
-
             'status.required' => 'Status mahasiswa wajib diisi.',
-
             'angkatan.required' => 'Angkatan wajib diisi.',
             'angkatan.integer' => 'Angkatan harus berupa angka.',
         ];
