@@ -140,9 +140,9 @@
                             required>
                             <option value="aktif" {{ old('status', $mahasiswa->status) == 'aktif' ? 'selected' : '' }}>Aktif (Sedang Berkuliah)</option>
                             <option value="cuti" {{ old('status', $mahasiswa->status) == 'cuti' ? 'selected' : '' }}>Cuti Akademik</option>
-                            <option value="lulus" {{ old('status', $mahasiswa->status) == 'lulus' ? 'selected' : '' }}>Lulus (Alumni)</option>
                             <option value="DO" {{ old('status', $mahasiswa->status) == 'DO' ? 'selected' : '' }}>DO (Drop Out / Keluar)</option>
                         </select>
+                        <p class="mt-1 text-xs" style="color: var(--muted-foreground);">Penetapan Lulus dilakukan melalui menu khusus Kelulusan Kaprodi.</p>
                     </div>
                 </div>
 
