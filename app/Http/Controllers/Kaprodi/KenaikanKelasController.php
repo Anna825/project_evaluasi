@@ -6,6 +6,10 @@ use App\Http\Controllers\Controller;
 use App\Models\KelasMahasiswa;
 use App\Models\Mahasiswa;
 use App\Models\Semester;
+use App\Models\RiwayatAksiAkademik;
+use App\Models\RiwayatPenempatanKelas;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 use Illuminate\Http\Request;
 
 class KenaikanKelasController extends Controller
