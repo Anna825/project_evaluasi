@@ -8,6 +8,8 @@ use App\Models\Mahasiswa;
 use App\Models\MahasiswaStatusLog;
 use App\Models\ProgresStudiMahasiswa;
 use App\Models\RiwayatPenempatanKelas;
+use App\Models\RiwayatCutiMahasiswa;
+use App\Models\RiwayatAksiAkademik;
 use App\Models\Semester;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -95,7 +97,35 @@ class PenempatanMahasiswaController extends Controller
                 throw ValidationException::withMessages(['mahasiswa' => 'Status mahasiswa sudah berubah. Muat ulang halaman.']);
             }
             $semester = Semester::findOrFail($data['semester_id']);
+            $riwayatCuti = RiwayatCutiMahasiswa::where('mahasiswa_id', $mahasiswa->id)
+                ->whereNull('tanggal_selesai')->latest('tanggal_mulai')->first();
+
+            if ($riwayatCuti) {
+                $riwayatCuti->update([
+                    'tanggal_selesai' => today(),
+                    'semester_selesai_id' => $semester->id,
+                ]);
+            }
+
+            $dataSebelum = [
+                'status' => $mahasiswa->status,
+                'kelas_mahasiswa_id' => $mahasiswa->kelas_mahasiswa_id,
+            ];
             $mahasiswa->update(['kelas_mahasiswa_id' => $kelasTujuan->id, 'status' => 'aktif']);
+
+            RiwayatAksiAkademik::create([
+                'mahasiswa_id' => $mahasiswa->id,
+                'jenis_aksi' => 'penempatan_kembali_cuti',
+                'data_sebelum' => $dataSebelum,
+                'data_sesudah' => [
+                    'status' => 'aktif',
+                    'kelas_mahasiswa_id' => $kelasTujuan->id,
+                    'semester_berikutnya' => $data['semester_berikutnya'],
+                    'semester_id' => $semester->id,
+                ],
+                'alasan' => $data['catatan'] ?? 'Penempatan kembali setelah cuti.',
+                'dilakukan_oleh' => auth()->id(),
+            ]);
 
             ProgresStudiMahasiswa::updateOrCreate(
                 ['mahasiswa_id' => $mahasiswa->id],
