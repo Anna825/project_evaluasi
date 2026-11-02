@@ -448,7 +448,7 @@ Route::middleware(['auth', 'role:kaprodi'])->group(function () {
     Route::get('/kaprodi/mata-kuliah/{mataKuliah}', [MataKuliahDosenController::class, 'showKaprodi'])
     ->name('kaprodi.mata-kuliah.show');
 
-    Route::get('/kaprodi/penempatan-mahasiswa', [PenempatanMahasiswaController::class, 'index'])->name('kaprodi.penempatan.index');
+    Route::get('/kaprodi/penempatan-mahasiswa', [PenempatanMahasiswaController::class, 'index'])->name('kaprodi.penempatan.index');\n    Route::get('/kaprodi/kenaikan-kelas', [KenaikanKelasController::class, 'index'])->name('kaprodi.kenaikan-kelas.index');
     Route::get('/kaprodi/penempatan-mahasiswa/{mahasiswa}', [PenempatanMahasiswaController::class, 'show'])->name('kaprodi.penempatan.show');
     Route::post('/kaprodi/penempatan-mahasiswa/{mahasiswa}', [PenempatanMahasiswaController::class, 'store'])->name('kaprodi.penempatan.store');
 });
