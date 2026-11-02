@@ -27,6 +27,7 @@ class StoreMahasiswaRequest extends FormRequest
                 'nullable',
                 'string',
                 'max:255',
+                'regex:/^\\d+[A-Za-z]+-\\d+$/',
                 'required_if:kelas_mahasiswa_id,baru',
             ],
 
