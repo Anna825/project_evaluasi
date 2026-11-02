@@ -27,75 +27,62 @@ class KenaikanKelasController extends Controller
     public function index(Request $request)
     {
         $prodi = $this->prodiKaprodi();
-        $angkatanList = Mahasiswa::where('prodi_id', $prodi->id)
-            ->whereNotNull('angkatan_masuk')
-            ->select('angkatan_masuk')->distinct()
-            ->orderByDesc('angkatan_masuk')->pluck('angkatan_masuk');
-
-        $semesterList = Semester::with('tahunAkademik')
-            ->orderByDesc('tanggal_mulai')->get();
-
+        $kelasList = KelasMahasiswa::where('prodi_id', $prodi->id)
+            ->where('status_kelas', 'aktif')
+            ->orderBy('tingkat')->orderBy('nama_kelas')->get();
+        $semesterList = Semester::with('tahunAkademik')->orderByDesc('tanggal_mulai')->get();
         $preview = collect();
         $warnings = collect();
-        $angkatan = $request->input('angkatan');
+        $kelasAsalId = $request->input('kelas_asal_id');
         $semesterId = $request->input('semester_id');
+        $kelasAsalTerpilih = $kelasAsalId ? $kelasList->firstWhere('id', (int) $kelasAsalId) : null;
         $semesterTujuan = $semesterId ? $semesterList->firstWhere('id', (int) $semesterId) : null;
 
-        if ($request->filled('angkatan') && $semesterTujuan) {
+        if ($request->filled('kelas_asal_id') && ! $kelasAsalTerpilih) {
+            abort(404, 'Kelas asal tidak ditemukan atau tidak aktif.');
+        }
+
+        if ($kelasAsalTerpilih && $semesterTujuan) {
             $mahasiswaList = Mahasiswa::with(['kelasMahasiswa', 'progresStudi'])
                 ->where('prodi_id', $prodi->id)
-                ->where('angkatan_masuk', $angkatan)
-                ->where('status', 'aktif')
-                ->orderBy('nim')->get();
+                ->where('kelas_mahasiswa_id', $kelasAsalTerpilih->id)
+                ->where('status', 'aktif')->orderBy('nim')->get();
 
             foreach ($mahasiswaList as $mahasiswa) {
-                $kelasAsal = $mahasiswa->kelasMahasiswa;
                 $semesterBerikutnya = $mahasiswa->progresStudi?->semester_berikutnya;
-
-                if (! $kelasAsal) {
-                    $warnings->push($mahasiswa->nim . ' - ' . $mahasiswa->nama . ': belum memiliki kelas asal.');
-                    continue;
-                }
-
                 if (! $semesterBerikutnya) {
-                    $warnings->push($mahasiswa->nim . ' - ' . $mahasiswa->nama . ': progres semester belum diatur.');
+                    $warnings->push([
+                        'nim' => $mahasiswa->nim, 'nama' => $mahasiswa->nama,
+                        'alasan' => 'Progres semester belum tersedia. Perlu dihitung dari kalender akademik dan riwayat cuti.',
+                    ]);
                     continue;
                 }
 
-                if ((int) $semesterBerikutnya !== (int) $request->input('semester_tujuan_nomor', $semesterBerikutnya)) {
-                    // Nilai semester yang akan diproses tetap ditampilkan dari progres studi.
+                $semesterSaatIni = (int) $semesterBerikutnya;
+                $tingkatAsal = KelasMahasiswa::tingkatDariNama($kelasAsalTerpilih->nama_kelas);
+                $namaTujuan = $kelasAsalTerpilih->nama_kelas;
+                if ($semesterSaatIni % 2 === 0) {
+                    $namaTujuan = preg_replace('/^\\d+/', (string) ($tingkatAsal + 1), $namaTujuan, 1);
                 }
-
-                $namaTujuan = $kelasAsal->nama_kelas;
-                $tingkatAsal = KelasMahasiswa::tingkatDariNama($namaTujuan);
-                $semesterAktif = (int) $semesterBerikutnya;
-
-                if ($semesterAktif % 2 === 0) {
-                    $namaTujuan = preg_replace('/^\d+/', (string) ($tingkatAsal + 1), $namaTujuan, 1);
-                }
-
                 $kelasTujuan = KelasMahasiswa::where('prodi_id', $prodi->id)
-                    ->where('nama_kelas', $namaTujuan)
-                    ->where('status_kelas', 'aktif')->first();
-
+                    ->where('nama_kelas', $namaTujuan)->where('status_kelas', 'aktif')->first();
                 $preview->push([
-                    'mahasiswa' => $mahasiswa,
-                    'kelas_asal' => $kelasAsal,
-                    'nama_tujuan' => $namaTujuan,
-                    'kelas_tujuan' => $kelasTujuan,
-                    'semester_saat_ini' => $semesterAktif,
-                    'semester_tujuan' => $semesterAktif + 1,
+                    'mahasiswa' => $mahasiswa, 'kelas_asal' => $kelasAsalTerpilih,
+                    'nama_tujuan' => $namaTujuan, 'kelas_tujuan' => $kelasTujuan,
+                    'semester_saat_ini' => $semesterSaatIni, 'semester_tujuan' => $semesterSaatIni + 1,
                 ]);
-
                 if (! $kelasTujuan) {
-                    $warnings->push($mahasiswa->nim . ' - ' . $mahasiswa->nama . ': kelas tujuan ' . $namaTujuan . ' belum tersedia atau tidak aktif.');
+                    $warnings->push([
+                        'nim' => $mahasiswa->nim, 'nama' => $mahasiswa->nama,
+                        'alasan' => 'Kelas tujuan ' . $namaTujuan . ' belum tersedia atau tidak aktif.',
+                    ]);
                 }
             }
         }
 
         return view('kaprodi.kenaikan-kelas.index', compact(
-            'prodi', 'angkatanList', 'semesterList', 'preview', 'warnings',
-            'angkatan', 'semesterTujuan'
+            'prodi', 'kelasList', 'semesterList', 'preview', 'warnings',
+            'kelasAsalTerpilih', 'semesterTujuan'
         ));
     }
 }
