@@ -43,6 +43,14 @@ class AcademicProgressCalculator
         }
 
         $cuti = $mahasiswa->riwayatCuti()->get();
+
+        // Data Cuti lama tanpa tanggal mulai tidak boleh diasumsikan tidak pernah Cuti.
+        $memilikiRiwayatCutiLama = $mahasiswa->statusLog()->where('status', 'cuti')->exists();
+        if (($mahasiswa->status === 'cuti' && ! $cuti->contains(fn ($item) => is_null($item->tanggal_selesai)))
+            || ($memilikiRiwayatCutiLama && $cuti->isEmpty())) {
+            return null;
+        }
+
         $semesterAktifTerhitung = 0;
 
         foreach ($semesters as $semester) {
