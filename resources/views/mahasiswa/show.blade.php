@@ -92,6 +92,26 @@
 
             <div class="rounded-2xl border overflow-hidden" style="background: var(--card); border-color: var(--border);">
                 <div class="px-6 py-4 border-b" style="border-color: var(--border);">
+                    <h2 class="font-serif-display text-lg">Riwayat Akademik</h2>
+                </div>
+                <div class="p-4 space-y-3">
+                    @forelse ($mahasiswa->riwayatAksiAkademik as $riwayat)
+                        <div class="rounded-xl px-4 py-3" style="background: var(--secondary);">
+                            <div class="flex flex-wrap items-center justify-between gap-2">
+                                <p class="text-sm font-semibold">{{ ucwords(str_replace('_', ' ', $riwayat->jenis_aksi)) }}</p>
+                                <span class="text-xs" style="color: var(--muted-foreground);">{{ $riwayat->created_at?->format('d M Y H:i') }}</span>
+                            </div>
+                            @if($riwayat->alasan)<p class="mt-1 text-xs" style="color: var(--muted-foreground);">{{ $riwayat->alasan }}</p>@endif
+                            <p class="mt-1 text-xs" style="color: var(--muted-foreground);">Dicatat oleh: {{ $riwayat->pelaksana->name ?? 'Sistem' }}</p>
+                        </div>
+                    @empty
+                        <p class="py-5 text-center text-sm" style="color: var(--muted-foreground);">Belum ada riwayat perubahan akademik.</p>
+                    @endforelse
+                </div>
+            </div>
+
+            <div class="rounded-2xl border overflow-hidden" style="background: var(--card); border-color: var(--border);">
+                <div class="px-6 py-4 border-b" style="border-color: var(--border);">
                     <h2 class="font-serif-display text-lg">Data Tracer Study</h2>
                 </div>
                 <div class="p-4 space-y-2">
