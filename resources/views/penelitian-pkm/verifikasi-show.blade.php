@@ -336,6 +336,14 @@
         </div>
 
 
+        @if ($penelitianPkm->status === 'ditolak' && $penelitianPkm->alasan_penolakan)
+            <div class="mx-6 mb-6 rounded-xl border p-4"
+                 style="background: #fef2f2; border-color: #fecaca; color: #991b1b;">
+                <p class="font-semibold text-sm mb-1">Alasan Penolakan</p>
+                <p class="text-sm whitespace-pre-line">{{ $penelitianPkm->alasan_penolakan }}</p>
+            </div>
+        @endif
+
         {{-- Footer Aksi --}}
         <div
             class="p-6 border-t flex justify-end items-center gap-3"
@@ -362,20 +370,39 @@
                 </form>
 
 
-                {{-- Tolak --}}
+                {{-- Tolak dengan alasan --}}
                 <form
                     method="POST"
                     action="{{ route('penelitian-pkm.reject', $penelitianPkm) }}"
+                    class="w-full max-w-xl"
                 >
                     @csrf
                     @method('PATCH')
+
+                    <label for="alasan_penolakan" class="block text-sm font-medium mb-2">
+                        Alasan Penolakan <span class="text-red-600">*</span>
+                    </label>
+                    <textarea
+                        id="alasan_penolakan"
+                        name="alasan_penolakan"
+                        rows="3"
+                        maxlength="2000"
+                        required
+                        minlength="5"
+                        placeholder="Tuliskan alasan mengapa pengajuan penelitian/PKM ditolak..."
+                        class="w-full rounded-xl border px-3 py-2.5 text-sm mb-2"
+                        style="border-color: var(--border);"
+                    >{{ old('alasan_penolakan') }}</textarea>
+                    @error('alasan_penolakan')
+                        <p class="text-sm mb-2" style="color: #b91c1c;">{{ $message }}</p>
+                    @enderror
 
                     <button
                         type="submit"
                         class="px-5 py-2.5 rounded-lg text-sm font-medium text-white hover:opacity-90"
                         style="background: #a13d3d;"
                     >
-                        Tolak
+                        Tolak Pengajuan
                     </button>
                 </form>
 
