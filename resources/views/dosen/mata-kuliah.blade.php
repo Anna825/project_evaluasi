@@ -17,9 +17,17 @@
             </p>
         </div>
 
-        <a href="{{ route('cpmk.create') }}"
-        class="inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-medium text-white"
-        style="background: var(--primary);">
+        <div class="flex flex-wrap gap-2">
+            <a href="{{ route('mata-kuliah.create') }}"
+               class="inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-medium text-white"
+               style="background: var(--primary);">
+                <span class="text-lg leading-none">+</span>
+                Tambah Mata Kuliah
+            </a>
+
+            <a href="{{ route('cpmk.create') }}"
+            class="inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-medium border"
+            style="border-color: var(--border); color: var(--primary); background: var(--card);">
             <span class="text-lg leading-none">+</span>
             Tambah CPMK
         </a>
