@@ -23,8 +23,12 @@ class PrestasiPerJenisSheet implements FromCollection, WithHeadings, WithMapping
             ->whereHas($relation);
 
         if ($this->prodiId !== null) {
-            $query->whereHas($relation, function ($q) {
-                $q->where('prodi_id', $this->prodiId);
+            $kolomProdi = $this->jenis === 'mahasiswa'
+                ? 'mahasiswa.prodi_id'
+                : 'dosen.prodi_id';
+
+            $query->whereHas($relation, function ($q) use ($kolomProdi) {
+                $q->where($kolomProdi, $this->prodiId);
             });
         }
 
