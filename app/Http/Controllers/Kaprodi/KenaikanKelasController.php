@@ -49,19 +49,38 @@ class KenaikanKelasController extends Controller
         }
 
         if ($kelasAsalTerpilih && $semesterTujuan) {
-            $semesterPerhitungan = $semesterTujuan;
-            if ($semesterTujuan->jenis === 'ganjil') {
-                $semesterPerhitungan = Semester::where('jenis', 'genap')
-                    ->where('tanggal_selesai', '<', $semesterTujuan->tanggal_mulai)
-                    ->orderByDesc('tanggal_selesai')->first() ?? $semesterTujuan;
-            }
+            $semesterGenapSebelumnya = Semester::where('jenis', 'genap')
+                ->where('tanggal_selesai', '<', $semesterTujuan->tanggal_mulai)
+                ->orderByDesc('tanggal_selesai')
+                ->first();
 
-            $mahasiswaList = Mahasiswa::with(['kelasMahasiswa', 'progresStudi'])
-                ->where('prodi_id', $prodi->id)
-                ->where('kelas_mahasiswa_id', $kelasAsalTerpilih->id)
-                ->where('status', 'aktif')->orderBy('nim')->get();
+            if ($semesterTujuan->jenis !== 'ganjil') {
+                $warnings->push([
+                    'nim' => '-',
+                    'nama' => 'Validasi periode',
+                    'alasan' => 'Kenaikan tingkat hanya dapat ditujukan ke Semester Ganjil. Pilih periode Ganjil berikutnya.',
+                ]);
+            } elseif (! $semesterGenapSebelumnya) {
+                $warnings->push([
+                    'nim' => '-',
+                    'nama' => 'Validasi kalender akademik',
+                    'alasan' => 'Semester Genap sebelumnya tidak ditemukan pada kalender akademik.',
+                ]);
+            } elseif (today()->lt($semesterGenapSebelumnya->tanggal_selesai)) {
+                $warnings->push([
+                    'nim' => '-',
+                    'nama' => 'Validasi kalender akademik',
+                    'alasan' => 'Semester Genap sebelumnya belum selesai. Pratinjau dan konfirmasi kenaikan belum dapat dilakukan.',
+                ]);
+            } else {
+                $semesterPerhitungan = $semesterGenapSebelumnya;
 
-            foreach ($mahasiswaList as $mahasiswa) {
+                $mahasiswaList = Mahasiswa::with(['kelasMahasiswa', 'progresStudi'])
+                    ->where('prodi_id', $prodi->id)
+                    ->where('kelas_mahasiswa_id', $kelasAsalTerpilih->id)
+                    ->where('status', 'aktif')->orderBy('nim')->get();
+
+                foreach ($mahasiswaList as $mahasiswa) {
                 $semesterBerikutnya = app(AcademicProgressCalculator::class)->semesterBerjalan($mahasiswa, $semesterPerhitungan);
                 if (! $semesterBerikutnya) {
                     $warnings->push([
@@ -89,6 +108,7 @@ class KenaikanKelasController extends Controller
                         'nim' => $mahasiswa->nim, 'nama' => $mahasiswa->nama,
                         'alasan' => 'Kelas tujuan ' . $namaTujuan . ' belum tersedia atau tidak aktif.',
                     ]);
+                }
                 }
             }
         }
