@@ -17,6 +17,7 @@ class PenelitianPkm extends Model
         'kategori_pendanaan',
         'tahun_akademik_id',
         'status',
+        'alasan_penolakan',
     ];
 
     public function tahunAkademik(): BelongsTo
