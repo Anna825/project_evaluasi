@@ -592,7 +592,13 @@
                                 {{-- Aksi --}}
                                 <td class="px-5 py-4">
 
-                                    <div class="flex items-center justify-center">
+                                    <div class="flex items-center justify-center gap-2">
+
+                                        <a href="{{ route('tahun-akademik.edit', $tahun) }}"
+                                           class="inline-flex items-center justify-center px-3.5 py-2 rounded-lg text-xs font-medium transition hover:opacity-80"
+                                           style="background: #dbeafe; color: #1d4ed8;">
+                                            Edit
+                                        </a>
 
                                         <form
                                             method="POST"
