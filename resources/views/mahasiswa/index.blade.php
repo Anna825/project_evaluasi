@@ -13,6 +13,13 @@
         </div>
     @endif
 
+    @if (session('error'))
+        <div class="text-sm rounded-lg px-4 py-3 mb-5 border"
+             style="background:#fef2f2; color:#991b1b; border-color:#fecaca;">
+            {{ session('error') }}
+        </div>
+    @endif
+
     {{-- Header Action --}}
     <div class="flex flex-col sm:flex-row gap-3 sm:items-center sm:justify-between mb-6">
 
