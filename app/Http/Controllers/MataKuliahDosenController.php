@@ -193,6 +193,7 @@ class MataKuliahDosenController extends Controller
          * Ambil kurikulum yang sesuai dengan prodi dosen.
          */
         $kurikulumList = Kurikulum::with('prodi')
+            ->where('prodi_id', $dosen->prodi_id)
             ->latest()
             ->get();
 
@@ -276,6 +277,16 @@ class MataKuliahDosenController extends Controller
                 'max:255',
             ],
         ]);
+
+        $kurikulumSesuaiProdi = Kurikulum::whereKey($validated['kurikulum_id'])
+            ->where('prodi_id', $dosen->prodi_id)
+            ->exists();
+
+        if (! $kurikulumSesuaiProdi) {
+            return back()->withInput()->withErrors([
+                'kurikulum_id' => 'Mata kuliah hanya dapat dibuat pada kurikulum Program Studi dosen yang sedang login.',
+            ]);
+        }
 
         /*
          * Gunakan transaction supaya:
