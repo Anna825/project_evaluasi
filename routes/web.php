@@ -589,6 +589,8 @@ Route::middleware(['auth', 'role:dosen,kaprodi'])->group(function () {
 Route::middleware(['auth', 'role:admin,kaprodi'])->group(function () {
     Route::get('/mahasiswa/kelas/{kelas}', [MahasiswaController::class, 'kelas'])
         ->name('mahasiswa.kelas.show');
+    Route::delete('/kelas-mahasiswa/{kelasMahasiswa}', [MahasiswaController::class, 'destroyKelas'])
+        ->name('mahasiswa.kelas.destroy');
     Route::resource('mahasiswa', MahasiswaController::class);
     Route::get('/mahasiswa-import', [MahasiswaImportController::class, 'create'])
         ->name('mahasiswa.import.create');
