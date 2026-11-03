@@ -61,6 +61,53 @@ class MahasiswaController extends Controller
         return view('mahasiswa.kelas', compact('kelas', 'mahasiswa'));
     }
 
+    /**
+     * Menghapus card kelas mahasiswa hanya jika tidak ada data yang masih
+     * bergantung pada kelas tersebut. Riwayat akademik tidak ikut dihapus.
+     */
+    public function destroyKelas(KelasMahasiswa $kelasMahasiswa)
+    {
+        $pesanPenolakan = null;
+
+        DB::transaction(function () use ($kelasMahasiswa, &$pesanPenolakan) {
+            $kelas = KelasMahasiswa::whereKey($kelasMahasiswa->id)
+                ->lockForUpdate()
+                ->firstOrFail();
+
+            $masihMemilikiMahasiswa = $kelas->mahasiswa()->exists();
+            $memilikiRiwayatPenempatan = $kelas->riwayatPenempatan()->exists();
+            $memilikiUsulanAsal = $kelas->usulanKelasAsal()->exists();
+            $memilikiUsulanTujuan = $kelas->usulanKelasTujuan()->exists();
+            $memilikiKelasPerkuliahan = \App\Models\Kelas::where(
+                'kelas_mahasiswa_id',
+                $kelas->id
+            )->exists();
+
+            if (
+                $masihMemilikiMahasiswa ||
+                $memilikiRiwayatPenempatan ||
+                $memilikiUsulanAsal ||
+                $memilikiUsulanTujuan ||
+                $memilikiKelasPerkuliahan
+            ) {
+                $pesanPenolakan = 'Kelas tidak dapat dihapus karena masih memiliki mahasiswa, riwayat penempatan, usulan penempatan, atau data perkuliahan yang terhubung. Pindahkan mahasiswa dan pastikan seluruh relasi sudah tidak digunakan.';
+                return;
+            }
+
+            $kelas->delete();
+        });
+
+        if ($pesanPenolakan) {
+            return redirect()
+                ->route('mahasiswa.index')
+                ->with('error', $pesanPenolakan);
+        }
+
+        return redirect()
+            ->route('mahasiswa.index')
+            ->with('status', 'Card kelas berhasil dihapus.');
+    }
+
     public function create()
     {
         $prodiList = Prodi::orderBy('nama')->get();
