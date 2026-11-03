@@ -47,6 +47,45 @@
         </div>
     </div>
 
+    {{-- Pencarian mahasiswa dan filter Program Studi --}}
+    <form method="GET" action="{{ route('mahasiswa.index') }}"
+          class="rounded-2xl border p-4 mb-5 flex flex-col md:flex-row gap-3"
+          style="background: var(--card); border-color: var(--border);">
+        <div class="flex-1">
+            <label for="search" class="block text-sm font-medium mb-1">Cari mahasiswa atau kelas</label>
+            <input id="search" type="search" name="search" value="{{ $search ?? request('search') }}"
+                   placeholder="Masukkan nama mahasiswa, NIM, atau nama kelas..."
+                   class="w-full rounded-xl border px-3 py-2.5 text-sm"
+                   style="background: var(--background); border-color: var(--border); color: var(--foreground);">
+        </div>
+        <div class="md:w-64">
+            <label for="prodi_id" class="block text-sm font-medium mb-1">Program Studi</label>
+            <select id="prodi_id" name="prodi_id"
+                    class="w-full rounded-xl border px-3 py-2.5 text-sm"
+                    style="background: var(--background); border-color: var(--border); color: var(--foreground);">
+                <option value="">Semua Program Studi</option>
+                @foreach ($prodiList as $prodi)
+                    <option value="{{ $prodi->id }}" @selected((string) ($prodiId ?? '') === (string) $prodi->id)>
+                        {{ $prodi->nama }}
+                    </option>
+                @endforeach
+            </select>
+        </div>
+        <div class="flex items-end gap-2">
+            <button type="submit" class="px-4 py-2.5 rounded-xl text-sm font-semibold text-white"
+                    style="background: var(--primary);">Cari</button>
+            <a href="{{ route('mahasiswa.index') }}"
+               class="px-4 py-2.5 rounded-xl text-sm font-medium border"
+               style="border-color: var(--border); color: var(--foreground);">Reset</a>
+        </div>
+    </form>
+
+    @if (($search ?? '') !== '' || ($prodiId ?? '') !== '')
+        <p class="text-sm mb-4" style="color: var(--muted-foreground);">
+            Menampilkan {{ $kelasMahasiswa->count() }} kelas yang sesuai dengan filter.
+        </p>
+    @endif
+
     {{-- Daftar Folder Kelas --}}
     <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
 
