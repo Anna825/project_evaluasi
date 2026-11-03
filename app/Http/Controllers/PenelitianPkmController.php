@@ -7,6 +7,7 @@ use App\Models\PenelitianPkm;
 use App\Models\TahunAkademik;
 use App\Models\Dosen;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\Request;
 
 class PenelitianPkmController extends Controller
 {
@@ -274,13 +275,23 @@ class PenelitianPkmController extends Controller
     /**
      * Kaprodi: tolak Penelitian/PKM.
      */
-    public function verifikasiReject(PenelitianPkm $penelitianPkm)
+    public function verifikasiReject(Request $request, PenelitianPkm $penelitianPkm)
     {
         $this->pastikanAksesKaprodi($penelitianPkm);
+
+        $validated = $request->validate([
+            'alasan_penolakan' => ['required', 'string', 'min:5', 'max:2000'],
+        ], [
+            'alasan_penolakan.required' => 'Alasan penolakan wajib diisi.',
+            'alasan_penolakan.min' => 'Alasan penolakan minimal 5 karakter.',
+            'alasan_penolakan.max' => 'Alasan penolakan maksimal 2.000 karakter.',
+        ]);
+
         $penelitianPkm->update([
             'status' => 'ditolak',
+            'alasan_penolakan' => $validated['alasan_penolakan'],
         ]);
-        return back()
-            ->with('status', 'Penelitian/PKM telah ditolak.');
+
+        return back()->with('status', 'Penelitian/PKM telah ditolak dan alasan penolakan berhasil disimpan.');
     }
 }
