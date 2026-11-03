@@ -11,20 +11,41 @@ use App\Models\Semester;
 use App\Models\RiwayatAksiAkademik;
 use App\Models\RiwayatCutiMahasiswa;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Http\Request;
 
 class MahasiswaController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $kelasMahasiswa = KelasMahasiswa::with([
+        $search = trim((string) $request->query('search', ''));
+        $prodiId = $request->query('prodi_id');
+
+        $kelasQuery = KelasMahasiswa::with([
             'prodi',
-            'mahasiswa:id,kelas_mahasiswa_id,angkatan_masuk',
-        ])
-            ->withCount('mahasiswa')
+            'mahasiswa:id,kelas_mahasiswa_id,angkatan_masuk,nama,nim',
+        ])->withCount('mahasiswa');
+
+        if ($search !== '') {
+            $kelasQuery->where(function ($query) use ($search) {
+                $query->where('nama_kelas', 'like', "%{$search}%")
+                    ->orWhereHas('mahasiswa', function ($mahasiswaQuery) use ($search) {
+                        $mahasiswaQuery->where('nama', 'like', "%{$search}%")
+                            ->orWhere('nim', 'like', "%{$search}%");
+                    });
+            });
+        }
+
+        if ($prodiId !== null && $prodiId !== '') {
+            $kelasQuery->where('prodi_id', $prodiId);
+        }
+
+        $kelasMahasiswa = $kelasQuery
             ->orderBy('prodi_id')
             ->orderBy('tingkat')
             ->orderBy('nama_kelas')
             ->get();
+
+        $prodiList = Prodi::orderBy('nama')->get();
 
         // Angkatan pada kartu kelas adalah angkatan mayoritas mahasiswa,
         // bukan identitas kelas. Jika jumlah sama, pilih tahun yang lebih baru.
@@ -45,7 +66,7 @@ class MahasiswaController extends Controller
             $kelas->angkatan_mayoritas = $tahunMayoritas;
         });
 
-        return view('mahasiswa.index', compact('kelasMahasiswa'));
+        return view('mahasiswa.index', compact('kelasMahasiswa', 'prodiList', 'search', 'prodiId'));
     }
 
     public function kelas(KelasMahasiswa $kelas)
