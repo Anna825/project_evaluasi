@@ -75,10 +75,23 @@ class JurusanController extends Controller
     {
         $jurusan = Jurusan::findOrFail($id);
 
-        if ($jurusan->prodi()->exists()) {
+        $prodiTerhubung = $jurusan->prodi()
+            ->orderBy('nama')
+            ->pluck('nama')
+            ->filter()
+            ->values();
+
+        if ($prodiTerhubung->isNotEmpty()) {
+            $daftarProdi = $prodiTerhubung->implode(', ');
+
             return redirect()
                 ->route('jurusan.index')
-                ->with('error', 'Jurusan tidak dapat dihapus karena masih memiliki program studi.');
+                ->with(
+                    'error',
+                    'Jurusan tidak dapat dihapus karena masih terhubung dengan Program Studi: ' .
+                    $daftarProdi .
+                    '. Pindahkan atau hapus data Program Studi terkait terlebih dahulu, lalu coba hapus jurusan kembali.'
+                );
         }
 
         $jurusan->delete();
