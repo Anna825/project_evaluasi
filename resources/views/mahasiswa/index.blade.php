@@ -52,9 +52,10 @@
 
         @forelse ($kelasMahasiswa as $kelas)
 
-            <a href="{{ route('mahasiswa.kelas.show', $kelas) }}"
-               class="group block rounded-2xl border p-5 transition-all duration-200 hover:-translate-y-1 hover:shadow-md"
+            <div
+               class="group rounded-2xl border p-5 transition-all duration-200 hover:-translate-y-1 hover:shadow-md"
                style="background: var(--card); border-color: var(--border);">
+                <a href="{{ route('mahasiswa.kelas.show', $kelas) }}" class="block">
 
                 <div class="flex items-start justify-between gap-4">
 
@@ -133,8 +134,25 @@
                     </div>
 
                 </div>
+                </a>
 
-            </a>
+                <div class="flex justify-end mt-4 pt-3 border-t" style="border-color: var(--border);">
+                    <form action="{{ route('mahasiswa.kelas.destroy', $kelas) }}"
+                          method="POST"
+                          onsubmit="return confirm('Hapus card kelas {{ $kelas->nama_kelas }}? Kelas hanya dapat dihapus jika seluruh relasi mahasiswa dan riwayatnya sudah tidak ada.');">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit"
+                                class="inline-flex items-center gap-2 text-sm font-medium px-3 py-2 rounded-lg border hover:bg-red-50 transition"
+                                style="color: #b91c1c; border-color: #fecaca;">
+                            <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M6 7h12m-10 0V5h8v2m-9 0 1 13h8l1-13M10 11v5m4-5v5"/>
+                            </svg>
+                            Hapus Card
+                        </button>
+                    </form>
+                </div>
+            </div>
 
         @empty
 
