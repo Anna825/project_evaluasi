@@ -2,6 +2,9 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
+    <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, max-age=0">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
     <title>@yield('title', 'Evaluasi PBM')</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -428,6 +431,13 @@
     </div>
 
     <script>
+        // Mencegah halaman dashboard lama tampil dari back-forward cache setelah logout.
+        window.addEventListener('pageshow', function (event) {
+            if (event.persisted) {
+                window.location.reload();
+            }
+        });
+
         document.getElementById('sidebarToggle').addEventListener('click', function () {
             document.getElementById('appSidebar').classList.toggle('sidebar-collapsed');
         });
