@@ -2,67 +2,39 @@
 
 namespace App\Exports;
 
-use App\Models\Mahasiswa;
+use App\Models\KelasMahasiswa;
 use Illuminate\Support\Facades\Auth;
-use Maatwebsite\Excel\Concerns\FromCollection;
-use Maatwebsite\Excel\Concerns\WithHeadings;
-use Maatwebsite\Excel\Concerns\WithMapping;
+use Maatwebsite\Excel\Concerns\WithMultipleSheets;
 
-class MahasiswaExport implements FromCollection, WithHeadings, WithMapping
+class MahasiswaExport implements WithMultipleSheets
 {
-    public function collection()
+    public function sheets(): array
     {
         $user = Auth::user();
+        $isAdmin = $user->roles()->where('nama_role', 'admin')->exists();
 
-        // Admin dapat melihat seluruh mahasiswa.
-        $isAdmin = $user->roles()
-            ->where('nama_role', 'admin')
-            ->exists();
-
-        $query = Mahasiswa::with('prodi');
+        $kelasQuery = KelasMahasiswa::with('prodi')
+            ->whereHas('mahasiswa');
 
         if (! $isAdmin) {
-            // Kaprodi hanya mendapatkan mahasiswa
-            // dari Prodi yang menjadi tanggung jawabnya.
             $kaprodiPivot = $user->roles()
                 ->where('nama_role', 'kaprodi')
                 ->first()?->pivot;
-
             $prodiId = $kaprodiPivot?->prodi_id;
 
             if (! $prodiId) {
                 abort(403, 'Akun Kaprodi belum memiliki Program Studi.');
             }
 
-            $query->where('prodi_id', $prodiId);
+            $kelasQuery->where('prodi_id', $prodiId);
         }
 
-        return $query
-            ->orderBy('nama')
-            ->get();
-    }
-
-    public function headings(): array
-    {
-        return [
-            'NIM',
-            'Nama',
-            'Program Studi',
-            'Angkatan',
-            'IPK Terakhir',
-            'Status',
-        ];
-    }
-
-    public function map($mahasiswa): array
-    {
-        return [
-            $mahasiswa->nim,
-            $mahasiswa->nama,
-            $mahasiswa->prodi->nama ?? '-',
-            $mahasiswa->angkatan,
-            $mahasiswa->ipk_terakhir ?? '-',
-            ucfirst($mahasiswa->status),
-        ];
+        return $kelasQuery
+            ->orderBy('prodi_id')
+            ->orderBy('tingkat')
+            ->orderBy('nama_kelas')
+            ->get()
+            ->map(fn ($kelas) => new MahasiswaPerKelasSheet($kelas))
+            ->all();
     }
 }
