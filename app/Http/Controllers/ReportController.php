@@ -82,10 +82,9 @@ class ReportController extends Controller
             }
         }
 
-        $mahasiswaList = Mahasiswa::where(
-            'prodi_id',
-            $kurikulum->prodi_id
-        )
+        $mahasiswaList = Mahasiswa::with('kelasMahasiswa')
+            ->where('prodi_id', $kurikulum->prodi_id)
+            ->orderBy('kelas_mahasiswa_id')
             ->orderBy('nama')
             ->get();
 
@@ -103,12 +102,21 @@ class ReportController extends Controller
             ];
         });
 
+        $rekapPerKelas = $rekap
+            ->groupBy(fn ($item) => $item['mahasiswa']->kelas_mahasiswa_id ?? 0)
+            ->map(function ($items) {
+                return [
+                    'kelas' => $items->first()['mahasiswa']->kelasMahasiswa,
+                    'rekap' => $items,
+                ];
+            });
+
         $pdf = Pdf::loadView(
             'report.laporan-cpl-pdf',
             compact(
                 'kurikulum',
                 'cplList',
-                'rekap'
+                'rekapPerKelas'
             )
         )->setPaper('a4', 'landscape');
 
