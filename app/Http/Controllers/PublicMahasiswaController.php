@@ -12,6 +12,21 @@ use App\Models\Prodi;
 
 class PublicMahasiswaController extends Controller
 {
+    /**
+     * Pastikan NIM pada URL sama dengan identitas mahasiswa yang tersimpan
+     * pada sesi setelah proses cek NIM.
+     */
+    private function mahasiswaDalamSesi(string $nim): Mahasiswa
+    {
+        if ((string) session('public_mahasiswa_nim') !== (string) $nim) {
+            abort(403, 'Sesi mahasiswa tidak sesuai. Silakan lakukan pengecekan NIM kembali.');
+        }
+
+        return Mahasiswa::with('prodi')
+            ->where('nim', $nim)
+            ->firstOrFail();
+    }
+
     public function cekNim()
     {
         $stats = [
@@ -48,6 +63,10 @@ class PublicMahasiswaController extends Controller
             ]);
         }
 
+        // Ikat sesi publik ke NIM yang telah melewati halaman cek NIM.
+        $request->session()->regenerate();
+        $request->session()->put('public_mahasiswa_nim', (string) $mahasiswa->nim);
+
         return redirect()->route(
             'public.mahasiswa.menu',
             $mahasiswa->nim
@@ -56,9 +75,7 @@ class PublicMahasiswaController extends Controller
 
    public function menu(string $nim)
     {
-        $mahasiswa = Mahasiswa::with('prodi')
-            ->where('nim', $nim)
-            ->firstOrFail();
+        $mahasiswa = $this->mahasiswaDalamSesi($nim);
         if ($mahasiswa->status === 'lulus') {
             return redirect()
                 ->route('mahasiswa.login')
@@ -79,7 +96,7 @@ class PublicMahasiswaController extends Controller
 
     public function prestasiIndex(string $nim)
     {
-        $mahasiswa = Mahasiswa::where('nim', $nim)->firstOrFail();
+        $mahasiswa = $this->mahasiswaDalamSesi($nim);
 
         $prestasiList = $mahasiswa
             ->prestasi()
@@ -95,7 +112,7 @@ class PublicMahasiswaController extends Controller
 
     public function prestasiShow(string $nim, Prestasi $prestasi)
     {
-        $mahasiswa = Mahasiswa::where('nim', $nim)->firstOrFail();
+        $mahasiswa = $this->mahasiswaDalamSesi($nim);
         if (! $prestasi->mahasiswa()->whereKey($mahasiswa->id)->exists()) {
             abort(403, 'Anda tidak memiliki akses ke prestasi ini.');
         }
@@ -115,7 +132,7 @@ class PublicMahasiswaController extends Controller
 
     public function prestasiEdit(string $nim, Prestasi $prestasi)
     {
-        $mahasiswa = Mahasiswa::where('nim', $nim)->firstOrFail();
+        $mahasiswa = $this->mahasiswaDalamSesi($nim);
         if (! $prestasi->mahasiswa()->whereKey($mahasiswa->id)->exists()) {
             abort(403, 'Anda tidak memiliki akses ke prestasi ini.');
         }
@@ -138,7 +155,7 @@ class PublicMahasiswaController extends Controller
 
     public function prestasiUpdate(Request $request, string $nim, Prestasi $prestasi)
     {
-        $mahasiswa = Mahasiswa::where('nim', $nim)->firstOrFail();
+        $mahasiswa = $this->mahasiswaDalamSesi($nim);
         if (! $prestasi->mahasiswa()->whereKey($mahasiswa->id)->exists()) {
             abort(403, 'Anda tidak memiliki akses ke prestasi ini.');
         }
@@ -214,7 +231,7 @@ class PublicMahasiswaController extends Controller
 
     public function prestasiDestroy(string $nim, Prestasi $prestasi)
     {
-        $mahasiswa = Mahasiswa::where('nim', $nim)->firstOrFail();        // Pastikan prestasi milik mahasiswa ini
+        $mahasiswa = $this->mahasiswaDalamSesi($nim);        // Pastikan prestasi milik mahasiswa ini
         if (! $prestasi->mahasiswa()->whereKey($mahasiswa->id)->exists()) {
             abort(403, 'Anda tidak memiliki akses ke prestasi ini.');
         }
@@ -233,9 +250,7 @@ class PublicMahasiswaController extends Controller
 
     public function profil(string $nim)
     {
-        $mahasiswa = Mahasiswa::with('prodi')
-            ->where('nim', $nim)
-            ->firstOrFail();
+        $mahasiswa = $this->mahasiswaDalamSesi($nim);
         return view(
             'public.profil',
             compact('mahasiswa')
@@ -244,7 +259,7 @@ class PublicMahasiswaController extends Controller
 
     public function prestasiCreate(string $nim)
     {
-        $mahasiswa = Mahasiswa::where('nim', $nim)->firstOrFail();
+        $mahasiswa = $this->mahasiswaDalamSesi($nim);
         $tahunAkademikList = TahunAkademik::all();
         $dosenList = Dosen::orderBy('nama')->get();
         return view(
@@ -259,7 +274,7 @@ class PublicMahasiswaController extends Controller
 
     public function prestasiStore(Request $request, string $nim)
     {
-        $mahasiswa = Mahasiswa::where('nim', $nim)->firstOrFail();
+        $mahasiswa = $this->mahasiswaDalamSesi($nim);
 
         $validated = $request->validate([
             'nama_kegiatan' => [
@@ -329,9 +344,7 @@ class PublicMahasiswaController extends Controller
     }
     public function tracerCreate(string $nim)
     {
-        $mahasiswa = Mahasiswa::with('prodi')
-            ->where('nim', $nim)
-            ->firstOrFail();
+        $mahasiswa = $this->mahasiswaDalamSesi($nim);
 
         if ($mahasiswa->status !== 'lulus') {
             return redirect()
@@ -362,9 +375,7 @@ class PublicMahasiswaController extends Controller
 
     public function tracerStore(Request $request, string $nim)
     {
-        $mahasiswa = Mahasiswa::with('prodi')
-            ->where('nim', $nim)
-            ->firstOrFail();
+        $mahasiswa = $this->mahasiswaDalamSesi($nim);
 
         if ($mahasiswa->status !== 'lulus') {
             abort(
@@ -606,7 +617,7 @@ class PublicMahasiswaController extends Controller
     }
     public function tracerDestroy(string $nim, TracerStudy $tracer)
     {
-        $mahasiswa = Mahasiswa::where('nim', $nim)->firstOrFail();
+        $mahasiswa = $this->mahasiswaDalamSesi($nim);
         // Pastikan riwayat yang dihapus benar-benar milik mahasiswa tersebut.
         if ($tracer->mahasiswa_id !== $mahasiswa->id) {
             abort(403);
