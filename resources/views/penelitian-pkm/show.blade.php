@@ -37,6 +37,11 @@
     @endif
 
     <div class="rounded-2xl border p-5 mb-4" style="background: var(--card); border-color: var(--border);">
+        <h2 class="font-serif-display text-lg mb-2">Deskripsi Kegiatan</h2>
+        <p class="text-sm whitespace-pre-line" style="color: var(--muted-foreground);">{{ $penelitianPkm->deskripsi_kegiatan ?: 'Belum ada deskripsi kegiatan.' }}</p>
+    </div>
+
+    <div class="rounded-2xl border p-5 mb-4" style="background: var(--card); border-color: var(--border);">
         <h2 class="font-serif-display text-lg mb-3">Laporan Akhir</h2>
         @if ($penelitianPkm->laporanAkhir)
             <p class="text-sm">Link: <a href="{{ $penelitianPkm->laporanAkhir->link_laporan }}" target="_blank" class="hover:underline" style="color: var(--primary);">{{ $penelitianPkm->laporanAkhir->link_laporan }}</a></p>
