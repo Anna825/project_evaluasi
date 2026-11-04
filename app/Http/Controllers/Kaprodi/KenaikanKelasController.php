@@ -1,18 +1,15 @@
 <?php
 
-namespace App\Http\Controllers\Kaprodi;
+namespace App\\Http\\Controllers\\Kaprodi;
 
-use App\Http\Controllers\Controller;
-use App\Models\KelasMahasiswa;
-use App\Models\Mahasiswa;
-use App\Models\ProgresStudiMahasiswa;
-use App\Models\Semester;
-use App\Services\AcademicProgressCalculator;
-use App\Models\RiwayatAksiAkademik;
-use App\Models\RiwayatPenempatanKelas;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Validation\ValidationException;
-use Illuminate\Http\Request;
+use App\\Http\\Controllers\\Controller;
+use App\\Models\\KelasMahasiswa;
+use App\\Models\\Mahasiswa;
+use App\\Models\\RiwayatAksiAkademik;
+use App\\Models\\Semester;
+use Illuminate\\Http\\Request;
+use Illuminate\\Support\\Facades\\DB;
+use Illuminate\\Validation\\ValidationException;
 
 class KenaikanKelasController extends Controller
 {
@@ -28,6 +25,14 @@ class KenaikanKelasController extends Controller
         }
 
         return $role->prodi;
+    }
+
+    private function rencanaNamaKelas(KelasMahasiswa $kelas): array
+    {
+        $tingkatAsal = KelasMahasiswa::tingkatDariNama($kelas->nama_kelas);
+        $namaTujuan = preg_replace('/^\\d+/', (string) ($tingkatAsal + 1), $kelas->nama_kelas, 1);
+
+        return [$tingkatAsal, $namaTujuan];
     }
 
     public function index(Request $request)
@@ -56,59 +61,95 @@ class KenaikanKelasController extends Controller
 
             if ($semesterTujuan->jenis !== 'ganjil') {
                 $warnings->push([
-                    'nim' => '-',
-                    'nama' => 'Validasi periode',
-                    'alasan' => 'Kenaikan tingkat hanya dapat ditujukan ke Semester Ganjil. Pilih periode Ganjil berikutnya.',
+                    'nim' => '-', 'nama' => 'Validasi periode',
+                    'alasan' => 'Kenaikan tingkat hanya dapat ditujukan ke Semester Ganjil.',
                 ]);
             } elseif (! $semesterGenapSebelumnya) {
                 $warnings->push([
-                    'nim' => '-',
-                    'nama' => 'Validasi kalender akademik',
+                    'nim' => '-', 'nama' => 'Validasi kalender akademik',
                     'alasan' => 'Semester Genap sebelumnya tidak ditemukan pada kalender akademik.',
                 ]);
             } elseif (today()->lt($semesterGenapSebelumnya->tanggal_selesai)) {
                 $warnings->push([
-                    'nim' => '-',
-                    'nama' => 'Validasi kalender akademik',
-                    'alasan' => 'Semester Genap sebelumnya belum selesai. Pratinjau dan konfirmasi kenaikan belum dapat dilakukan.',
+                    'nim' => '-', 'nama' => 'Validasi kalender akademik',
+                    'alasan' => 'Semester Genap sebelumnya belum melewati tanggal akhir.',
                 ]);
             } else {
-                $semesterPerhitungan = $semesterGenapSebelumnya;
+                [$tingkatAsal, $namaTujuan] = $this->rencanaNamaKelas($kelasAsalTerpilih);
+
+                $bentrokKelas = KelasMahasiswa::where('prodi_id', $prodi->id)
+                    ->where('nama_kelas', $namaTujuan)
+                    ->where('angkatan', $kelasAsalTerpilih->angkatan)
+                    ->where('id', '!=', $kelasAsalTerpilih->id)
+                    ->where('status_kelas', 'aktif')
+                    ->exists();
+
+                if ($bentrokKelas) {
+                    $warnings->push([
+                        'nim' => '-', 'nama' => 'Validasi identitas kelas',
+                        'alasan' => 'Nama kelas tujuan ' . $namaTujuan . ' sudah digunakan pada angkatan ' . $kelasAsalTerpilih->angkatan . '. Periksa data kelas agar tidak terjadi penggabungan.',
+                    ]);
+                }
 
                 $mahasiswaList = Mahasiswa::with(['kelasMahasiswa', 'progresStudi'])
                     ->where('prodi_id', $prodi->id)
                     ->where('kelas_mahasiswa_id', $kelasAsalTerpilih->id)
                     ->where('status', 'aktif')->orderBy('nim')->get();
 
-                foreach ($mahasiswaList as $mahasiswa) {
-                $semesterBerikutnya = app(AcademicProgressCalculator::class)->semesterBerjalan($mahasiswa, $semesterPerhitungan);
-                if (! $semesterBerikutnya) {
+                $sudahDiproses = DB::table('riwayat_batch_kenaikan_kelas')
+                    ->where('kelas_asal_id', $kelasAsalTerpilih->id)
+                    ->where('semester_tujuan_id', $semesterTujuan->id)
+                    ->exists();
+
+                if ($sudahDiproses) {
                     $warnings->push([
-                        'nim' => $mahasiswa->nim, 'nama' => $mahasiswa->nama,
-                        'alasan' => 'Progres semester belum tersedia. Perlu dihitung dari kalender akademik dan riwayat cuti.',
+                        'nim' => '-', 'nama' => 'Validasi duplikasi',
+                        'alasan' => 'Kenaikan kelas untuk kelas dan periode ini sudah pernah diproses.',
                     ]);
-                    continue;
                 }
 
-                $semesterSaatIni = (int) $semesterBerikutnya;
-                $tingkatAsal = KelasMahasiswa::tingkatDariNama($kelasAsalTerpilih->nama_kelas);
-                $namaTujuan = $kelasAsalTerpilih->nama_kelas;
-                if ($semesterSaatIni % 2 === 0) {
-                    $namaTujuan = preg_replace('/^\\d+/', (string) ($tingkatAsal + 1), $namaTujuan, 1);
-                }
-                $kelasTujuan = KelasMahasiswa::where('prodi_id', $prodi->id)
-                    ->where('nama_kelas', $namaTujuan)->where('status_kelas', 'aktif')->first();
-                $preview->push([
-                    'mahasiswa' => $mahasiswa, 'kelas_asal' => $kelasAsalTerpilih,
-                    'nama_tujuan' => $namaTujuan, 'kelas_tujuan' => $kelasTujuan,
-                    'semester_saat_ini' => $semesterSaatIni, 'semester_tujuan' => $semesterSaatIni + 1,
-                ]);
-                if (! $kelasTujuan) {
-                    $warnings->push([
-                        'nim' => $mahasiswa->nim, 'nama' => $mahasiswa->nama,
-                        'alasan' => 'Kelas tujuan ' . $namaTujuan . ' belum tersedia atau tidak aktif.',
+                foreach ($mahasiswaList as $mahasiswa) {
+                    $detailSelesai = DB::table('riwayat_detail_penyelesaian_semester')
+                        ->where('mahasiswa_id', $mahasiswa->id)
+                        ->where('semester_id', $semesterGenapSebelumnya->id)
+                        ->first();
+
+                    $semesterSelesai = (int) ($detailSelesai->semester_diselesaikan ?? 0);
+                    $semesterBerikutnya = (int) ($detailSelesai->semester_berikutnya ?? 0);
+                    $alasan = null;
+
+                    if (! $detailSelesai) {
+                        $alasan = 'Belum tercatat menyelesaikan Semester Genap sebelumnya (' . ($semesterGenapSebelumnya->tahunAkademik->label ?? 'periode terkait') . ').';
+                    } elseif ($semesterSelesai < 1 || $semesterSelesai % 2 !== 0 || $semesterBerikutnya !== $semesterSelesai + 1) {
+                        $alasan = 'Catatan progres tidak konsisten atau semester terakhir yang diselesaikan bukan semester genap.';
+                    } elseif ((int) ($mahasiswa->progresStudi?->semester_terakhir_selesai ?? 0) !== $semesterSelesai
+                        || (int) ($mahasiswa->progresStudi?->semester_berikutnya ?? 0) !== $semesterBerikutnya) {
+                        $alasan = 'Data progres studi tidak sama dengan riwayat penyelesaian semester.';
+                    }
+
+                    $preview->push([
+                        'mahasiswa' => $mahasiswa,
+                        'semester_selesai' => $semesterSelesai,
+                        'semester_tujuan' => $semesterBerikutnya,
+                        'nama_tujuan' => $namaTujuan,
+                        'layak' => ! $alasan && ! $bentrokKelas && ! $sudahDiproses,
+                        'alasan' => $alasan,
                     ]);
+
+                    if ($alasan) {
+                        $warnings->push([
+                            'nim' => $mahasiswa->nim,
+                            'nama' => $mahasiswa->nama,
+                            'alasan' => $alasan,
+                        ]);
+                    }
                 }
+
+                if ($mahasiswaList->isEmpty()) {
+                    $warnings->push([
+                        'nim' => '-', 'nama' => 'Validasi kelas',
+                        'alasan' => 'Tidak ada mahasiswa Aktif pada kelas ini.',
+                    ]);
                 }
             }
         }
@@ -118,6 +159,7 @@ class KenaikanKelasController extends Controller
             'kelasAsalTerpilih', 'semesterTujuan'
         ));
     }
+
     public function store(Request $request)
     {
         $prodi = $this->prodiKaprodi();
@@ -126,38 +168,62 @@ class KenaikanKelasController extends Controller
             'semester_id' => ['required', 'integer', 'exists:semester,id'],
         ]);
 
-        $kelasAsal = KelasMahasiswa::where('id', $data['kelas_asal_id'])
-            ->where('prodi_id', $prodi->id)->where('status_kelas', 'aktif')->firstOrFail();
-        $semesterTujuan = Semester::findOrFail($data['semester_id']);
+        DB::transaction(function () use ($data, $prodi) {
+            $kelas = KelasMahasiswa::where('id', $data['kelas_asal_id'])
+                ->where('prodi_id', $prodi->id)
+                ->where('status_kelas', 'aktif')
+                ->lockForUpdate()
+                ->firstOrFail();
+            $semesterTujuan = Semester::with('tahunAkademik')->findOrFail($data['semester_id']);
 
-        if ($semesterTujuan->jenis !== 'ganjil') {
-            throw ValidationException::withMessages([
-                'semester_id' => 'Kenaikan tingkat kelas hanya dapat dilakukan menuju semester Ganjil setelah semester Genap selesai.',
-            ]);
-        }
+            if ($semesterTujuan->jenis !== 'ganjil') {
+                throw ValidationException::withMessages([
+                    'semester_id' => 'Kenaikan tingkat hanya dapat dilakukan menuju Semester Ganjil.',
+                ]);
+            }
 
-        $semesterGenapSebelumnya = Semester::where('tanggal_selesai', '<', $semesterTujuan->tanggal_mulai)
-            ->where('jenis', 'genap')->orderByDesc('tanggal_selesai')->first();
+            $semesterGenapSebelumnya = Semester::where('jenis', 'genap')
+                ->where('tanggal_selesai', '<', $semesterTujuan->tanggal_mulai)
+                ->orderByDesc('tanggal_selesai')
+                ->first();
 
-        if (! $semesterGenapSebelumnya || today()->lt($semesterGenapSebelumnya->tanggal_selesai)) {
-            throw ValidationException::withMessages([
-                'semester_id' => 'Semester Genap sebelumnya belum selesai menurut kalender akademik.',
-            ]);
-        }
+            if (! $semesterGenapSebelumnya || today()->lt($semesterGenapSebelumnya->tanggal_selesai)) {
+                throw ValidationException::withMessages([
+                    'semester_id' => 'Semester Genap sebelumnya belum selesai menurut kalender akademik.',
+                ]);
+            }
 
-        DB::transaction(function () use ($data, $prodi, $kelasAsal, $semesterTujuan, $semesterGenapSebelumnya) {
             if (DB::table('riwayat_batch_kenaikan_kelas')
-                ->where('kelas_asal_id', $kelasAsal->id)
-                ->where('semester_tujuan_id', $semesterTujuan->id)->exists()) {
+                ->where('kelas_asal_id', $kelas->id)
+                ->where('semester_tujuan_id', $semesterTujuan->id)
+                ->exists()) {
                 throw ValidationException::withMessages([
                     'kelas_asal_id' => 'Kenaikan untuk kelas dan periode ini sudah pernah diproses.',
                 ]);
             }
 
+            [$tingkatAsal, $namaTujuan] = $this->rencanaNamaKelas($kelas);
+
+            $bentrokKelas = KelasMahasiswa::where('prodi_id', $prodi->id)
+                ->where('nama_kelas', $namaTujuan)
+                ->where('angkatan', $kelas->angkatan)
+                ->where('id', '!=', $kelas->id)
+                ->where('status_kelas', 'aktif')
+                ->exists();
+
+            if ($bentrokKelas) {
+                throw ValidationException::withMessages([
+                    'kelas_asal_id' => 'Nama kelas tujuan ' . $namaTujuan . ' sudah digunakan pada angkatan yang sama. Proses dibatalkan.',
+                ]);
+            }
+
             $mahasiswaList = Mahasiswa::with('progresStudi')
                 ->where('prodi_id', $prodi->id)
-                ->where('kelas_mahasiswa_id', $kelasAsal->id)
-                ->where('status', 'aktif')->lockForUpdate()->get();
+                ->where('kelas_mahasiswa_id', $kelas->id)
+                ->where('status', 'aktif')
+                ->orderBy('nim')
+                ->lockForUpdate()
+                ->get();
 
             if ($mahasiswaList->isEmpty()) {
                 throw ValidationException::withMessages([
@@ -167,34 +233,45 @@ class KenaikanKelasController extends Controller
 
             $rencana = [];
             foreach ($mahasiswaList as $mahasiswa) {
-                $semesterBerikutnya = app(AcademicProgressCalculator::class)->semesterBerjalan($mahasiswa, $semesterGenapSebelumnya);
-                if (! $semesterBerikutnya) {
+                $detail = DB::table('riwayat_detail_penyelesaian_semester')
+                    ->where('mahasiswa_id', $mahasiswa->id)
+                    ->where('semester_id', $semesterGenapSebelumnya->id)
+                    ->first();
+
+                if (! $detail) {
                     throw ValidationException::withMessages([
-                        'kelas_asal_id' => 'Progres semester mahasiswa ' . $mahasiswa->nim . ' belum tersedia. Proses dibatalkan tanpa mengubah data.',
+                        'kelas_asal_id' => 'Mahasiswa ' . $mahasiswa->nim . ' belum menyelesaikan Semester Genap sebelumnya. Tidak ada perubahan yang dilakukan.',
                     ]);
                 }
 
-                $tingkatAsal = KelasMahasiswa::tingkatDariNama($kelasAsal->nama_kelas);
-                $namaTujuan = $kelasAsal->nama_kelas;
-                if ((int) $semesterBerikutnya % 2 === 0) {
-                    $namaTujuan = preg_replace('/^\\d+/', (string) ($tingkatAsal + 1), $namaTujuan, 1);
-                }
+                $selesai = (int) $detail->semester_diselesaikan;
+                $berikutnya = (int) $detail->semester_berikutnya;
 
-                $kelasTujuan = KelasMahasiswa::where('prodi_id', $prodi->id)
-                    ->where('nama_kelas', $namaTujuan)->where('status_kelas', 'aktif')->first();
-
-                if (! $kelasTujuan) {
+                if ($selesai < 1 || $selesai % 2 !== 0 || $berikutnya !== $selesai + 1
+                    || (int) ($mahasiswa->progresStudi?->semester_terakhir_selesai ?? 0) !== $selesai
+                    || (int) ($mahasiswa->progresStudi?->semester_berikutnya ?? 0) !== $berikutnya) {
                     throw ValidationException::withMessages([
-                        'kelas_asal_id' => 'Kelas tujuan ' . $namaTujuan . ' untuk mahasiswa ' . $mahasiswa->nim . ' belum tersedia. Tidak ada perubahan yang dilakukan.',
+                        'kelas_asal_id' => 'Progres mahasiswa ' . $mahasiswa->nim . ' tidak konsisten. Seluruh proses dibatalkan tanpa mengubah data.',
                     ]);
                 }
 
-                $rencana[] = compact('mahasiswa', 'kelasTujuan', 'semesterBerikutnya');
+                $rencana[] = $mahasiswa;
             }
+
+            $kelasSebelum = [
+                'nama_kelas' => $kelas->nama_kelas,
+                'tingkat' => $kelas->tingkat,
+                'angkatan' => $kelas->angkatan,
+            ];
+
+            $kelas->update([
+                'nama_kelas' => $namaTujuan,
+                'tingkat' => $tingkatAsal + 1,
+            ]);
 
             DB::table('riwayat_batch_kenaikan_kelas')->insert([
                 'prodi_id' => $prodi->id,
-                'kelas_asal_id' => $kelasAsal->id,
+                'kelas_asal_id' => $kelas->id,
                 'semester_tujuan_id' => $semesterTujuan->id,
                 'status' => 'selesai',
                 'jumlah_mahasiswa' => count($rencana),
@@ -203,47 +280,29 @@ class KenaikanKelasController extends Controller
                 'updated_at' => now(),
             ]);
 
-            foreach ($rencana as $item) {
-                $mahasiswa = $item['mahasiswa'];
-                $kelasTujuan = $item['kelasTujuan'];
-                $progres = $mahasiswa->progresStudi;
-                $before = [
-                    'kelas_mahasiswa_id' => $mahasiswa->kelas_mahasiswa_id,
-                    'semester_berikutnya' => $item['semesterBerikutnya'],
-                ];
-
-                $mahasiswa->update(['kelas_mahasiswa_id' => $kelasTujuan->id]);
-                ProgresStudiMahasiswa::updateOrCreate(
-                    ['mahasiswa_id' => $mahasiswa->id],
-                    [
-                    'semester_terakhir_selesai' => max((int) ($progres?->semester_terakhir_selesai ?? 0), (int) $item['semesterBerikutnya']),
-                    'semester_berikutnya' => (int) $item['semesterBerikutnya'] + 1,
-                    'semester_terakhir_id' => $semesterGenapSebelumnya->id,
-                    'status_progres' => 'berjalan',
-                    ]
-                );
-
-                RiwayatPenempatanKelas::updateOrCreate(
-                    ['mahasiswa_id' => $mahasiswa->id, 'semester_id' => $semesterTujuan->id],
-                    ['kelas_mahasiswa_id' => $kelasTujuan->id, 'alasan_penempatan' => 'kenaikan_kelas', 'dilakukan_oleh' => auth()->id()]
-                );
-
+            foreach ($rencana as $mahasiswa) {
                 RiwayatAksiAkademik::create([
                     'mahasiswa_id' => $mahasiswa->id,
                     'jenis_aksi' => 'kenaikan_kelas',
-                    'data_sebelum' => $before,
-                    'data_sesudah' => [
-                        'kelas_mahasiswa_id' => $kelasTujuan->id,
-                        'semester_berikutnya' => (int) $item['semesterBerikutnya'] + 1,
+                    'data_sebelum' => [
+                        'kelas_mahasiswa_id' => $kelas->id,
+                        'nama_kelas' => $kelasSebelum['nama_kelas'],
+                        'tingkat' => $kelasSebelum['tingkat'],
+                        'angkatan' => $kelasSebelum['angkatan'],
                     ],
-                    'alasan' => 'Kenaikan kelas terkonfirmasi untuk periode ' . ($semesterTujuan->tahunAkademik?->label ?? $semesterTujuan->id) . ' Ganjil.',
+                    'data_sesudah' => [
+                        'kelas_mahasiswa_id' => $kelas->id,
+                        'nama_kelas' => $namaTujuan,
+                        'tingkat' => $tingkatAsal + 1,
+                        'angkatan' => $kelas->angkatan,
+                    ],
+                    'alasan' => 'Kenaikan kelas dikonfirmasi Kaprodi untuk periode ' . ($semesterTujuan->tahunAkademik?->label ?? $semesterTujuan->id) . ' Ganjil.',
                     'dilakukan_oleh' => auth()->id(),
                 ]);
             }
         });
 
         return redirect()->route('kaprodi.kenaikan-kelas.index')
-            ->with('status', 'Kenaikan kelas berhasil diproses untuk seluruh mahasiswa Aktif pada kelas terpilih.');
+            ->with('status', 'Kenaikan kelas berhasil. Identitas kelas diperbarui tanpa memindahkan mahasiswa.');
     }
-
 }
