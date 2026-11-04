@@ -143,6 +143,12 @@
                         'icon' => $icons['book'],
                     ],
                     [
+                        'route' => 'kaprodi.validasi-progres.index',
+                        'pattern' => 'kaprodi.validasi-progres.*',
+                        'label' => 'Validasi & Perbaikan Akademik',
+                        'icon' => $icons['report'],
+                    ],
+                    [
                         'route' => 'kaprodi.kenaikan-kelas.index',
                         'pattern' => 'kaprodi.kenaikan-kelas.*',
                         'label' => 'Kenaikan Kelas',
