@@ -20,6 +20,7 @@ class ProdiController extends Controller
     public function index()
     {
         $this->pastikanAdmin();
+        $jurusanList = Jurusan::orderBy('nama')->get();
         $prodi = Prodi::with([
             'jurusan',
             'dosen.user',
@@ -43,6 +44,7 @@ class ProdiController extends Controller
             ->groupBy('prodi_id');
         return view('prodi.index', compact(
             'prodi',
+            'jurusanList',
             'kaprodiUsers',
             'dosenAktifPerProdi'
         ));
