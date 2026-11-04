@@ -46,6 +46,7 @@ class MahasiswaController extends Controller
             ->get();
 
         $prodiList = Prodi::orderBy('nama')->get();
+        $kelasList = KelasMahasiswa::with('prodi')->where('status_kelas', 'aktif')->orderBy('nama_kelas')->get();
 
         // Angkatan pada kartu kelas adalah angkatan mayoritas mahasiswa,
         // bukan identitas kelas. Jika jumlah sama, pilih tahun yang lebih baru.
@@ -66,7 +67,7 @@ class MahasiswaController extends Controller
             $kelas->angkatan_mayoritas = $tahunMayoritas;
         });
 
-        return view('mahasiswa.index', compact('kelasMahasiswa', 'prodiList', 'search', 'prodiId'));
+        return view('mahasiswa.index', compact('kelasMahasiswa', 'prodiList', 'kelasList', 'search', 'prodiId'));
     }
 
     public function kelas(KelasMahasiswa $kelas)
