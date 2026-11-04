@@ -293,8 +293,11 @@ button:focus-visible {
 
 /* Shared modal/dialog presentation for CRUD forms. */
 .ui-modal {
-    width: min( min(100% - 2rem, 48rem), 100%);
+    position: fixed;
+    inset: 0;
+    width: min(calc(100% - 2rem), 48rem);
     max-width: 48rem;
+    height: fit-content;
     max-height: min(90vh, 56rem);
     margin: auto;
     padding: 0;
