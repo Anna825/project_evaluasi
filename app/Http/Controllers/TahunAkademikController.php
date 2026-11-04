@@ -1,18 +1,22 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\\Http\\Controllers;
 
-use App\Http\Requests\StoreTahunAkademikRequest;
-use App\Models\Semester;
-use App\Models\TahunAkademik;
-use Illuminate\Support\Facades\DB;
+use App\\Http\\Requests\\StoreTahunAkademikRequest;
+use App\\Models\\Semester;
+use App\\Models\\TahunAkademik;
+use Illuminate\\Support\\Facades\\DB;
 
 class TahunAkademikController extends Controller
 {
     public function index()
     {
+        // Urutkan berdasarkan tahun awal pada label (mis. 2027/2028),
+        // bukan tanggal pembuatan record.
         $tahunAkademik = TahunAkademik::with('semester')
-            ->latest()
+            ->orderByRaw("CAST(SPLIT_PART(label, '/', 1) AS INTEGER) DESC")
+            ->orderByDesc('label')
+            ->orderByDesc('id')
             ->get();
 
         return view('tahun-akademik.index', compact('tahunAkademik'));
