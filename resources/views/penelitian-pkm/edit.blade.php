@@ -19,6 +19,20 @@
         class="w-full rounded-2xl border p-6 sm:p-8"
         style="background: var(--card); border-color: var(--border);"
     >       
+        @if ($penelitianPkm->status === 'ditolak')
+            <div class="mb-5 rounded-xl border p-4"
+                 style="background: #fff7ed; border-color: #fed7aa; color: #9a3412;">
+                <p class="font-semibold text-sm mb-1">Pengajuan Ditolak — Perlu Perbaikan</p>
+                <p class="text-sm mb-2">Perbaiki informasi pengajuan berdasarkan catatan Kaprodi di bawah ini. Setelah menekan tombol <strong>Simpan Perubahan & Ajukan Ulang</strong>, pengajuan akan kembali berstatus Diajukan dan masuk ke daftar verifikasi Kaprodi.</p>
+                @if ($penelitianPkm->alasan_penolakan)
+                    <div class="rounded-lg p-3 mt-2" style="background: rgba(255,255,255,.7);">
+                        <p class="text-xs font-semibold mb-1">Catatan Kaprodi</p>
+                        <p class="text-sm whitespace-pre-line">{{ $penelitianPkm->alasan_penolakan }}</p>
+                    </div>
+                @endif
+            </div>
+        @endif
+
         @if ($errors->any())
             <div class="mb-4 px-4 py-3 rounded-xl text-sm" style="background: #fdecea; color: #a13d3d;">
                 @foreach ($errors->all() as $error)<p>{{ $error }}</p>@endforeach
@@ -97,7 +111,7 @@
                 <div id="selected-dosen-inputs"></div>
             </div>
             <div class="flex gap-2">
-                <button type="submit" class="px-4 py-2 rounded-xl text-sm font-medium text-white" style="background: var(--primary);">Simpan</button>
+                <button type="submit" class="px-4 py-2 rounded-xl text-sm font-medium text-white" style="background: var(--primary);">{{ $penelitianPkm->status === 'ditolak' ? 'Simpan Perubahan & Ajukan Ulang' : 'Simpan' }}</button>
                 <a href="{{ route('penelitian-pkm.index') }}" class="px-4 py-2 rounded-xl text-sm font-medium" style="background: var(--secondary); color: var(--foreground);">Batal</a>
             </div>
         </form>
