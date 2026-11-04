@@ -15,6 +15,7 @@ class StorePenelitianPkmRequest extends FormRequest
     {
         return [
             'judul' => ['required', 'string', 'max:255'],
+            'deskripsi_kegiatan' => ['required', 'string', 'min:20', 'max:5000'],
             'jenis' => ['required', 'in:Penelitian,PKM'],
             'kategori_pendanaan' => ['nullable', 'string', 'max:255'],
             'tahun_akademik_id' => ['required', 'exists:tahun_akademik,id'],
