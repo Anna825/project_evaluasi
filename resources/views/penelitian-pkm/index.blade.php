@@ -23,42 +23,85 @@
                     <div><label class="block text-sm font-medium mb-1">Kategori Pendanaan</label><input name="kategori_pendanaan" value="{{ old('kategori_pendanaan') }}" placeholder="Internal, DIKTI, dsb." class="w-full rounded-xl border px-3 py-2.5" style="border-color:var(--ui-border)"></div>
                 </div>
                 <div><label class="block text-sm font-medium mb-1">Tahun Akademik *</label><select name="tahun_akademik_id" required class="w-full rounded-xl border px-3 py-2.5" style="border-color:var(--ui-border)"><option value="">Pilih Tahun Akademik</option>@foreach(\App\Models\TahunAkademik::orderByDesc('id')->get() as $ta)<option value="{{ $ta->id }}" @selected(old('tahun_akademik_id')==$ta->id)>{{ $ta->label }}</option>@endforeach</select></div>
-                <div class="space-y-2">
-                    <div class="flex items-center justify-between gap-3"><label class="block text-sm font-medium">Dosen Anggota <span class="font-normal" style="color:var(--ui-muted)">(opsional)</span></label><span class="text-xs pkm-selected-count" data-count-for="pkm-create-list" style="color:var(--ui-muted)">0 dipilih</span></div>
-                    <input type="search" class="w-full rounded-xl border px-3 py-2.5 pkm-dosen-search" data-target="pkm-create-list" placeholder="Cari nama dosen..." aria-label="Cari dosen anggota">
-                    <div id="pkm-create-list" class="pkm-check-list rounded-xl border divide-y" style="border-color:var(--ui-border);max-height:13rem;overflow-y:auto">
-                        @foreach(\App\Models\Dosen::where('id','!=',auth()->user()->dosen?->id)->orderBy('nama')->get() as $dosen)
-                            <label class="pkm-dosen-option flex items-center gap-3 px-3 py-2.5 cursor-pointer hover:bg-slate-50">
-                                <input type="checkbox" name="anggota[]" value="{{ $dosen->id }}" @checked(in_array($dosen->id, old('anggota',[]))) class="rounded border-slate-300" style="accent-color:var(--ui-primary)">
-                                <span class="text-sm">{{ $dosen->nama }}</span>
-                            </label>
-                        @endforeach
+                <div class="pkm-multiselect relative" data-pkm-select>
+                        <div class="flex items-center justify-between gap-3 mb-1"><label class="block text-sm font-medium">Dosen Anggota <span class="font-normal" style="color:var(--ui-muted)">(opsional)</span></label></div>
+                        <button type="button" class="pkm-select-trigger w-full flex items-center justify-between gap-3 rounded-xl border px-3 py-3 text-left" style="border-color:var(--ui-border);background:var(--ui-surface)" aria-expanded="false">
+                            <span class="pkm-select-summary text-sm" style="color:var(--ui-muted)">Pilih dosen anggota...</span>
+                            <span class="pkm-select-chevron" aria-hidden="true">⌄</span>
+                        </button>
+                        <div class="pkm-select-panel hidden absolute left-0 right-0 z-20 mt-2 rounded-xl border shadow-xl p-3" style="background:var(--ui-surface);border-color:var(--ui-border)">
+                            <input type="search" class="pkm-dosen-search w-full rounded-lg border px-3 py-2.5 mb-2" placeholder="Cari nama dosen..." aria-label="Cari dosen anggota" style="border-color:var(--ui-border)">
+                            <div id="pkm-create-list" class="pkm-check-list space-y-1" style="max-height:12rem;overflow-y:auto">
+                                @foreach(\App\Models\Dosen::where('id','!=',auth()->user()->dosen?->id)->orderBy('nama')->get() as $dosen)
+                                    <label class="pkm-dosen-option flex items-center gap-3 rounded-lg px-2.5 py-2 cursor-pointer hover:bg-slate-50">
+                                        <input type="checkbox" name="anggota[]" value="{{ $dosen->id }}" @checked(in_array($dosen->id, old('anggota',[]))) class="rounded border-slate-300" style="accent-color:var(--ui-primary)">
+                                        <span class="text-sm">{{ $dosen->nama }}</span>
+                                    </label>
+                                @endforeach
+                            </div>
+                            <div class="flex justify-between items-center gap-3 border-t pt-2 mt-2" style="border-color:var(--ui-border)">
+                                <span class="text-xs pkm-selected-count" style="color:var(--ui-muted)">0 dipilih</span>
+                                <button type="button" class="pkm-select-done text-sm font-medium" style="color:var(--ui-primary)">Selesai</button>
+                            </div>
+                        </div>
+                        <div class="pkm-selected-chips flex flex-wrap gap-1.5 mt-2"></div>
+                        <p class="text-xs mt-1" style="color:var(--ui-muted)">Pilih dosen dari dropdown. Kamu dapat memilih lebih dari satu anggota.</p>
                     </div>
-                    <p class="text-xs" style="color:var(--ui-muted)">Centang dosen yang ingin ditambahkan sebagai anggota tim. Kamu bisa memilih lebih dari satu.</p>
-                </div>
             </div>
             <div class="ui-modal__footer"><button type="button" class="px-4 py-2 rounded-xl border" onclick="this.closest('dialog').close()">Batal</button><button type="submit" class="px-4 py-2 rounded-xl text-white" style="background:var(--ui-primary)">Ajukan</button></div>
         </form>
     </dialog>
     <script>
-    document.querySelectorAll('.pkm-dosen-search').forEach(function(search) {
+    document.querySelectorAll('[data-pkm-select]').forEach(function(wrapper) {
+        const trigger = wrapper.querySelector('.pkm-select-trigger');
+        const panel = wrapper.querySelector('.pkm-select-panel');
+        const search = wrapper.querySelector('.pkm-dosen-search');
+        const list = wrapper.querySelector('.pkm-check-list');
+        const summary = wrapper.querySelector('.pkm-select-summary');
+        const countLabel = wrapper.querySelector('.pkm-selected-count');
+        const chips = wrapper.querySelector('.pkm-selected-chips');
+
+        function refreshSelection() {
+            const checked = Array.from(list.querySelectorAll('input[type="checkbox"]:checked'));
+            countLabel.textContent = checked.length + ' dipilih';
+            summary.textContent = checked.length ? checked.length + ' dosen dipilih' : 'Pilih dosen anggota...';
+            summary.style.color = checked.length ? 'var(--ui-text)' : 'var(--ui-muted)';
+            chips.innerHTML = '';
+            checked.forEach(function(input) {
+                const label = input.closest('label').querySelector('span').textContent.trim();
+                const chip = document.createElement('span');
+                chip.className = 'inline-flex items-center rounded-full px-2.5 py-1 text-xs';
+                chip.style.cssText = 'background:var(--ui-secondary);color:var(--ui-text)';
+                chip.textContent = label;
+                chips.appendChild(chip);
+            });
+        }
+
+        trigger.addEventListener('click', function() {
+            const opening = panel.classList.contains('hidden');
+            document.querySelectorAll('.pkm-select-panel').forEach(p => p.classList.add('hidden'));
+            panel.classList.toggle('hidden', !opening);
+            trigger.setAttribute('aria-expanded', String(opening));
+            if (opening) search.focus();
+        });
         search.addEventListener('input', function() {
-            const list = document.getElementById(search.dataset.target);
-            if (!list) return;
             const query = search.value.trim().toLocaleLowerCase();
             list.querySelectorAll('.pkm-dosen-option').forEach(function(option) {
                 option.hidden = !option.textContent.toLocaleLowerCase().includes(query);
             });
         });
-    });
-    document.querySelectorAll('.pkm-check-list').forEach(function(list) {
-        const updateCount = function() {
-            const count = list.querySelectorAll('input[type="checkbox"]:checked').length;
-            const output = document.querySelector('[data-count-for="' + list.id + '"]');
-            if (output) output.textContent = count + ' dipilih';
-        };
-        list.addEventListener('change', updateCount);
-        updateCount();
+        list.addEventListener('change', refreshSelection);
+        wrapper.querySelector('.pkm-select-done').addEventListener('click', function() {
+            panel.classList.add('hidden');
+            trigger.setAttribute('aria-expanded', 'false');
+        });
+        document.addEventListener('click', function(event) {
+            if (!wrapper.contains(event.target)) {
+                panel.classList.add('hidden');
+                trigger.setAttribute('aria-expanded', 'false');
+            }
+        });
+        refreshSelection();
     });
     const pkmDialog=document.getElementById('modalAjukanPkm');pkmDialog?.addEventListener('click',function(e){if(e.target===pkmDialog)pkmDialog.close();});
     @if($errors->any() && old('form_modal')==='pkm-create')document.addEventListener('DOMContentLoaded',()=>pkmDialog?.showModal());@endif
@@ -80,19 +123,30 @@
                     <div><label class="block text-sm font-medium mb-1">Kategori Pendanaan</label><input name="kategori_pendanaan" value="{{ old('kategori_pendanaan',$p->kategori_pendanaan) }}" class="w-full rounded-xl border px-3 py-2.5" style="border-color:var(--ui-border)"></div>
                 </div>
                 <div><label class="block text-sm font-medium mb-1">Tahun Akademik *</label><select name="tahun_akademik_id" required class="w-full rounded-xl border px-3 py-2.5" style="border-color:var(--ui-border)">@foreach(\App\Models\TahunAkademik::orderByDesc('id')->get() as $ta)<option value="{{ $ta->id }}" @selected(old('tahun_akademik_id',$p->tahun_akademik_id)==$ta->id)>{{ $ta->label }}</option>@endforeach</select></div>
-                <div class="space-y-2">
-                    <div class="flex items-center justify-between gap-3"><label class="block text-sm font-medium">Dosen Anggota</label><span class="text-xs pkm-selected-count" data-count-for="pkm-edit-list-{{ $p->id }}" style="color:var(--ui-muted)">0 dipilih</span></div>
-                    <input type="search" class="w-full rounded-xl border px-3 py-2.5 pkm-dosen-search" data-target="pkm-edit-list-{{ $p->id }}" placeholder="Cari nama dosen..." aria-label="Cari dosen anggota">
-                    <div id="pkm-edit-list-{{ $p->id }}" class="pkm-check-list rounded-xl border divide-y" style="border-color:var(--ui-border);max-height:13rem;overflow-y:auto">
-                        @foreach(\App\Models\Dosen::where('id','!=',auth()->user()->dosen?->id)->orderBy('nama')->get() as $dosen)
-                            <label class="pkm-dosen-option flex items-center gap-3 px-3 py-2.5 cursor-pointer hover:bg-slate-50">
-                                <input type="checkbox" name="anggota[]" value="{{ $dosen->id }}" @checked(in_array($dosen->id, old('anggota',$p->dosen->where('pivot.peran','Anggota')->pluck('id')->all()))) class="rounded border-slate-300" style="accent-color:var(--ui-primary)">
-                                <span class="text-sm">{{ $dosen->nama }}</span>
-                            </label>
-                        @endforeach
+                <div class="pkm-multiselect relative" data-pkm-select>
+                        <div class="flex items-center justify-between gap-3 mb-1"><label class="block text-sm font-medium">Dosen Anggota <span class="font-normal" style="color:var(--ui-muted)">(opsional)</span></label></div>
+                        <button type="button" class="pkm-select-trigger w-full flex items-center justify-between gap-3 rounded-xl border px-3 py-3 text-left" style="border-color:var(--ui-border);background:var(--ui-surface)" aria-expanded="false">
+                            <span class="pkm-select-summary text-sm" style="color:var(--ui-muted)">Pilih dosen anggota...</span>
+                            <span class="pkm-select-chevron" aria-hidden="true">⌄</span>
+                        </button>
+                        <div class="pkm-select-panel hidden absolute left-0 right-0 z-20 mt-2 rounded-xl border shadow-xl p-3" style="background:var(--ui-surface);border-color:var(--ui-border)">
+                            <input type="search" class="pkm-dosen-search w-full rounded-lg border px-3 py-2.5 mb-2" placeholder="Cari nama dosen..." aria-label="Cari dosen anggota" style="border-color:var(--ui-border)">
+                            <div id="pkm-edit-list-{{ $p->id }}" class="pkm-check-list space-y-1" style="max-height:12rem;overflow-y:auto">
+                                @foreach(\App\Models\Dosen::where('id','!=',auth()->user()->dosen?->id)->orderBy('nama')->get() as $dosen)
+                                    <label class="pkm-dosen-option flex items-center gap-3 rounded-lg px-2.5 py-2 cursor-pointer hover:bg-slate-50">
+                                        <input type="checkbox" name="anggota[]" value="{{ $dosen->id }}" @checked(in_array($dosen->id, old('anggota',$p->dosen->where('pivot.peran','Anggota')->pluck('id')->all()))) class="rounded border-slate-300" style="accent-color:var(--ui-primary)">
+                                        <span class="text-sm">{{ $dosen->nama }}</span>
+                                    </label>
+                                @endforeach
+                            </div>
+                            <div class="flex justify-between items-center gap-3 border-t pt-2 mt-2" style="border-color:var(--ui-border)">
+                                <span class="text-xs pkm-selected-count" style="color:var(--ui-muted)">0 dipilih</span>
+                                <button type="button" class="pkm-select-done text-sm font-medium" style="color:var(--ui-primary)">Selesai</button>
+                            </div>
+                        </div>
+                        <div class="pkm-selected-chips flex flex-wrap gap-1.5 mt-2"></div>
+                        <p class="text-xs mt-1" style="color:var(--ui-muted)">Pilih dosen dari dropdown. Kamu dapat memilih lebih dari satu anggota.</p>
                     </div>
-                    <p class="text-xs" style="color:var(--ui-muted)">Centang dosen yang menjadi anggota tim. Kamu bisa memilih lebih dari satu.</p>
-                </div>
             </div>
             <div class="ui-modal__footer"><button type="button" class="px-4 py-2 rounded-xl border" onclick="this.closest('dialog').close()">Batal</button><button type="submit" class="px-4 py-2 rounded-xl text-white" style="background:var(--ui-primary)">{{ $p->status==='ditolak'?'Simpan & Ajukan Ulang':'Simpan Perubahan' }}</button></div>
         </form>
