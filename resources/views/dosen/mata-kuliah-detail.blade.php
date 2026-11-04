@@ -66,7 +66,7 @@
                             <p class="text-sm mt-1" style="color: var(--muted-foreground);">{{ $cpmk->deskripsi }}</p>
                         </div>
                         <div class="flex gap-3 shrink-0 ml-4 text-sm">
-                            <a href="{{ route('cpmk.edit', $cpmk) }}" class="hover:underline" style="color: var(--accent);">Edit</a>
+                            <button type="button" onclick="document.getElementById('modalEditCpmk{{ $cpmk->id }}').showModal()" class="hover:underline" style="color: var(--accent);">Edit</button>
                             <form method="POST" action="{{ route('cpmk.destroy', $cpmk) }}" onsubmit="return confirm('Yakin hapus?')">
                                 @csrf @method('DELETE')
                                 <button type="submit" class="hover:underline" style="color: #a13d3d;">Hapus</button>
@@ -98,7 +98,7 @@
                         <p class="text-sm mt-1" style="color: var(--muted-foreground);">{{ $rps->deskripsi_singkat ?? '-' }}</p>
                     </div>
                     <div class="flex gap-3 shrink-0 ml-4 text-sm">
-                        <a href="{{ route('rps.edit', $rps) }}" class="hover:underline" style="color: var(--accent);">Edit</a>
+                        <button type="button" onclick="document.getElementById('modalEditRps{{ $rps->id }}').showModal()" class="hover:underline" style="color: var(--accent);">Edit</button>
                         <form method="POST" action="{{ route('rps.destroy', $rps) }}" onsubmit="return confirm('Yakin hapus?')">
                             @csrf @method('DELETE')
                             <button type="submit" class="hover:underline" style="color: #a13d3d;">Hapus</button>
@@ -111,6 +111,39 @@
         </div>
     </div>
     
+
+@foreach ($mataKuliah->cpmk as $cpmk)
+    <dialog id="modalEditCpmk{{ $cpmk->id }}" class="ui-modal">
+        <form method="POST" action="{{ route('cpmk.update', $cpmk) }}" class="ui-modal__panel">
+            @csrf @method('PUT')
+            <input type="hidden" name="mata_kuliah_id" value="{{ $mataKuliah->id }}">
+            <input type="hidden" name="form_modal" value="cpmk-edit-{{ $cpmk->id }}">
+            <div class="ui-modal__header"><div><h2 class="text-lg font-semibold">Edit CPMK</h2><p class="text-sm" style="color:var(--ui-muted)">{{ $cpmk->kode }}</p></div><button type="button" class="ui-modal__close" onclick="this.closest('dialog').close()">×</button></div>
+            <div class="ui-modal__body space-y-4">
+                <div><label class="block text-sm font-medium mb-1" for="cpmk_kode_{{ $cpmk->id }}">Kode CPMK *</label><input id="cpmk_kode_{{ $cpmk->id }}" name="kode" value="{{ old('kode', $cpmk->kode) }}" required class="w-full rounded-xl border px-3 py-2.5" style="border-color:var(--ui-border)"></div>
+                <div><label class="block text-sm font-medium mb-1" for="cpmk_deskripsi_{{ $cpmk->id }}">Deskripsi *</label><textarea id="cpmk_deskripsi_{{ $cpmk->id }}" name="deskripsi" rows="4" required class="w-full rounded-xl border px-3 py-2.5" style="border-color:var(--ui-border)">{{ old('deskripsi', $cpmk->deskripsi) }}</textarea></div>
+            </div>
+            <div class="ui-modal__footer"><button type="button" class="px-4 py-2 rounded-xl border" onclick="this.closest('dialog').close()">Batal</button><button type="submit" class="px-4 py-2 rounded-xl text-white" style="background:var(--ui-primary)">Simpan Perubahan</button></div>
+        </form>
+    </dialog>
+@endforeach
+
+    @foreach ($mataKuliah->rps as $rps)
+    <dialog id="modalEditRps{{ $rps->id }}" class="ui-modal">
+        <form method="POST" action="{{ route('rps.update', $rps) }}" class="ui-modal__panel">
+            @csrf @method('PUT')
+            <input type="hidden" name="mata_kuliah_id" value="{{ $mataKuliah->id }}">
+            <input type="hidden" name="form_modal" value="rps-edit-{{ $rps->id }}">
+            <div class="ui-modal__header"><div><h2 class="text-lg font-semibold">Edit RPS</h2><p class="text-sm" style="color:var(--ui-muted)">Versi {{ $rps->versi }}</p></div><button type="button" class="ui-modal__close" onclick="this.closest('dialog').close()">×</button></div>
+            <div class="ui-modal__body space-y-4">
+                <div><label class="block text-sm font-medium mb-1" for="rps_versi_{{ $rps->id }}">Versi *</label><input id="rps_versi_{{ $rps->id }}" name="versi" value="{{ old('versi', $rps->versi) }}" required class="w-full rounded-xl border px-3 py-2.5" style="border-color:var(--ui-border)"></div>
+                <div><label class="block text-sm font-medium mb-1" for="rps_tanggal_{{ $rps->id }}">Tanggal Disusun *</label><input id="rps_tanggal_{{ $rps->id }}" type="date" name="tanggal_disusun" value="{{ old('tanggal_disusun', optional($rps->tanggal_disusun)->format('Y-m-d') ?? $rps->tanggal_disusun) }}" required class="w-full rounded-xl border px-3 py-2.5" style="border-color:var(--ui-border)"></div>
+                <div><label class="block text-sm font-medium mb-1" for="rps_deskripsi_{{ $rps->id }}">Deskripsi Singkat</label><textarea id="rps_deskripsi_{{ $rps->id }}" name="deskripsi_singkat" rows="3" class="w-full rounded-xl border px-3 py-2.5" style="border-color:var(--ui-border)">{{ old('deskripsi_singkat', $rps->deskripsi_singkat) }}</textarea></div>
+            </div>
+            <div class="ui-modal__footer"><button type="button" class="px-4 py-2 rounded-xl border" onclick="this.closest('dialog').close()">Batal</button><button type="submit" class="px-4 py-2 rounded-xl text-white" style="background:var(--ui-primary)">Simpan Perubahan</button></div>
+        </form>
+    </dialog>
+@endforeach
 
     <dialog id="modalTambahRps" class="ui-modal">
         <form method="POST" action="{{ route('rps.store') }}" class="ui-modal__panel">
@@ -262,8 +295,8 @@
 
 <script>
 document.querySelectorAll('dialog.ui-modal').forEach(function(dialog){dialog.addEventListener('click',function(event){if(event.target===dialog)dialog.close();});});
-@if ($errors->any() && old('form_modal') === 'rps-create')
-document.addEventListener('DOMContentLoaded',function(){document.getElementById('modalTambahRps')?.showModal();});
+@if ($errors->any())
+document.addEventListener('DOMContentLoaded',function(){const key=@json(old('form_modal'));if(key==='rps-create')document.getElementById('modalTambahRps')?.showModal();else if(key==='cpmk-create')document.getElementById('modalTambahCpmk')?.showModal();else if(key?.startsWith('cpmk-edit-'))document.getElementById('modalEditCpmk'+key.slice(10))?.showModal();else if(key?.startsWith('rps-edit-'))document.getElementById('modalEditRps'+key.slice(9))?.showModal();});
 @endif
 </script>
 @endsection
