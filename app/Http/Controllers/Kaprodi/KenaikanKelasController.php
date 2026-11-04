@@ -1,15 +1,15 @@
 <?php
 
-namespace App\\Http\\Controllers\\Kaprodi;
+namespace App\Http\Controllers\Kaprodi;
 
-use App\\Http\\Controllers\\Controller;
-use App\\Models\\KelasMahasiswa;
-use App\\Models\\Mahasiswa;
-use App\\Models\\RiwayatAksiAkademik;
-use App\\Models\\Semester;
-use Illuminate\\Http\\Request;
-use Illuminate\\Support\\Facades\\DB;
-use Illuminate\\Validation\\ValidationException;
+use App\Http\Controllers\Controller;
+use App\Models\KelasMahasiswa;
+use App\Models\Mahasiswa;
+use App\Models\RiwayatAksiAkademik;
+use App\Models\Semester;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 
 class KenaikanKelasController extends Controller
 {
@@ -30,7 +30,7 @@ class KenaikanKelasController extends Controller
     private function rencanaNamaKelas(KelasMahasiswa $kelas): array
     {
         $tingkatAsal = KelasMahasiswa::tingkatDariNama($kelas->nama_kelas);
-        $namaTujuan = preg_replace('/^\\d+/', (string) ($tingkatAsal + 1), $kelas->nama_kelas, 1);
+        $namaTujuan = preg_replace('/^\d+/', (string) ($tingkatAsal + 1), $kelas->nama_kelas, 1);
 
         return [$tingkatAsal, $namaTujuan];
     }
