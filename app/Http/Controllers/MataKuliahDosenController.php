@@ -175,7 +175,15 @@ class MataKuliahDosenController extends Controller
             ->unique('id')
             ->values();
 
-        return view('dosen.mata-kuliah', compact('mataKuliahList'));
+        $kurikulumList = Kurikulum::with('prodi')
+            ->where('prodi_id', $dosen->prodi_id)
+            ->orderByDesc('tahun_berlaku_mulai')
+            ->get();
+        $semesterList = Semester::with('tahunAkademik')
+            ->orderByDesc('tanggal_mulai')
+            ->get();
+
+        return view('dosen.mata-kuliah', compact('mataKuliahList', 'kurikulumList', 'semesterList'));
     }
 
     /**
