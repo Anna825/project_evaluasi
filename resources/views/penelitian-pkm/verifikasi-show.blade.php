@@ -355,7 +355,7 @@
 
         {{-- Footer Aksi --}}
         @if ($penelitianPkm->status === 'diajukan')
-            <div class="p-6 border-t space-y-5" style="border-color: var(--border);">
+            <div class="p-6 border-t" style="border-color: var(--border);">
                 <form method="POST"
                       action="{{ route('penelitian-pkm.reject', $penelitianPkm) }}"
                       class="w-full">
@@ -377,32 +377,34 @@
                         <p class="text-sm mt-1" style="color: #b91c1c;">{{ $message }}</p>
                     @enderror
 
-                    <div class="flex flex-col-reverse sm:flex-row sm:items-center sm:justify-between gap-3 mt-4">
+                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mt-4">
                         <span class="text-xs" style="color: var(--muted-foreground);">
                             Alasan wajib diisi apabila memilih Tolak Pengajuan.
                         </span>
-                        <div class="flex justify-end gap-3">
+
+                        <div class="flex items-center justify-end gap-3">
                             <button type="submit"
                                     class="px-5 py-2.5 rounded-lg text-sm font-medium text-white hover:opacity-90"
                                     style="background: #a13d3d;">
                                 Tolak Pengajuan
                             </button>
+
+                            <button type="submit"
+                                    form="form-approve-penelitian"
+                                    class="px-5 py-2.5 rounded-lg text-sm font-medium text-white hover:opacity-90"
+                                    style="background: #2e7d32;">
+                                Setujui Pengajuan
+                            </button>
                         </div>
                     </div>
                 </form>
 
-                <div class="flex justify-end border-t pt-4" style="border-color: var(--border);">
-                    <form method="POST" action="{{ route('penelitian-pkm.approve', $penelitianPkm) }}"
-                          onsubmit="return confirm('Setujui pengajuan penelitian/PKM ini?');">
-                        @csrf
-                        @method('PATCH')
-                        <button type="submit"
-                                class="px-5 py-2.5 rounded-lg text-sm font-medium text-white hover:opacity-90"
-                                style="background: #2e7d32;">
-                            Setujui Pengajuan
-                        </button>
-                    </form>
-                </div>
+                <form id="form-approve-penelitian" method="POST"
+                      action="{{ route('penelitian-pkm.approve', $penelitianPkm) }}"
+                      onsubmit="return confirm('Setujui pengajuan penelitian/PKM ini?');">
+                    @csrf
+                    @method('PATCH')
+                </form>
             </div>
         @endif
 
