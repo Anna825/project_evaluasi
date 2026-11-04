@@ -120,9 +120,40 @@ class CpmkController extends Controller
     {
         $this->pastikanPembuat($cpmk);
 
-        $cpmk->update($request->validated());
+        $data = $request->validated();
+        $mataKuliah = MataKuliah::with('kurikulum.cpl')->findOrFail($cpmk->mata_kuliah_id);
+        $cplIds = collect($data['cpl_ids'])->map(fn ($id) => (int) $id)->unique()->values();
+        $validIds = $mataKuliah->kurikulum
+            ? $mataKuliah->kurikulum->cpl()->whereIn('cpl.id', $cplIds)->pluck('cpl.id')->map(fn ($id) => (int) $id)
+            : collect();
 
-        return redirect()->route('mata-kuliah.show', $cpmk->mata_kuliah_id)->with('status', 'CPMK berhasil diperbarui.');
+        if ($validIds->count() !== $cplIds->count()) {
+            return back()->withInput()->withErrors([
+                'cpl_ids' => 'CPL harus berasal dari kurikulum mata kuliah yang dipilih.',
+            ]);
+        }
+
+        foreach ($cplIds as $cplId) {
+            if (! isset($data['bobot'][$cplId])) {
+                return back()->withInput()->withErrors([
+                    'bobot' => 'Bobot wajib diisi untuk setiap CPL yang dipilih.',
+                ]);
+            }
+        }
+
+        DB::transaction(function () use ($cpmk, $data, $cplIds) {
+            $cpmk->update([
+                'kode' => $data['kode'],
+                'deskripsi' => $data['deskripsi'],
+            ]);
+            $mapping = [];
+            foreach ($cplIds as $cplId) {
+                $mapping[$cplId] = ['bobot' => $data['bobot'][$cplId]];
+            }
+            $cpmk->cpl()->sync($mapping);
+        });
+
+        return redirect()->route('mata-kuliah.show', $cpmk->mata_kuliah_id)->with('status', 'CPMK dan pemetaan CPL berhasil diperbarui.');
     }
 
     public function destroy(Cpmk $cpmk)
