@@ -18,12 +18,7 @@
         </div>
 
         <div class="flex flex-wrap gap-2">
-            <a href="{{ route('mata-kuliah.create') }}"
-               class="inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-medium text-white"
-               style="background: var(--primary);">
-                <span class="text-lg leading-none">+</span>
-                Tambah Mata Kuliah
-            </a>
+            <button type="button" onclick="document.getElementById('modalTambahMataKuliahDosen').showModal()" class="inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-medium text-white" style="background: var(--primary);"><span class="text-lg leading-none">+</span>Tambah Mata Kuliah</button>
 
             <a href="{{ route('cpmk.create') }}"
             class="inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-medium border"
@@ -33,6 +28,29 @@
             </a>
         </div>
     </div>
+
+
+    @if($errors->any())<div class="mb-4 rounded-xl border p-4 text-sm" style="background:#fef2f2;border-color:#fecaca;color:#991b1b"><ul class="list-disc pl-5">@foreach($errors->all() as $error)<li>{{ $error }}</li>@endforeach</ul></div>@endif
+    <dialog id="modalTambahMataKuliahDosen" class="ui-modal">
+        <form method="POST" action="{{ route('mata-kuliah.store') }}" class="ui-modal__panel">
+            @csrf <input type="hidden" name="form_modal" value="mata-kuliah-dosen-create">
+            <div class="ui-modal__header"><div><h2 class="text-lg font-semibold">Tambah Mata Kuliah</h2><p class="text-sm" style="color:var(--ui-muted)">Mata kuliah dan kelas yang Anda ampu.</p></div><button type="button" class="ui-modal__close" onclick="this.closest('dialog').close()">×</button></div>
+            <div class="ui-modal__body space-y-4">
+                <div><label class="block text-sm font-medium mb-1">Kurikulum *</label><select name="kurikulum_id" required class="w-full rounded-xl border px-3 py-2.5" style="border-color:var(--ui-border)"><option value="">Pilih Kurikulum</option>@foreach($kurikulumList as $kurikulum)<option value="{{ $kurikulum->id }}" @selected(old('kurikulum_id')==$kurikulum->id)>{{ $kurikulum->nama }} — {{ $kurikulum->prodi->nama ?? '-' }}</option>@endforeach</select></div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div><label class="block text-sm font-medium mb-1">Kode Mata Kuliah *</label><input name="kode" value="{{ old('kode') }}" maxlength="50" required placeholder="Contoh: TI301" class="w-full rounded-xl border px-3 py-2.5" style="border-color:var(--ui-border)"></div>
+                    <div><label class="block text-sm font-medium mb-1">Nama Mata Kuliah *</label><input name="nama" value="{{ old('nama') }}" maxlength="255" required class="w-full rounded-xl border px-3 py-2.5" style="border-color:var(--ui-border)"></div>
+                    <div><label class="block text-sm font-medium mb-1">SKS *</label><input type="number" name="sks" value="{{ old('sks') }}" min="1" max="10" required class="w-full rounded-xl border px-3 py-2.5" style="border-color:var(--ui-border)"></div>
+                    <div><label class="block text-sm font-medium mb-1">Semester Ke- *</label><input type="number" name="semester_ke" value="{{ old('semester_ke') }}" min="1" max="8" required class="w-full rounded-xl border px-3 py-2.5" style="border-color:var(--ui-border)"></div>
+                </div>
+                <div><label class="block text-sm font-medium mb-1">Jenis Mata Kuliah *</label><select name="jenis" required class="w-full rounded-xl border px-3 py-2.5" style="border-color:var(--ui-border)"><option value="">Pilih Jenis</option><option value="praktek" @selected(old('jenis')==='praktek')>Praktek</option><option value="teori" @selected(old('jenis')==='teori')>Teori</option></select></div>
+                <div><label class="block text-sm font-medium mb-1">Semester Akademik *</label><select name="semester_id" required class="w-full rounded-xl border px-3 py-2.5" style="border-color:var(--ui-border)"><option value="">Pilih Semester Akademik</option>@foreach($semesterList as $semester)<option value="{{ $semester->id }}" @selected(old('semester_id')==$semester->id)>{{ ucfirst($semester->jenis) }} — {{ $semester->tahunAkademik->label ?? '-' }}</option>@endforeach</select></div>
+                <div><label class="block text-sm font-medium mb-1">Nama Kelas *</label><input name="nama_kelas" value="{{ old('nama_kelas') }}" required maxlength="255" placeholder="Contoh: Kelas A" class="w-full rounded-xl border px-3 py-2.5" style="border-color:var(--ui-border)"></div>
+            </div>
+            <div class="ui-modal__footer"><button type="button" class="px-4 py-2 rounded-xl border" onclick="this.closest('dialog').close()">Batal</button><button type="submit" class="px-4 py-2 rounded-xl text-white" style="background:var(--ui-primary)">Simpan Mata Kuliah</button></div>
+        </form>
+    </dialog>
+    <script>const mkDosenDialog=document.getElementById('modalTambahMataKuliahDosen');mkDosenDialog?.addEventListener('click',e=>{if(e.target===mkDosenDialog)mkDosenDialog.close()});@if($errors->any() && old('form_modal')==='mata-kuliah-dosen-create')document.addEventListener('DOMContentLoaded',()=>mkDosenDialog?.showModal());@endif</script>
 
     {{-- Pesan sukses --}}
     @if (session('status'))
