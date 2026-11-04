@@ -1,11 +1,11 @@
 <?php
 
-namespace App\\Http\\Controllers;
+namespace App\Http\Controllers;
 
-use App\\Http\\Requests\\StoreTahunAkademikRequest;
-use App\\Models\\Semester;
-use App\\Models\\TahunAkademik;
-use Illuminate\\Support\\Facades\\DB;
+use App\Http\Requests\StoreTahunAkademikRequest;
+use App\Models\Semester;
+use App\Models\TahunAkademik;
+use Illuminate\Support\Facades\DB;
 
 class TahunAkademikController extends Controller
 {
