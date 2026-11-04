@@ -111,11 +111,11 @@
                 </p>
             </div>
 
-            <a href="{{ route('kurikulum.mata-kuliah.create', $kurikulum) }}"
+            <button type="button" onclick="document.getElementById('modalTambahMataKuliah').showModal()"
             class="inline-flex items-center justify-center px-4 py-2 rounded-xl text-sm font-medium text-white hover:opacity-90 shrink-0"
             style="background: var(--primary);">
                 + Tambah Mata Kuliah
-            </a>
+            </button>
         </div>
 
         <div class="overflow-x-auto">
@@ -258,6 +258,28 @@
     </div>
 
 
+
+    <dialog id="modalTambahMataKuliah" class="ui-modal">
+        <form method="POST" action="{{ route('kurikulum.mata-kuliah.store', $kurikulum) }}" class="ui-modal__panel">
+            @csrf
+            <input type="hidden" name="form_modal" value="mata-kuliah-create">
+            <div class="ui-modal__header">
+                <div><h2 class="text-lg font-semibold">Tambah Mata Kuliah</h2><p class="text-sm" style="color:var(--ui-muted)">Kurikulum: {{ $kurikulum->nama }}</p></div>
+                <button type="button" class="ui-modal__close" onclick="this.closest('dialog').close()">×</button>
+            </div>
+            <div class="ui-modal__body space-y-4">
+                <div><label for="mk_kode" class="block text-sm font-medium mb-1">Kode Mata Kuliah *</label><input id="mk_kode" name="kode" value="{{ old('kode') }}" maxlength="50" required placeholder="Contoh: TII101" class="w-full rounded-xl border px-3 py-2.5" style="border-color:var(--ui-border)"></div>
+                <div><label for="mk_nama" class="block text-sm font-medium mb-1">Nama Mata Kuliah *</label><input id="mk_nama" name="nama" value="{{ old('nama') }}" maxlength="255" required placeholder="Contoh: Pemrograman Dasar" class="w-full rounded-xl border px-3 py-2.5" style="border-color:var(--ui-border)"></div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div><label for="mk_sks" class="block text-sm font-medium mb-1">Jumlah SKS *</label><input id="mk_sks" type="number" name="sks" value="{{ old('sks') }}" min="1" max="10" required class="w-full rounded-xl border px-3 py-2.5" style="border-color:var(--ui-border)"></div>
+                    <div><label for="mk_semester" class="block text-sm font-medium mb-1">Semester *</label><select id="mk_semester" name="semester_ke" required class="w-full rounded-xl border px-3 py-2.5" style="border-color:var(--ui-border)"><option value="">Pilih Semester</option>@for ($i = 1; $i <= 8; $i++)<option value="{{ $i }}" @selected(old('semester_ke') == $i)>Semester {{ $i }}</option>@endfor</select></div>
+                </div>
+                <div><label for="mk_jenis" class="block text-sm font-medium mb-1">Jenis Mata Kuliah</label><select id="mk_jenis" name="jenis" class="w-full rounded-xl border px-3 py-2.5" style="border-color:var(--ui-border)"><option value="">Pilih Jenis</option><option value="Teori" @selected(old('jenis') === 'Teori')>Teori</option><option value="Praktek" @selected(old('jenis') === 'Praktek')>Praktek</option></select></div>
+            </div>
+            <div class="ui-modal__footer"><button type="button" class="px-4 py-2 rounded-xl border" onclick="this.closest('dialog').close()">Batal</button><button type="submit" class="px-4 py-2 rounded-xl text-white" style="background:var(--ui-primary)">Simpan Mata Kuliah</button></div>
+        </form>
+    </dialog>
+
     @if (session('status'))
         <div class="mb-4 rounded-xl border px-4 py-3 text-sm" style="background:#f0fdf4;border-color:#bbf7d0;color:#166534">{{ session('status') }}</div>
     @endif
@@ -294,6 +316,9 @@
     document.querySelectorAll('dialog.ui-modal').forEach(function(dialog){dialog.addEventListener('click',function(event){if(event.target===dialog)dialog.close();});});
     @if ($errors->any())
     document.addEventListener('DOMContentLoaded',function(){const key=@json(old('form_modal'));if(key==='create')document.getElementById('modalTambahCpl')?.showModal();else if(key&&key.startsWith('edit-'))document.getElementById('modalEditCpl'+key.slice(5))?.showModal();});
+    @endif
+    @if ($errors->any() && old('form_modal') === 'mata-kuliah-create')
+    document.addEventListener('DOMContentLoaded',function(){document.getElementById('modalTambahMataKuliah')?.showModal();});
     @endif
     </script>
 
