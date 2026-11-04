@@ -176,11 +176,12 @@
             ================================================== --}}
             <form
                 method="POST"
-                action="{{ route('tahun-akademik.store') }}"
+                action="{{ route('tahun-akademik.store') }}?modal=create"
                 class="flex flex-col min-h-0"
             >
 
                 @csrf
+                <input type="hidden" name="form_modal" value="create">
 
 
                 {{-- Area Form Scroll --}}
@@ -487,16 +488,58 @@
         <script>
             document.addEventListener('DOMContentLoaded', function () {
 
-                const modal = document.getElementById('modalTambahTahunAkademik');
-
-                if (modal) {
-                    modal.showModal();
-                }
+                const key = @json(request('modal') ?: old('form_modal'));
+                const modal = key === 'create' ? document.getElementById('modalTambahTahunAkademik') : null;
+                if (modal) modal.showModal();
 
             });
         </script>
     @endif
 
+
+
+    @foreach ($tahunAkademik as $tahun)
+        @php
+            $ganjil = $tahun->semester->firstWhere('jenis', 'ganjil');
+            $genap = $tahun->semester->firstWhere('jenis', 'genap');
+        @endphp
+        <dialog id="modalEditTahunAkademik{{ $tahun->id }}" class="ui-modal">
+            <form method="POST" action="{{ route('tahun-akademik.update', $tahun) }}?modal=edit-{{ $tahun->id }}" class="ui-modal__panel">
+                @csrf @method('PUT')
+                <input type="hidden" name="form_modal" value="edit-{{ $tahun->id }}">
+                <div class="ui-modal__header">
+                    <div><h2 class="text-lg font-semibold">Edit Tahun Akademik</h2><p class="text-sm" style="color:var(--ui-muted)">Perbarui tahun akademik dan periode semester.</p></div>
+                    <button type="button" class="ui-modal__close" onclick="this.closest('dialog').close()" aria-label="Tutup">×</button>
+                </div>
+                <div class="ui-modal__body space-y-5">
+                    <div><label for="tahun_label_{{ $tahun->id }}" class="block text-sm font-medium mb-1">Tahun Akademik</label><input id="tahun_label_{{ $tahun->id }}" name="label" value="{{ old('label', $tahun->label) }}" required class="w-full rounded-xl border px-3 py-2.5" style="border-color:var(--ui-border)"></div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <section class="rounded-xl border p-4 space-y-3" style="border-color:var(--ui-border)">
+                            <h3 class="font-semibold">Semester Ganjil</h3>
+                            <div><label for="ganjil_mulai_{{ $tahun->id }}" class="block text-sm mb-1">Tanggal Mulai</label><input type="date" id="ganjil_mulai_{{ $tahun->id }}" name="ganjil_mulai" value="{{ old('ganjil_mulai', optional($ganjil)->tanggal_mulai ? \Illuminate\Support\Carbon::parse($ganjil->tanggal_mulai)->format('Y-m-d') : '') }}" required class="w-full rounded-xl border px-3 py-2.5" style="border-color:var(--ui-border)"></div>
+                            <div><label for="ganjil_selesai_{{ $tahun->id }}" class="block text-sm mb-1">Tanggal Selesai</label><input type="date" id="ganjil_selesai_{{ $tahun->id }}" name="ganjil_selesai" value="{{ old('ganjil_selesai', optional($ganjil)->tanggal_selesai ? \Illuminate\Support\Carbon::parse($ganjil->tanggal_selesai)->format('Y-m-d') : '') }}" required class="w-full rounded-xl border px-3 py-2.5" style="border-color:var(--ui-border)"></div>
+                        </section>
+                        <section class="rounded-xl border p-4 space-y-3" style="border-color:var(--ui-border)">
+                            <h3 class="font-semibold">Semester Genap</h3>
+                            <div><label for="genap_mulai_{{ $tahun->id }}" class="block text-sm mb-1">Tanggal Mulai</label><input type="date" id="genap_mulai_{{ $tahun->id }}" name="genap_mulai" value="{{ old('genap_mulai', optional($genap)->tanggal_mulai ? \Illuminate\Support\Carbon::parse($genap->tanggal_mulai)->format('Y-m-d') : '') }}" required class="w-full rounded-xl border px-3 py-2.5" style="border-color:var(--ui-border)"></div>
+                            <div><label for="genap_selesai_{{ $tahun->id }}" class="block text-sm mb-1">Tanggal Selesai</label><input type="date" id="genap_selesai_{{ $tahun->id }}" name="genap_selesai" value="{{ old('genap_selesai', optional($genap)->tanggal_selesai ? \Illuminate\Support\Carbon::parse($genap->tanggal_selesai)->format('Y-m-d') : '') }}" required class="w-full rounded-xl border px-3 py-2.5" style="border-color:var(--ui-border)"></div>
+                        </section>
+                    </div>
+                </div>
+                <div class="ui-modal__footer"><button type="button" class="px-4 py-2 rounded-xl border" onclick="this.closest('dialog').close()">Batal</button><button type="submit" class="px-4 py-2 rounded-xl text-white" style="background:var(--ui-primary)">Simpan Perubahan</button></div>
+            </form>
+        </dialog>
+    @endforeach
+    <script>
+    document.querySelectorAll('dialog.ui-modal').forEach(function(dialog) { dialog.addEventListener('click', function(event) { if (event.target === dialog) dialog.close(); }); });
+    @if ($errors->any())
+    document.addEventListener('DOMContentLoaded', function() {
+        const key = @json(request('modal') ?: old('form_modal'));
+        if (key === 'create') document.getElementById('modalTambahTahunAkademik')?.showModal();
+        else if (key && key.startsWith('edit-')) document.getElementById('modalEditTahunAkademik' + key.slice(5))?.showModal();
+    });
+    @endif
+    </script>
 
     {{-- =========================================================
         DAFTAR TAHUN AKADEMIK
@@ -594,11 +637,9 @@
 
                                     <div class="flex items-center justify-center gap-2">
 
-                                        <a href="{{ route('tahun-akademik.edit', $tahun) }}"
+                                        <button type="button" onclick="document.getElementById('modalEditTahunAkademik{{ $tahun->id }}').showModal()"
                                            class="inline-flex items-center justify-center px-3.5 py-2 rounded-lg text-xs font-medium transition hover:opacity-80"
-                                           style="background: #dbeafe; color: #1d4ed8;">
-                                            Edit
-                                        </a>
+                                           style="background: #dbeafe; color: #1d4ed8;">Edit</button>
 
                                         <form
                                             method="POST"
