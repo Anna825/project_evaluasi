@@ -36,6 +36,7 @@ use App\Http\Controllers\JurusanController;
 use App\Http\Controllers\Kaprodi\PenempatanMahasiswaController;
 use App\Http\Controllers\Kaprodi\KenaikanKelasController;
 use App\Http\Controllers\Kaprodi\PenyelesaianSemesterController;
+use App\Http\Controllers\Kaprodi\ValidasiProgresAkademikController;
 use App\Http\Controllers\Kaprodi\KelulusanMahasiswaController;
 
 /*
@@ -454,6 +455,9 @@ Route::middleware(['auth', 'role:kaprodi'])->group(function () {
     Route::get('/kaprodi/penempatan-mahasiswa', [PenempatanMahasiswaController::class, 'index'])->name('kaprodi.penempatan.index');
     Route::get('/kaprodi/penyelesaian-semester', [PenyelesaianSemesterController::class, 'index'])->name('kaprodi.penyelesaian-semester.index');
     Route::post('/kaprodi/penyelesaian-semester', [PenyelesaianSemesterController::class, 'store'])->name('kaprodi.penyelesaian-semester.store');
+    Route::get('/kaprodi/validasi-progres', [ValidasiProgresAkademikController::class, 'index'])->name('kaprodi.validasi-progres.index');
+    Route::get('/kaprodi/validasi-progres/{mahasiswa}', [ValidasiProgresAkademikController::class, 'show'])->name('kaprodi.validasi-progres.show');
+    Route::post('/kaprodi/validasi-progres/{mahasiswa}/sinkronisasi', [ValidasiProgresAkademikController::class, 'sync'])->name('kaprodi.validasi-progres.sync');
     Route::get('/kaprodi/kenaikan-kelas', [KenaikanKelasController::class, 'index'])->name('kaprodi.kenaikan-kelas.index');
     Route::post('/kaprodi/kenaikan-kelas', [KenaikanKelasController::class, 'store'])->name('kaprodi.kenaikan-kelas.store');
     Route::get('/kaprodi/kelulusan', [KelulusanMahasiswaController::class, 'index'])->name('kaprodi.kelulusan.index');
