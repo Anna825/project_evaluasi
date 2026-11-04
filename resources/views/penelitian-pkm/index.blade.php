@@ -23,12 +23,43 @@
                     <div><label class="block text-sm font-medium mb-1">Kategori Pendanaan</label><input name="kategori_pendanaan" value="{{ old('kategori_pendanaan') }}" placeholder="Internal, DIKTI, dsb." class="w-full rounded-xl border px-3 py-2.5" style="border-color:var(--ui-border)"></div>
                 </div>
                 <div><label class="block text-sm font-medium mb-1">Tahun Akademik *</label><select name="tahun_akademik_id" required class="w-full rounded-xl border px-3 py-2.5" style="border-color:var(--ui-border)"><option value="">Pilih Tahun Akademik</option>@foreach(\App\Models\TahunAkademik::orderByDesc('id')->get() as $ta)<option value="{{ $ta->id }}" @selected(old('tahun_akademik_id')==$ta->id)>{{ $ta->label }}</option>@endforeach</select></div>
-                <div><label class="block text-sm font-medium mb-1">Dosen Anggota (opsional)</label><select name="anggota[]" multiple size="5" class="w-full rounded-xl border px-3 py-2.5" style="border-color:var(--ui-border)">@foreach(\App\Models\Dosen::where('id','!=',auth()->user()->dosen?->id)->orderBy('nama')->get() as $dosen)<option value="{{ $dosen->id }}" @selected(in_array($dosen->id, old('anggota',[])))>{{ $dosen->nama }}</option>@endforeach</select><p class="text-xs mt-1" style="color:var(--ui-muted)">Gunakan Ctrl (Windows) atau Command (Mac) untuk memilih lebih dari satu dosen.</p></div>
+                <div class="space-y-2">
+                    <div class="flex items-center justify-between gap-3"><label class="block text-sm font-medium">Dosen Anggota <span class="font-normal" style="color:var(--ui-muted)">(opsional)</span></label><span class="text-xs pkm-selected-count" data-count-for="pkm-create-list" style="color:var(--ui-muted)">0 dipilih</span></div>
+                    <input type="search" class="w-full rounded-xl border px-3 py-2.5 pkm-dosen-search" data-target="pkm-create-list" placeholder="Cari nama dosen..." aria-label="Cari dosen anggota">
+                    <div id="pkm-create-list" class="pkm-check-list rounded-xl border divide-y" style="border-color:var(--ui-border);max-height:13rem;overflow-y:auto">
+                        @foreach(\App\Models\Dosen::where('id','!=',auth()->user()->dosen?->id)->orderBy('nama')->get() as $dosen)
+                            <label class="pkm-dosen-option flex items-center gap-3 px-3 py-2.5 cursor-pointer hover:bg-slate-50">
+                                <input type="checkbox" name="anggota[]" value="{{ $dosen->id }}" @checked(in_array($dosen->id, old('anggota',[]))) class="rounded border-slate-300" style="accent-color:var(--ui-primary)">
+                                <span class="text-sm">{{ $dosen->nama }}</span>
+                            </label>
+                        @endforeach
+                    </div>
+                    <p class="text-xs" style="color:var(--ui-muted)">Centang dosen yang ingin ditambahkan sebagai anggota tim. Kamu bisa memilih lebih dari satu.</p>
+                </div>
             </div>
             <div class="ui-modal__footer"><button type="button" class="px-4 py-2 rounded-xl border" onclick="this.closest('dialog').close()">Batal</button><button type="submit" class="px-4 py-2 rounded-xl text-white" style="background:var(--ui-primary)">Ajukan</button></div>
         </form>
     </dialog>
     <script>
+    document.querySelectorAll('.pkm-dosen-search').forEach(function(search) {
+        search.addEventListener('input', function() {
+            const list = document.getElementById(search.dataset.target);
+            if (!list) return;
+            const query = search.value.trim().toLocaleLowerCase();
+            list.querySelectorAll('.pkm-dosen-option').forEach(function(option) {
+                option.hidden = !option.textContent.toLocaleLowerCase().includes(query);
+            });
+        });
+    });
+    document.querySelectorAll('.pkm-check-list').forEach(function(list) {
+        const updateCount = function() {
+            const count = list.querySelectorAll('input[type="checkbox"]:checked').length;
+            const output = document.querySelector('[data-count-for="' + list.id + '"]');
+            if (output) output.textContent = count + ' dipilih';
+        };
+        list.addEventListener('change', updateCount);
+        updateCount();
+    });
     const pkmDialog=document.getElementById('modalAjukanPkm');pkmDialog?.addEventListener('click',function(e){if(e.target===pkmDialog)pkmDialog.close();});
     @if($errors->any() && old('form_modal')==='pkm-create')document.addEventListener('DOMContentLoaded',()=>pkmDialog?.showModal());@endif
     </script>
@@ -49,7 +80,19 @@
                     <div><label class="block text-sm font-medium mb-1">Kategori Pendanaan</label><input name="kategori_pendanaan" value="{{ old('kategori_pendanaan',$p->kategori_pendanaan) }}" class="w-full rounded-xl border px-3 py-2.5" style="border-color:var(--ui-border)"></div>
                 </div>
                 <div><label class="block text-sm font-medium mb-1">Tahun Akademik *</label><select name="tahun_akademik_id" required class="w-full rounded-xl border px-3 py-2.5" style="border-color:var(--ui-border)">@foreach(\App\Models\TahunAkademik::orderByDesc('id')->get() as $ta)<option value="{{ $ta->id }}" @selected(old('tahun_akademik_id',$p->tahun_akademik_id)==$ta->id)>{{ $ta->label }}</option>@endforeach</select></div>
-                <div><label class="block text-sm font-medium mb-1">Dosen Anggota</label><select name="anggota[]" multiple size="5" class="w-full rounded-xl border px-3 py-2.5" style="border-color:var(--ui-border)">@foreach(\App\Models\Dosen::where('id','!=',auth()->user()->dosen?->id)->orderBy('nama')->get() as $dosen)<option value="{{ $dosen->id }}" @selected(in_array($dosen->id, old('anggota',$p->dosen->where('pivot.peran','Anggota')->pluck('id')->all())))>{{ $dosen->nama }}</option>@endforeach</select><p class="text-xs mt-1" style="color:var(--ui-muted)">Gunakan Ctrl/Command untuk memilih beberapa dosen.</p></div>
+                <div class="space-y-2">
+                    <div class="flex items-center justify-between gap-3"><label class="block text-sm font-medium">Dosen Anggota</label><span class="text-xs pkm-selected-count" data-count-for="pkm-edit-list-{{ $p->id }}" style="color:var(--ui-muted)">0 dipilih</span></div>
+                    <input type="search" class="w-full rounded-xl border px-3 py-2.5 pkm-dosen-search" data-target="pkm-edit-list-{{ $p->id }}" placeholder="Cari nama dosen..." aria-label="Cari dosen anggota">
+                    <div id="pkm-edit-list-{{ $p->id }}" class="pkm-check-list rounded-xl border divide-y" style="border-color:var(--ui-border);max-height:13rem;overflow-y:auto">
+                        @foreach(\App\Models\Dosen::where('id','!=',auth()->user()->dosen?->id)->orderBy('nama')->get() as $dosen)
+                            <label class="pkm-dosen-option flex items-center gap-3 px-3 py-2.5 cursor-pointer hover:bg-slate-50">
+                                <input type="checkbox" name="anggota[]" value="{{ $dosen->id }}" @checked(in_array($dosen->id, old('anggota',$p->dosen->where('pivot.peran','Anggota')->pluck('id')->all()))) class="rounded border-slate-300" style="accent-color:var(--ui-primary)">
+                                <span class="text-sm">{{ $dosen->nama }}</span>
+                            </label>
+                        @endforeach
+                    </div>
+                    <p class="text-xs" style="color:var(--ui-muted)">Centang dosen yang menjadi anggota tim. Kamu bisa memilih lebih dari satu.</p>
+                </div>
             </div>
             <div class="ui-modal__footer"><button type="button" class="px-4 py-2 rounded-xl border" onclick="this.closest('dialog').close()">Batal</button><button type="submit" class="px-4 py-2 rounded-xl text-white" style="background:var(--ui-primary)">{{ $p->status==='ditolak'?'Simpan & Ajukan Ulang':'Simpan Perubahan' }}</button></div>
         </form>
