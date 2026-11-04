@@ -175,11 +175,9 @@
                     ← Kembali
                 </a>
 
-                <a href="{{ route('prestasi-dosen.edit', $prestasi->id) }}"
-                   class="inline-flex items-center justify-center px-5 py-2.5 rounded-xl text-sm font-semibold text-white"
-                   style="background: var(--primary);">
+                <button type="button" onclick="document.getElementById('modalEditPrestasi').showModal()" class="inline-flex items-center justify-center px-5 py-2.5 rounded-xl text-sm font-semibold text-white" style="background: var(--primary);">
                     Edit Prestasi
-                </a>
+                </button>
 
                 <form method="POST"
                       action="{{ route('prestasi-dosen.destroy', $prestasi->id) }}"
@@ -203,5 +201,27 @@
     </div>
 
 </div>
+
+
+    @if($errors->any())<div class="mb-4 rounded-xl border px-4 py-3 text-sm" style="background:#fef2f2;border-color:#fecaca;color:#991b1b"><ul class="list-disc pl-5">@foreach($errors->all() as $error)<li>{{ $error }}</li>@endforeach</ul></div>@endif
+    <dialog id="modalEditPrestasi" class="ui-modal">
+        <form method="POST" action="{{ route('prestasi-dosen.update',$prestasi->id) }}" class="ui-modal__panel">
+            @csrf @method('PUT') <input type="hidden" name="form_modal" value="prestasi-edit">
+            <div class="ui-modal__header"><div><h2 class="text-lg font-semibold">Edit Prestasi</h2><p class="text-sm" style="color:var(--ui-muted)">{{ $prestasi->nama_kegiatan }}</p></div><button type="button" class="ui-modal__close" onclick="this.closest('dialog').close()">×</button></div>
+            <div class="ui-modal__body space-y-4">
+                <div><label class="block text-sm font-medium mb-1">Nama Kegiatan *</label><input name="nama_kegiatan" value="{{ old('nama_kegiatan',$prestasi->nama_kegiatan) }}" required maxlength="255" class="w-full rounded-xl border px-3 py-2.5" style="border-color:var(--ui-border)"></div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div><label class="block text-sm font-medium mb-1">Tingkat</label><input name="tingkat" value="{{ old('tingkat',$prestasi->tingkat) }}" class="w-full rounded-xl border px-3 py-2.5" style="border-color:var(--ui-border)"></div>
+                    <div><label class="block text-sm font-medium mb-1">Jenis</label><input name="jenis" value="{{ old('jenis',$prestasi->jenis) }}" class="w-full rounded-xl border px-3 py-2.5" style="border-color:var(--ui-border)"></div>
+                    <div><label class="block text-sm font-medium mb-1">Peringkat/Capaian</label><input name="peringkat" value="{{ old('peringkat',$prestasi->peringkat) }}" class="w-full rounded-xl border px-3 py-2.5" style="border-color:var(--ui-border)"></div>
+                    <div><label class="block text-sm font-medium mb-1">Tempat Pelaksanaan</label><input name="tempat_pelaksanaan" value="{{ old('tempat_pelaksanaan',$prestasi->tempat_pelaksanaan) }}" class="w-full rounded-xl border px-3 py-2.5" style="border-color:var(--ui-border)"></div>
+                </div>
+                <div><label class="block text-sm font-medium mb-1">Tanggal Penerimaan</label><input type="date" name="tanggal_penerimaan" value="{{ old('tanggal_penerimaan',$prestasi->tanggal_penerimaan?->format('Y-m-d')) }}" class="w-full rounded-xl border px-3 py-2.5" style="border-color:var(--ui-border)"></div>
+                <div><label class="block text-sm font-medium mb-1">Tahun Akademik *</label><select name="tahun_akademik_id" required class="w-full rounded-xl border px-3 py-2.5" style="border-color:var(--ui-border)">@foreach(\App\Models\TahunAkademik::orderByDesc('id')->get() as $ta)<option value="{{ $ta->id }}" @selected(old('tahun_akademik_id',$prestasi->tahun_akademik_id)==$ta->id)>{{ $ta->label }}</option>@endforeach</select></div>
+            </div>
+            <div class="ui-modal__footer"><button type="button" class="px-4 py-2 rounded-xl border" onclick="this.closest('dialog').close()">Batal</button><button type="submit" class="px-4 py-2 rounded-xl text-white" style="background:var(--ui-primary)">Simpan Perubahan</button></div>
+        </form>
+    </dialog>
+    <script>const editPrestasiDialog=document.getElementById('modalEditPrestasi');editPrestasiDialog?.addEventListener('click',e=>{if(e.target===editPrestasiDialog)editPrestasiDialog.close()});@if($errors->any() && old('form_modal')==='prestasi-edit')document.addEventListener('DOMContentLoaded',()=>editPrestasiDialog?.showModal());@endif</script>
 
 @endsection
