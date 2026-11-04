@@ -39,7 +39,11 @@ class KurikulumController extends Controller
                 ->get();
         }
 
-        return view('kurikulum.index', compact('kurikulum'));
+        $prodiList = $isAdmin
+            ? Prodi::orderBy('nama')->get()
+            : Prodi::where('id', $prodiId)->get();
+
+        return view('kurikulum.index', compact('kurikulum', 'prodiList'));
     }
 
     public function create()
