@@ -75,7 +75,7 @@
                                         class="hover:underline"
                                         style="color: var(--accent);"
                                     >
-                                        Edit
+                                        {{ $p->status === 'ditolak' ? 'Perbaiki & Ajukan Ulang' : 'Edit' }}
                                     </a>
 
                                     <form
