@@ -46,13 +46,38 @@
                 Import Excel
             </a>
 
-            <a href="{{ route('mahasiswa.create') }}"
-                class="btn-primary px-4 py-2.5 rounded-lg text-sm font-medium text-white"
-                style="background: var(--primary);">
-                + Tambah Mahasiswa
-            </a>
+            <button type="button" onclick="document.getElementById('modalTambahMahasiswa').showModal()" class="btn-primary px-4 py-2.5 rounded-lg text-sm font-medium text-white" style="background: var(--primary);">+ Tambah Mahasiswa</button>
         </div>
     </div>
+
+
+    @if($errors->any())<div class="mb-4 rounded-xl border px-4 py-3 text-sm" style="background:#fef2f2;border-color:#fecaca;color:#991b1b"><ul class="list-disc pl-5">@foreach($errors->all() as $error)<li>{{ $error }}</li>@endforeach</ul></div>@endif
+    <dialog id="modalTambahMahasiswa" class="ui-modal">
+        <form method="POST" action="{{ route('mahasiswa.store') }}" class="ui-modal__panel">
+            @csrf <input type="hidden" name="form_modal" value="mahasiswa-create">
+            <div class="ui-modal__header"><div><h2 class="text-lg font-semibold">Tambah Mahasiswa</h2><p class="text-sm" style="color:var(--ui-muted)">Lengkapi identitas dan penempatan kelas mahasiswa.</p></div><button type="button" class="ui-modal__close" onclick="this.closest('dialog').close()">×</button></div>
+            <div class="ui-modal__body space-y-4">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div><label class="block text-sm font-medium mb-1">NIM *</label><input name="nim" value="{{ old('nim') }}" required class="w-full rounded-xl border px-3 py-2.5" style="border-color:var(--ui-border)"></div>
+                    <div><label class="block text-sm font-medium mb-1">Nama Lengkap *</label><input name="nama" value="{{ old('nama') }}" required maxlength="255" class="w-full rounded-xl border px-3 py-2.5" style="border-color:var(--ui-border)"></div>
+                </div>
+                <div><label class="block text-sm font-medium mb-1">Program Studi *</label><select id="mhs_prodi_id" name="prodi_id" required class="w-full rounded-xl border px-3 py-2.5" style="border-color:var(--ui-border)"><option value="">Pilih Program Studi</option>@foreach($prodiList as $prodi)<option value="{{ $prodi->id }}" @selected(old('prodi_id')==$prodi->id)>{{ $prodi->nama }}</option>@endforeach</select></div>
+                <div><label class="block text-sm font-medium mb-1">Kelas *</label><select id="mhs_kelas_id" name="kelas_mahasiswa_id" required class="w-full rounded-xl border px-3 py-2.5" style="border-color:var(--ui-border)"><option value="">Pilih Kelas</option>@foreach($kelasList as $kelas)<option value="{{ $kelas->id }}" data-prodi="{{ $kelas->prodi_id }}" @selected(old('kelas_mahasiswa_id')==$kelas->id)>{{ $kelas->nama_kelas }} — {{ $kelas->prodi->nama ?? '-' }}</option>@endforeach<option value="baru" @selected(old('kelas_mahasiswa_id')==='baru')>+ Kelas belum tersedia</option></select></div>
+                <div id="mhs_kelas_baru_wrap" class="{{ old('kelas_mahasiswa_id')==='baru'?'':'hidden' }}"><label class="block text-sm font-medium mb-1">Nama Kelas Baru *</label><input id="mhs_kelas_baru" name="kelas_baru" value="{{ old('kelas_baru') }}" placeholder="Contoh: 1AEA-1" class="w-full rounded-xl border px-3 py-2.5" style="border-color:var(--ui-border)"><p class="text-xs mt-1" style="color:var(--ui-muted)">Format nama kelas: tingkat + kode prodi + nomor paralel, misalnya 1AEA-1.</p></div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div><label class="block text-sm font-medium mb-1">Angkatan Masuk *</label><input type="number" name="angkatan" min="2000" max="{{ date('Y')+1 }}" value="{{ old('angkatan',date('Y')) }}" required class="w-full rounded-xl border px-3 py-2.5" style="border-color:var(--ui-border)"></div>
+                    <div><label class="block text-sm font-medium mb-1">Status *</label><select name="status" required class="w-full rounded-xl border px-3 py-2.5" style="border-color:var(--ui-border)"><option value="aktif" @selected(old('status','aktif')==='aktif')>Aktif</option><option value="cuti" @selected(old('status')==='cuti')>Cuti</option><option value="lulus" @selected(old('status')==='lulus')>Lulus</option><option value="DO" @selected(old('status')==='DO')>DO</option></select></div>
+                </div>
+            </div>
+            <div class="ui-modal__footer"><button type="button" class="px-4 py-2 rounded-xl border" onclick="this.closest('dialog').close()">Batal</button><button type="submit" class="px-4 py-2 rounded-xl text-white" style="background:var(--ui-primary)">Simpan Mahasiswa</button></div>
+        </form>
+    </dialog>
+    <script>
+    const mhsDialog=document.getElementById('modalTambahMahasiswa'),prodiSelect=document.getElementById('mhs_prodi_id'),kelasSelect=document.getElementById('mhs_kelas_id'),kelasBaruWrap=document.getElementById('mhs_kelas_baru_wrap'),kelasBaruInput=document.getElementById('mhs_kelas_baru');
+    function filterMhsKelas(){const prodi=prodiSelect?.value;Array.from(kelasSelect?.options||[]).forEach(o=>{if(o.dataset.prodi){o.hidden=!!prodi&&o.dataset.prodi!==prodi;if(o.hidden&&o.selected)kelasSelect.value='';}});const isNew=kelasSelect?.value==='baru';kelasBaruWrap?.classList.toggle('hidden',!isNew);if(kelasBaruInput)kelasBaruInput.required=isNew;}
+    prodiSelect?.addEventListener('change',filterMhsKelas);kelasSelect?.addEventListener('change',filterMhsKelas);filterMhsKelas();mhsDialog?.addEventListener('click',e=>{if(e.target===mhsDialog)mhsDialog.close()});
+    @if($errors->any() && old('form_modal')==='mahasiswa-create')document.addEventListener('DOMContentLoaded',()=>mhsDialog?.showModal());@endif
+    </script>
 
     {{-- Pencarian mahasiswa dan filter Program Studi --}}
     <form method="GET" action="{{ route('mahasiswa.index') }}"
