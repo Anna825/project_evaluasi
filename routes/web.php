@@ -35,6 +35,7 @@ use App\Http\Controllers\Kaprodi\TracerStudyController;
 use App\Http\Controllers\JurusanController;
 use App\Http\Controllers\Kaprodi\PenempatanMahasiswaController;
 use App\Http\Controllers\Kaprodi\KenaikanKelasController;
+use App\Http\Controllers\Kaprodi\PenyelesaianSemesterController;
 use App\Http\Controllers\Kaprodi\KelulusanMahasiswaController;
 
 /*
