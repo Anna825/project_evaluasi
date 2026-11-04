@@ -51,7 +51,7 @@
     <div class="rounded-2xl border overflow-hidden mb-6" style="background: var(--card); border-color: var(--border);">
         <div class="px-6 py-4 border-b flex items-center justify-between" style="border-color: var(--border);">
             <h2 class="font-serif-display text-lg">RPS</h2>
-            <a href="{{ route('rps.create', $mataKuliah) }}" class="px-3 py-1.5 rounded-lg text-xs font-medium text-white" style="background: var(--primary);">+ Tambah RPS</a>
+            <button type="button" onclick="document.getElementById('modalTambahRps').showModal()" class="px-3 py-1.5 rounded-lg text-xs font-medium text-white" style="background: var(--primary);">+ Tambah RPS</button>
         </div>
         <div class="p-2">
             @forelse ($mataKuliah->rps as $rps)
@@ -74,6 +74,22 @@
         </div>
     </div>
     
+
+    <dialog id="modalTambahRps" class="ui-modal">
+        <form method="POST" action="{{ route('rps.store') }}" class="ui-modal__panel">
+            @csrf
+            <input type="hidden" name="mata_kuliah_id" value="{{ $mataKuliah->id }}">
+            <input type="hidden" name="form_modal" value="rps-create">
+            <div class="ui-modal__header"><div><h2 class="text-lg font-semibold">Tambah RPS</h2><p class="text-sm" style="color:var(--ui-muted)">{{ $mataKuliah->kode }} — {{ $mataKuliah->nama }}</p></div><button type="button" class="ui-modal__close" onclick="this.closest('dialog').close()">×</button></div>
+            <div class="ui-modal__body space-y-4">
+                <div><label for="rps_versi_baru" class="block text-sm font-medium mb-1">Versi *</label><input id="rps_versi_baru" name="versi" value="{{ old('versi') }}" required placeholder="Contoh: 1.0" class="w-full rounded-xl border px-3 py-2.5" style="border-color:var(--ui-border)"></div>
+                <div><label for="rps_tanggal_baru" class="block text-sm font-medium mb-1">Tanggal Disusun *</label><input id="rps_tanggal_baru" type="date" name="tanggal_disusun" value="{{ old('tanggal_disusun') }}" required class="w-full rounded-xl border px-3 py-2.5" style="border-color:var(--ui-border)"></div>
+                <div><label for="rps_deskripsi_baru" class="block text-sm font-medium mb-1">Deskripsi Singkat (opsional)</label><textarea id="rps_deskripsi_baru" name="deskripsi_singkat" rows="4" class="w-full rounded-xl border px-3 py-2.5" style="border-color:var(--ui-border)">{{ old('deskripsi_singkat') }}</textarea></div>
+            </div>
+            <div class="ui-modal__footer"><button type="button" class="px-4 py-2 rounded-xl border" onclick="this.closest('dialog').close()">Batal</button><button type="submit" class="px-4 py-2 rounded-xl text-white" style="background:var(--ui-primary)">Simpan RPS</button></div>
+        </form>
+    </dialog>
+
     <div class="rounded-2xl border overflow-hidden" style="background: var(--card); border-color: var(--border);">
         <div class="px-6 py-4 border-b flex items-center justify-between" style="border-color: var(--border);">
             <h2 class="font-serif-display text-lg">Kelas &amp; Input Nilai</h2>
@@ -207,4 +223,10 @@
         </div>
     </div>
 
+<script>
+document.querySelectorAll('dialog.ui-modal').forEach(function(dialog){dialog.addEventListener('click',function(event){if(event.target===dialog)dialog.close();});});
+@if ($errors->any() && old('form_modal') === 'rps-create')
+document.addEventListener('DOMContentLoaded',function(){document.getElementById('modalTambahRps')?.showModal();});
+@endif
+</script>
 @endsection
