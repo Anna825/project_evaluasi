@@ -29,6 +29,39 @@ class PenyelesaianSemesterController extends Controller
         return $role->prodi;
     }
 
+    private function tingkatKelasMahasiswa(?KelasMahasiswa $kelas): ?int
+    {
+        if (! $kelas) {
+            return null;
+        }
+
+        $tingkat = (int) ($kelas->tingkat ?? 0);
+
+        return $tingkat > 0 ? $tingkat : KelasMahasiswa::tingkatDariNama($kelas->nama_kelas);
+    }
+
+    private function validasiTingkatUntukSemester(Mahasiswa $mahasiswa, ?int $nomorSemester): ?string
+    {
+        if (! $nomorSemester) {
+            return null;
+        }
+
+        $tingkatKelas = $this->tingkatKelasMahasiswa($mahasiswa->kelasMahasiswa);
+        $tingkatSeharusnya = intdiv($nomorSemester + 1, 2);
+
+        if (! $tingkatKelas) {
+            return 'Mahasiswa belum memiliki kelas aktif yang dapat divalidasi.';
+        }
+
+        if ($tingkatKelas !== $tingkatSeharusnya) {
+            return 'Semester ' . $nomorSemester . ' membutuhkan kelas tingkat ' . $tingkatSeharusnya
+                . ', sedangkan mahasiswa masih tercatat di tingkat ' . $tingkatKelas
+                . '. Proses kenaikan kelas harus dilakukan terlebih dahulu.';
+        }
+
+        return null;
+    }
+
     public function index(Request $request)
     {
         $prodi = $this->prodiKaprodi();
@@ -78,6 +111,8 @@ class PenyelesaianSemesterController extends Controller
                     $mahasiswa->alasan_validasi = 'Semester studi belum dapat dihitung. Periksa angkatan masuk dan riwayat cuti.';
                 } elseif ($progresTerakhir >= $nomorSemester) {
                     $mahasiswa->alasan_validasi = 'Progres terakhir tercatat sudah mencapai semester ini atau lebih tinggi.';
+                } else {
+                    $mahasiswa->alasan_validasi = $this->validasiTingkatUntukSemester($mahasiswa, $nomorSemester);
                 }
                 $mahasiswa->layak_diselesaikan = ! $mahasiswa->alasan_validasi;
             });
@@ -116,7 +151,7 @@ class PenyelesaianSemesterController extends Controller
         }
 
         DB::transaction(function () use ($data, $prodi, $semester, $kelas) {
-            $mahasiswaList = Mahasiswa::with('progresStudi')
+            $mahasiswaList = Mahasiswa::with(['progresStudi', 'kelasMahasiswa'])
                 ->where('prodi_id', $prodi->id)
                 ->where('status', 'aktif')
                 ->whereIn('id', $data['mahasiswa_ids'])
@@ -147,6 +182,13 @@ class PenyelesaianSemesterController extends Controller
                 if (! $nomorSemester || $progresTerakhir >= $nomorSemester) {
                     throw ValidationException::withMessages([
                         'mahasiswa_ids' => 'Progres mahasiswa ' . $mahasiswa->nim . ' tidak valid atau belum dapat dihitung. Tidak ada data yang diubah.',
+                    ]);
+                }
+
+                $alasanTingkat = $this->validasiTingkatUntukSemester($mahasiswa, (int) $nomorSemester);
+                if ($alasanTingkat) {
+                    throw ValidationException::withMessages([
+                        'mahasiswa_ids' => 'Mahasiswa ' . $mahasiswa->nim . ': ' . $alasanTingkat . ' Tidak ada data yang diubah.',
                     ]);
                 }
 
