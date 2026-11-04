@@ -27,6 +27,15 @@
         </div>
     </div>
 
+    @if ($penelitianPkm->status === 'ditolak' && $penelitianPkm->alasan_penolakan)
+        <div class="rounded-2xl border p-5 mb-4"
+             style="background: #fef2f2; border-color: #fecaca; color: #991b1b;">
+            <h2 class="font-semibold text-base mb-2">Keterangan Penolakan dari Kaprodi</h2>
+            <p class="text-sm whitespace-pre-line">{{ $penelitianPkm->alasan_penolakan }}</p>
+            <p class="text-xs mt-3">Silakan perhatikan catatan tersebut sebagai bahan perbaikan pengajuan.</p>
+        </div>
+    @endif
+
     <div class="rounded-2xl border p-5 mb-4" style="background: var(--card); border-color: var(--border);">
         <h2 class="font-serif-display text-lg mb-3">Laporan Akhir</h2>
         @if ($penelitianPkm->laporanAkhir)
