@@ -25,11 +25,11 @@
     @endif
 
     <div class="flex justify-end mb-4">
-        <a href="{{ route('prodi.create') }}"
+        <button type="button" onclick="document.getElementById('modalTambahProdi').showModal()"
            class="inline-block px-4 py-2 rounded-xl text-sm font-medium text-white hover:opacity-90"
            style="background: var(--primary);">
             + Tambah Prodi
-        </a>
+        </button>
     </div>
 
     <div class="rounded-2xl border overflow-hidden"
@@ -109,11 +109,8 @@
                                     </button>
 
                                     {{-- Edit Prodi --}}
-                                    <a href="{{ route('prodi.edit', $p) }}"
-                                       class="hover:underline"
-                                       style="color: var(--accent);">
-                                        Edit
-                                    </a>
+                                    <button type="button" onclick="document.getElementById('modalEditProdi{{ $p->id }}').showModal()"
+                                       class="hover:underline" style="color: var(--accent);">Edit</button>
 
                                     {{-- Hapus Prodi --}}
                                     <form method="POST"
@@ -320,4 +317,40 @@
             });
         });
     </script>
+
+    <dialog id="modalTambahProdi" class="ui-modal">
+        <form method="POST" action="{{ route('prodi.store') }}?modal=create" class="ui-modal__panel">
+            @csrf <input type="hidden" name="form_modal" value="create">
+            <div class="ui-modal__header"><div><h2 class="text-lg font-semibold">Tambah Program Studi</h2><p class="text-sm" style="color:var(--ui-muted)">Lengkapi informasi program studi.</p></div><button type="button" class="ui-modal__close" onclick="this.closest('dialog').close()" aria-label="Tutup">×</button></div>
+            <div class="ui-modal__body space-y-4">
+                <div><label class="block text-sm font-medium mb-1" for="prodi_jurusan_baru">Jurusan</label><select id="prodi_jurusan_baru" name="jurusan_id" required class="w-full rounded-xl border px-3 py-2.5" style="border-color:var(--ui-border)"><option value="">-- Pilih Jurusan --</option>@foreach ($jurusanList as $jurusan)<option value="{{ $jurusan->id }}" @selected(old('jurusan_id') == $jurusan->id)>{{ $jurusan->nama }}</option>@endforeach</select></div>
+                <div><label class="block text-sm font-medium mb-1" for="prodi_nama_baru">Nama Program Studi</label><input id="prodi_nama_baru" name="nama" value="{{ old('nama') }}" required class="w-full rounded-xl border px-3 py-2.5" style="border-color:var(--ui-border)"></div>
+            </div>
+            <div class="ui-modal__footer"><button type="button" class="px-4 py-2 rounded-xl border" onclick="this.closest('dialog').close()">Batal</button><button type="submit" class="px-4 py-2 rounded-xl text-white" style="background:var(--ui-primary)">Simpan Prodi</button></div>
+        </form>
+    </dialog>
+    @foreach ($prodi as $p)
+        <dialog id="modalEditProdi{{ $p->id }}" class="ui-modal">
+            <form method="POST" action="{{ route('prodi.update', $p) }}?modal=edit-{{ $p->id }}" class="ui-modal__panel">
+                @csrf @method('PUT') <input type="hidden" name="form_modal" value="edit-{{ $p->id }}">
+                <div class="ui-modal__header"><div><h2 class="text-lg font-semibold">Edit Program Studi</h2><p class="text-sm" style="color:var(--ui-muted)">{{ $p->nama }}</p></div><button type="button" class="ui-modal__close" onclick="this.closest('dialog').close()" aria-label="Tutup">×</button></div>
+                <div class="ui-modal__body space-y-4">
+                    <div><label class="block text-sm font-medium mb-1" for="prodi_jurusan_{{ $p->id }}">Jurusan</label><select id="prodi_jurusan_{{ $p->id }}" name="jurusan_id" required class="w-full rounded-xl border px-3 py-2.5" style="border-color:var(--ui-border)"><option value="">-- Pilih Jurusan --</option>@foreach ($jurusanList as $jurusan)<option value="{{ $jurusan->id }}" @selected(old('jurusan_id', $p->jurusan_id) == $jurusan->id)>{{ $jurusan->nama }}</option>@endforeach</select></div>
+                    <div><label class="block text-sm font-medium mb-1" for="prodi_nama_{{ $p->id }}">Nama Program Studi</label><input id="prodi_nama_{{ $p->id }}" name="nama" value="{{ old('nama', $p->nama) }}" required class="w-full rounded-xl border px-3 py-2.5" style="border-color:var(--ui-border)"></div>
+                </div>
+                <div class="ui-modal__footer"><button type="button" class="px-4 py-2 rounded-xl border" onclick="this.closest('dialog').close()">Batal</button><button type="submit" class="px-4 py-2 rounded-xl text-white" style="background:var(--ui-primary)">Simpan Perubahan</button></div>
+            </form>
+        </dialog>
+    @endforeach
+    <script>
+    document.querySelectorAll('dialog.ui-modal').forEach(function(dialog) { dialog.addEventListener('click', function(event) { if (event.target === dialog) dialog.close(); }); });
+    @if ($errors->any())
+    document.addEventListener('DOMContentLoaded', function() {
+        const key = @json(request('modal') ?: old('form_modal'));
+        if (key === 'create') document.getElementById('modalTambahProdi')?.showModal();
+        else if (key && key.startsWith('edit-')) document.getElementById('modalEditProdi' + key.slice(5))?.showModal();
+    });
+    @endif
+    </script>
+
 @endsection
