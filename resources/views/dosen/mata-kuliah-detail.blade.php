@@ -167,7 +167,7 @@
 
             <button
                 type="button"
-                onclick="document.getElementById('form-tambah-kelas').classList.toggle('hidden')"
+                onclick="document.getElementById('form-tambah-kelas').showModal()"
                 class="px-3 py-1.5 rounded-lg text-xs font-medium text-white"
                 style="background: var(--primary);"
             >
@@ -191,7 +191,7 @@
             </div>
         @endif
 
-        <div id="form-tambah-kelas" class="hidden p-4 border-b" style="border-color: var(--border);">
+        <dialog id="form-tambah-kelas" class="ui-modal"><div class="ui-modal__panel"><div class="ui-modal__header"><h2 class="text-lg font-semibold">Tambah Kelas</h2><button type="button" class="ui-modal__close" onclick="this.closest('dialog').close()">×</button></div><div class="ui-modal__body">
             <form method="POST" action="{{ route('mata-kuliah.kelas.store', $mataKuliah) }}" class="space-y-4">
                 @csrf
                 <div>
@@ -256,7 +256,7 @@
 
                     <button
                         type="button"
-                        onclick="document.getElementById('form-tambah-kelas').classList.add('hidden')"
+                        onclick="document.getElementById('form-tambah-kelas').close()"
                         class="px-4 py-2 rounded-lg border text-sm"
                         style="border-color: var(--border);"
                     >
@@ -264,8 +264,7 @@
                     </button>
                 </div>
             </form>
-
-        </div>
+        </div></div></dialog>
 
         <div class="p-2">
             @forelse ($mataKuliah->kelas as $kls)
