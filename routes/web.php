@@ -617,6 +617,8 @@ Route::middleware(['auth', 'role:admin,kaprodi'])->group(function () {
         ->name('cpl.destroy');
     Route::get('/kurikulum/{kurikulum}/laporan-cpl', [LaporanCplController::class, 'index'])
         ->name('kurikulum.laporan-cpl');
+    Route::get('/kurikulum/{kurikulum}/laporan-cpl/kelas/{kelasMahasiswa}', [LaporanCplController::class, 'showKelas'])
+        ->name('kurikulum.laporan-cpl.kelas');
     Route::get('/verifikasi-penelitian', [PenelitianPkmController::class, 'verifikasiIndex'])
         ->name('penelitian-pkm.verifikasi');
     Route::get('/verifikasi-penelitian/{penelitianPkm}', [PenelitianPkmController::class, 'verifikasiShow'])
