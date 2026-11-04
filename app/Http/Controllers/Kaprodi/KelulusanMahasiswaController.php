@@ -32,16 +32,32 @@ class KelulusanMahasiswaController extends Controller
         $angkatanList = Mahasiswa::where('prodi_id', $prodi->id)
             ->whereNotNull('angkatan_masuk')->distinct()->orderByDesc('angkatan_masuk')
             ->pluck('angkatan_masuk');
-        $query = Mahasiswa::with('kelasMahasiswa')
-            ->where('prodi_id', $prodi->id)->where('status', 'aktif');
+        $kelasList = Mahasiswa::with('kelasMahasiswa')
+            ->where('prodi_id', $prodi->id)
+            ->where('status', 'aktif')
+            ->get()
+            ->pluck('kelasMahasiswa')
+            ->filter()
+            ->unique('id')
+            ->sortBy('nama_kelas')
+            ->values();
 
+        // Jangan tampilkan seluruh mahasiswa sekaligus. Kaprodi memilih angkatan terlebih dahulu.
+        $mahasiswa = null;
         if ($request->filled('angkatan')) {
-            $query->where('angkatan_masuk', $request->integer('angkatan'));
+            $query = Mahasiswa::with('kelasMahasiswa')
+                ->where('prodi_id', $prodi->id)
+                ->where('status', 'aktif')
+                ->where('angkatan_masuk', $request->integer('angkatan'));
+
+            if ($request->filled('kelas')) {
+                $query->where('kelas_mahasiswa_id', $request->integer('kelas'));
+            }
+
+            $mahasiswa = $query->orderBy('nim')->paginate(30)->withQueryString();
         }
 
-        $mahasiswa = $query->orderBy('angkatan_masuk')->orderBy('nim')->paginate(30)->withQueryString();
-
-        return view('kaprodi.kelulusan.index', compact('prodi', 'angkatanList', 'mahasiswa'));
+        return view('kaprodi.kelulusan.index', compact('prodi', 'angkatanList', 'kelasList', 'mahasiswa'));
     }
 
     public function store(Request $request)
