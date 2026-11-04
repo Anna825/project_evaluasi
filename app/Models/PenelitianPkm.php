@@ -13,6 +13,7 @@ class PenelitianPkm extends Model
 
     protected $fillable = [
         'judul',
+        'deskripsi_kegiatan',
         'jenis',
         'kategori_pendanaan',
         'tahun_akademik_id',
