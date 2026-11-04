@@ -35,22 +35,17 @@ class PenempatanMahasiswaController extends Controller
     public function index(Request $request)
     {
         $prodi = $this->prodiKaprodi();
+        // Halaman ini khusus untuk mahasiswa yang masih berstatus Cuti.
+        // Mahasiswa Aktif tidak perlu muncul karena tidak membutuhkan penempatan kembali.
         $query = Mahasiswa::with(['kelasMahasiswa', 'progresStudi'])
-            ->where('prodi_id', $prodi->id);
+            ->where('prodi_id', $prodi->id)
+            ->where('status', 'cuti');
 
-        if ($request->filled('status')) {
-            $query->where('status', $request->status);
-        }
-        if ($request->filled('penempatan')) {
-            if ($request->penempatan === 'belum') {
-                $query->where('status', 'cuti');
-            } elseif ($request->penempatan === 'selesai') {
-                $query->where('status', 'aktif')->whereHas('riwayatPenempatanKelas', fn ($q) => $q->where('alasan_penempatan', 'cuti_kembali'));
-            }
-        }
         if ($request->filled('keyword')) {
-            $keyword = $request->keyword;
-            $query->where(fn ($q) => $q->where('nim', 'like', "%{$keyword}%")->orWhere('nama', 'like', "%{$keyword}%"));
+            $keyword = trim($request->keyword);
+            $query->where(fn ($q) => $q
+                ->where('nim', 'like', "%{$keyword}%")
+                ->orWhere('nama', 'like', "%{$keyword}%"));
         }
 
         $mahasiswa = $query->orderBy('nim')->paginate(15)->withQueryString();
