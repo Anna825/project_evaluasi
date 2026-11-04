@@ -14,7 +14,9 @@ class SemesterController extends Controller
             ->latest()
             ->get();
 
-        return view('semester.index', compact('semesterList'));
+        $tahunAkademikList = TahunAkademik::latest()->get();
+
+        return view('semester.index', compact('semesterList', 'tahunAkademikList'));
     }
 
     public function create()
