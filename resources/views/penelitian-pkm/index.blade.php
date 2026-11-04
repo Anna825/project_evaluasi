@@ -6,8 +6,33 @@
 
 @section('content')
     <div class="flex justify-end mb-4">
-        <a href="{{ route('penelitian-pkm.create') }}" class="inline-block px-4 py-2 rounded-xl text-sm font-medium text-white" style="background: var(--primary);">+ Ajukan Baru</a>
+        <button type="button" onclick="document.getElementById('modalAjukanPkm').showModal()" class="inline-block px-4 py-2 rounded-xl text-sm font-medium text-white" style="background: var(--primary);">+ Ajukan Baru</button>
     </div>
+
+    @if (session('status'))<div class="mb-4 rounded-xl border px-4 py-3 text-sm" style="background:#f0fdf4;border-color:#bbf7d0;color:#166534">{{ session('status') }}</div>@endif
+    @if ($errors->any())<div class="mb-4 rounded-xl border px-4 py-3 text-sm" style="background:#fef2f2;border-color:#fecaca;color:#991b1b"><ul class="list-disc pl-5">@foreach ($errors->all() as $error)<li>{{ $error }}</li>@endforeach</ul></div>@endif
+    <dialog id="modalAjukanPkm" class="ui-modal">
+        <form method="POST" action="{{ route('penelitian-pkm.store') }}" class="ui-modal__panel">
+            @csrf <input type="hidden" name="form_modal" value="pkm-create">
+            <div class="ui-modal__header"><div><h2 class="text-lg font-semibold">Ajukan Penelitian / PKM</h2><p class="text-sm" style="color:var(--ui-muted)">Isi informasi pengajuan dan anggota tim.</p></div><button type="button" class="ui-modal__close" onclick="this.closest('dialog').close()">×</button></div>
+            <div class="ui-modal__body space-y-4">
+                <div><label class="block text-sm font-medium mb-1">Judul *</label><input name="judul" value="{{ old('judul') }}" required maxlength="255" class="w-full rounded-xl border px-3 py-2.5" style="border-color:var(--ui-border)"></div>
+                <div><label class="block text-sm font-medium mb-1">Deskripsi Kegiatan *</label><textarea name="deskripsi_kegiatan" rows="5" minlength="20" maxlength="5000" required class="w-full rounded-xl border px-3 py-2.5" style="border-color:var(--ui-border)">{{ old('deskripsi_kegiatan') }}</textarea><p class="text-xs mt-1" style="color:var(--ui-muted)">Minimal 20 dan maksimal 5.000 karakter.</p></div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div><label class="block text-sm font-medium mb-1">Jenis *</label><select name="jenis" required class="w-full rounded-xl border px-3 py-2.5" style="border-color:var(--ui-border)"><option value="Penelitian" @selected(old('jenis')==='Penelitian')>Penelitian</option><option value="PKM" @selected(old('jenis')==='PKM')>PKM</option></select></div>
+                    <div><label class="block text-sm font-medium mb-1">Kategori Pendanaan</label><input name="kategori_pendanaan" value="{{ old('kategori_pendanaan') }}" placeholder="Internal, DIKTI, dsb." class="w-full rounded-xl border px-3 py-2.5" style="border-color:var(--ui-border)"></div>
+                </div>
+                <div><label class="block text-sm font-medium mb-1">Tahun Akademik *</label><select name="tahun_akademik_id" required class="w-full rounded-xl border px-3 py-2.5" style="border-color:var(--ui-border)"><option value="">Pilih Tahun Akademik</option>@foreach(\App\Models\TahunAkademik::orderByDesc('id')->get() as $ta)<option value="{{ $ta->id }}" @selected(old('tahun_akademik_id')==$ta->id)>{{ $ta->label }}</option>@endforeach</select></div>
+                <div><label class="block text-sm font-medium mb-1">Dosen Anggota (opsional)</label><select name="anggota[]" multiple size="5" class="w-full rounded-xl border px-3 py-2.5" style="border-color:var(--ui-border)">@foreach(\App\Models\Dosen::where('id','!=',auth()->user()->dosen?->id)->orderBy('nama')->get() as $dosen)<option value="{{ $dosen->id }}" @selected(in_array($dosen->id, old('anggota',[])))>{{ $dosen->nama }}</option>@endforeach</select><p class="text-xs mt-1" style="color:var(--ui-muted)">Gunakan Ctrl (Windows) atau Command (Mac) untuk memilih lebih dari satu dosen.</p></div>
+            </div>
+            <div class="ui-modal__footer"><button type="button" class="px-4 py-2 rounded-xl border" onclick="this.closest('dialog').close()">Batal</button><button type="submit" class="px-4 py-2 rounded-xl text-white" style="background:var(--ui-primary)">Ajukan</button></div>
+        </form>
+    </dialog>
+    <script>
+    const pkmDialog=document.getElementById('modalAjukanPkm');pkmDialog?.addEventListener('click',function(e){if(e.target===pkmDialog)pkmDialog.close();});
+    @if($errors->any() && old('form_modal')==='pkm-create')document.addEventListener('DOMContentLoaded',()=>pkmDialog?.showModal());@endif
+    </script>
+
     <div class="rounded-2xl border overflow-hidden" style="background: var(--card); border-color: var(--border);">
         <table class="w-full text-left text-sm">
             <thead style="background: var(--secondary);">
