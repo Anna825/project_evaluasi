@@ -65,7 +65,8 @@ class PenyelesaianSemesterController extends Controller
 
             $calculator = app(AcademicProgressCalculator::class);
             $mahasiswaList->each(function ($mahasiswa) use ($semester, $sudahDiproses, $calculator) {
-                $nomorSemester = $calculator->semesterBerjalan($mahasiswa, $semester);
+                $nomorSemester = $mahasiswa->progresStudi?->semester_berikutnya
+                    ?: $calculator->semesterBerjalan($mahasiswa, $semester);
                 $mahasiswa->nomor_semester_acuan = $nomorSemester;
                 $mahasiswa->sudah_diselesaikan = in_array((int) $mahasiswa->id, $sudahDiproses, true);
                 $progresTerakhir = (int) ($mahasiswa->progresStudi?->semester_terakhir_selesai ?? 0);
@@ -131,7 +132,8 @@ class PenyelesaianSemesterController extends Controller
             $calculator = app(AcademicProgressCalculator::class);
             $rencana = [];
             foreach ($mahasiswaList as $mahasiswa) {
-                $nomorSemester = $calculator->semesterBerjalan($mahasiswa, $semester);
+                $nomorSemester = $mahasiswa->progresStudi?->semester_berikutnya
+                    ?: $calculator->semesterBerjalan($mahasiswa, $semester);
                 $progresTerakhir = (int) ($mahasiswa->progresStudi?->semester_terakhir_selesai ?? 0);
                 $sudahDiproses = DB::table('riwayat_detail_penyelesaian_semester')
                     ->where('mahasiswa_id', $mahasiswa->id)
