@@ -28,6 +28,20 @@
                 <input type="text" name="judul" value="{{ old('judul') }}" class="w-full rounded-xl border px-3 py-2 text-sm" style="border-color: var(--border);" required>
             </div>
             <div class="mb-4">
+                <label for="deskripsi_kegiatan" class="block text-sm font-medium mb-1">
+                    Deskripsi Kegiatan <span class="text-red-600">*</span>
+                </label>
+                <p class="text-xs mb-2" style="color: var(--muted-foreground);">
+                    Jelaskan latar belakang singkat, tujuan, sasaran atau mitra, metode pelaksanaan, serta kegiatan utama yang akan dilakukan.
+                </p>
+                <textarea id="deskripsi_kegiatan" name="deskripsi_kegiatan" rows="5" minlength="20" maxlength="5000" required
+                    placeholder="Uraikan kegiatan penelitian/PKM secara jelas dan terstruktur..."
+                    class="w-full rounded-xl border px-3 py-2.5 text-sm"
+                    style="border-color: var(--border);">{{ old('deskripsi_kegiatan') }}</textarea>
+                <p class="text-xs mt-1" style="color: var(--muted-foreground);">Minimal 20 karakter, maksimal 5.000 karakter.</p>
+            </div>
+
+            <div class="mb-4">
                 <label class="block text-sm font-medium mb-1">Jenis</label>
                 <select name="jenis" class="w-full rounded-xl border px-3 py-2 text-sm" style="border-color: var(--border);" required>
                     <option value="Penelitian" {{ old('jenis') == 'Penelitian' ? 'selected' : '' }}>Penelitian</option>
