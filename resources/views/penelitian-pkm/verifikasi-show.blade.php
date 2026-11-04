@@ -82,6 +82,15 @@
                     </div>
 
 
+                    {{-- Deskripsi Kegiatan --}}
+                    <div>
+                        <p class="text-xs mb-1.5" style="color: var(--muted-foreground);">Deskripsi Kegiatan</p>
+                        <div class="rounded-xl border p-4 text-sm whitespace-pre-line"
+                             style="background: var(--secondary); border-color: var(--border);">
+                            {{ $penelitianPkm->deskripsi_kegiatan ?: 'Belum ada deskripsi kegiatan.' }}
+                        </div>
+                    </div>
+
                     {{-- Jenis --}}
                     <div>
                         <p
@@ -345,70 +354,57 @@
         @endif
 
         {{-- Footer Aksi --}}
-        <div
-            class="p-6 border-t flex justify-end items-center gap-3"
-            style="border-color: var(--border);"
-        >
-
-            @if ($penelitianPkm->status === 'diajukan')
-
-                {{-- Setujui --}}
-                <form
-                    method="POST"
-                    action="{{ route('penelitian-pkm.approve', $penelitianPkm) }}"
-                >
+        @if ($penelitianPkm->status === 'diajukan')
+            <div class="p-6 border-t space-y-5" style="border-color: var(--border);">
+                <form method="POST"
+                      action="{{ route('penelitian-pkm.reject', $penelitianPkm) }}"
+                      class="w-full">
                     @csrf
                     @method('PATCH')
 
-                    <button
-                        type="submit"
-                        class="px-5 py-2.5 rounded-lg text-sm font-medium text-white hover:opacity-90"
-                        style="background: #2e7d32;"
-                    >
-                        Setujui
-                    </button>
-                </form>
-
-
-                {{-- Tolak dengan alasan --}}
-                <form
-                    method="POST"
-                    action="{{ route('penelitian-pkm.reject', $penelitianPkm) }}"
-                    class="w-full max-w-xl"
-                >
-                    @csrf
-                    @method('PATCH')
-
-                    <label for="alasan_penolakan" class="block text-sm font-medium mb-2">
+                    <label for="alasan_penolakan" class="block text-sm font-semibold mb-2">
                         Alasan Penolakan <span class="text-red-600">*</span>
                     </label>
-                    <textarea
-                        id="alasan_penolakan"
-                        name="alasan_penolakan"
-                        rows="3"
-                        maxlength="2000"
-                        required
-                        minlength="5"
-                        placeholder="Tuliskan alasan mengapa pengajuan penelitian/PKM ditolak..."
-                        class="w-full rounded-xl border px-3 py-2.5 text-sm mb-2"
-                        style="border-color: var(--border);"
-                    >{{ old('alasan_penolakan') }}</textarea>
+                    <p class="text-xs mb-2" style="color: var(--muted-foreground);">
+                        Jika pengajuan belum dapat disetujui, jelaskan bagian yang perlu diperbaiki oleh dosen pengusul.
+                    </p>
+                    <textarea id="alasan_penolakan" name="alasan_penolakan" rows="4"
+                              maxlength="2000" minlength="5" required
+                              placeholder="Tuliskan alasan penolakan secara jelas..."
+                              class="w-full rounded-xl border px-3 py-2.5 text-sm"
+                              style="border-color: var(--border);">{{ old('alasan_penolakan') }}</textarea>
                     @error('alasan_penolakan')
-                        <p class="text-sm mb-2" style="color: #b91c1c;">{{ $message }}</p>
+                        <p class="text-sm mt-1" style="color: #b91c1c;">{{ $message }}</p>
                     @enderror
 
-                    <button
-                        type="submit"
-                        class="px-5 py-2.5 rounded-lg text-sm font-medium text-white hover:opacity-90"
-                        style="background: #a13d3d;"
-                    >
-                        Tolak Pengajuan
-                    </button>
+                    <div class="flex flex-col-reverse sm:flex-row sm:items-center sm:justify-between gap-3 mt-4">
+                        <span class="text-xs" style="color: var(--muted-foreground);">
+                            Alasan wajib diisi apabila memilih Tolak Pengajuan.
+                        </span>
+                        <div class="flex justify-end gap-3">
+                            <button type="submit"
+                                    class="px-5 py-2.5 rounded-lg text-sm font-medium text-white hover:opacity-90"
+                                    style="background: #a13d3d;">
+                                Tolak Pengajuan
+                            </button>
+                        </div>
+                    </div>
                 </form>
 
-            @endif
-
-        </div>
+                <div class="flex justify-end border-t pt-4" style="border-color: var(--border);">
+                    <form method="POST" action="{{ route('penelitian-pkm.approve', $penelitianPkm) }}"
+                          onsubmit="return confirm('Setujui pengajuan penelitian/PKM ini?');">
+                        @csrf
+                        @method('PATCH')
+                        <button type="submit"
+                                class="px-5 py-2.5 rounded-lg text-sm font-medium text-white hover:opacity-90"
+                                style="background: #2e7d32;">
+                            Setujui Pengajuan
+                        </button>
+                    </form>
+                </div>
+            </div>
+        @endif
 
     </div>
 
