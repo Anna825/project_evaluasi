@@ -164,6 +164,12 @@ class ValidasiProgresAkademikController extends Controller
             $semesterValid = $analisis['semester_valid'];
             $detailTerakhir = $analisis['detail_valid_terakhir'];
 
+            if ($semesterValid < 1 || ! $detailTerakhir) {
+                throw ValidationException::withMessages([
+                    'mahasiswa' => 'Belum ditemukan riwayat penyelesaian semester valid. Perbaikan otomatis tidak dapat dilakukan; riwayat harus diverifikasi terlebih dahulu.',
+                ]);
+            }
+
             $after = [
                 'semester_terakhir_selesai' => $semesterValid,
                 'semester_berikutnya' => $semesterValid + 1,
