@@ -57,9 +57,7 @@
                     Capaian pembelajaran lulusan pada kurikulum ini.
                 </p>
             </div>
-            <a href="{{ route('cpl.create', $kurikulum) }}"class="inline-flex items-center px-4 py-2 rounded-xl text-sm font-medium text-white hover:opacity-90 shrink-0"style="background: var(--primary);">
-                + Tambah CPL
-            </a>
+            <button type="button" onclick="document.getElementById('modalTambahCpl').showModal()" class="inline-flex items-center px-4 py-2 rounded-xl text-sm font-medium text-white hover:opacity-90 shrink-0" style="background:var(--primary)">+ Tambah CPL</button>
         </div>
         <div class="p-2">
             @forelse ($kurikulum->cpl as $cpl)
@@ -78,9 +76,7 @@
                         </p>
                     </div>
                     <div class="flex gap-4 shrink-0">
-                        <a href="{{ route('cpl.edit', $cpl) }}"class="text-sm hover:underline"style="color: var(--accent);">
-                            Edit
-                        </a>
+                        <button type="button" onclick="document.getElementById('modalEditCpl{{ $cpl->id }}').showModal()" class="text-sm hover:underline" style="color:var(--accent)">Edit</button>
                         <form method="POST"action="{{ route('cpl.destroy', $cpl) }}"onsubmit="return confirm('Yakin hapus CPL ini?')">
                             @csrf
                             @method('DELETE')
@@ -260,5 +256,45 @@
             @endforelse
         </div>
     </div>
+
+
+    @if (session('status'))
+        <div class="mb-4 rounded-xl border px-4 py-3 text-sm" style="background:#f0fdf4;border-color:#bbf7d0;color:#166534">{{ session('status') }}</div>
+    @endif
+    @if ($errors->any())
+        <div class="mb-4 rounded-xl border px-4 py-3 text-sm" style="background:#fef2f2;border-color:#fecaca;color:#991b1b"><ul class="list-disc pl-5">@foreach ($errors->all() as $error)<li>{{ $error }}</li>@endforeach</ul></div>
+    @endif
+    <dialog id="modalTambahCpl" class="ui-modal">
+        <form method="POST" action="{{ route('cpl.store') }}" class="ui-modal__panel">
+            @csrf <input type="hidden" name="kurikulum_id" value="{{ $kurikulum->id }}"><input type="hidden" name="form_modal" value="create">
+            <div class="ui-modal__header"><div><h2 class="text-lg font-semibold">Tambah CPL</h2><p class="text-sm" style="color:var(--ui-muted)">Kurikulum: {{ $kurikulum->nama }}</p></div><button type="button" class="ui-modal__close" onclick="this.closest('dialog').close()">×</button></div>
+            <div class="ui-modal__body space-y-4">
+                <div><label class="block text-sm font-medium mb-1" for="cpl_kode_baru">Kode CPL</label><input id="cpl_kode_baru" name="kode" value="{{ old('kode') }}" placeholder="Contoh: CPL-01" required class="w-full rounded-xl border px-3 py-2.5" style="border-color:var(--ui-border)"></div>
+                <div><label class="block text-sm font-medium mb-1" for="cpl_domain_baru">Domain (opsional)</label><input id="cpl_domain_baru" name="domain" value="{{ old('domain') }}" class="w-full rounded-xl border px-3 py-2.5" style="border-color:var(--ui-border)"></div>
+                <div><label class="block text-sm font-medium mb-1" for="cpl_deskripsi_baru">Deskripsi</label><textarea id="cpl_deskripsi_baru" name="deskripsi" rows="5" required class="w-full rounded-xl border px-3 py-2.5" style="border-color:var(--ui-border)">{{ old('deskripsi') }}</textarea></div>
+            </div>
+            <div class="ui-modal__footer"><button type="button" class="px-4 py-2 rounded-xl border" onclick="this.closest('dialog').close()">Batal</button><button type="submit" class="px-4 py-2 rounded-xl text-white" style="background:var(--ui-primary)">Simpan CPL</button></div>
+        </form>
+    </dialog>
+    @foreach ($kurikulum->cpl as $cpl)
+        <dialog id="modalEditCpl{{ $cpl->id }}" class="ui-modal">
+            <form method="POST" action="{{ route('cpl.update', $cpl) }}" class="ui-modal__panel">
+                @csrf @method('PUT') <input type="hidden" name="kurikulum_id" value="{{ $kurikulum->id }}"><input type="hidden" name="form_modal" value="edit-{{ $cpl->id }}">
+                <div class="ui-modal__header"><div><h2 class="text-lg font-semibold">Edit CPL</h2><p class="text-sm" style="color:var(--ui-muted)">{{ $cpl->kode }}</p></div><button type="button" class="ui-modal__close" onclick="this.closest('dialog').close()">×</button></div>
+                <div class="ui-modal__body space-y-4">
+                    <div><label class="block text-sm font-medium mb-1" for="cpl_kode_{{ $cpl->id }}">Kode CPL</label><input id="cpl_kode_{{ $cpl->id }}" name="kode" value="{{ old('kode', $cpl->kode) }}" required class="w-full rounded-xl border px-3 py-2.5" style="border-color:var(--ui-border)"></div>
+                    <div><label class="block text-sm font-medium mb-1" for="cpl_domain_{{ $cpl->id }}">Domain (opsional)</label><input id="cpl_domain_{{ $cpl->id }}" name="domain" value="{{ old('domain', $cpl->domain) }}" class="w-full rounded-xl border px-3 py-2.5" style="border-color:var(--ui-border)"></div>
+                    <div><label class="block text-sm font-medium mb-1" for="cpl_deskripsi_{{ $cpl->id }}">Deskripsi</label><textarea id="cpl_deskripsi_{{ $cpl->id }}" name="deskripsi" rows="5" required class="w-full rounded-xl border px-3 py-2.5" style="border-color:var(--ui-border)">{{ old('deskripsi', $cpl->deskripsi) }}</textarea></div>
+                </div>
+                <div class="ui-modal__footer"><button type="button" class="px-4 py-2 rounded-xl border" onclick="this.closest('dialog').close()">Batal</button><button type="submit" class="px-4 py-2 rounded-xl text-white" style="background:var(--ui-primary)">Simpan Perubahan</button></div>
+            </form>
+        </dialog>
+    @endforeach
+    <script>
+    document.querySelectorAll('dialog.ui-modal').forEach(function(dialog){dialog.addEventListener('click',function(event){if(event.target===dialog)dialog.close();});});
+    @if ($errors->any())
+    document.addEventListener('DOMContentLoaded',function(){const key=@json(old('form_modal'));if(key==='create')document.getElementById('modalTambahCpl')?.showModal();else if(key&&key.startsWith('edit-'))document.getElementById('modalEditCpl'+key.slice(5))?.showModal();});
+    @endif
+    </script>
 
 @endsection
