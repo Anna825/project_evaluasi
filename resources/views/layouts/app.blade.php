@@ -136,6 +136,12 @@
                         'icon' => $icons['people'],
                     ],
                     [
+                    [
+                        'route' => 'kaprodi.penyelesaian-semester.index',
+                        'pattern' => 'kaprodi.penyelesaian-semester.*',
+                        'label' => 'Penyelesaian Semester',
+                        'icon' => $icons['book'],
+                    ],
                         'route' => 'kaprodi.kenaikan-kelas.index',
                         'pattern' => 'kaprodi.kenaikan-kelas.*',
                         'label' => 'Kenaikan Kelas',
