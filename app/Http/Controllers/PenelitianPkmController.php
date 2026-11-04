@@ -162,10 +162,19 @@ class PenelitianPkmController extends Controller
         PenelitianPkm $penelitianPkm
     ) {
         $this->pastikanKetuaTim($penelitianPkm);
-        // Update data utama penelitian/PKM.
-        $penelitianPkm->update(
-            $request->validated()
-        );
+
+        // Jika pengajuan sebelumnya ditolak, penyimpanan perbaikan
+        // sekaligus mengajukan ulang ke Kaprodi.
+        $pengajuanUlang = $penelitianPkm->status === 'ditolak';
+
+        $dataUpdate = $request->validated();
+
+        if ($pengajuanUlang) {
+            $dataUpdate['status'] = 'diajukan';
+            $dataUpdate['alasan_penolakan'] = null;
+        }
+
+        $penelitianPkm->update($dataUpdate);
         // Ambil anggota yang dipilih dari form.
         $anggotaIds = $request->input('anggota', []);
         // Ketua tetap adalah dosen yang sedang login.
@@ -185,7 +194,12 @@ class PenelitianPkmController extends Controller
         $penelitianPkm->dosen()->sync($syncData);
         return redirect()
             ->route('penelitian-pkm.index')
-            ->with('status', 'Penelitian/PKM berhasil diperbarui.');
+            ->with(
+                'status',
+                $pengajuanUlang
+                    ? 'Perbaikan berhasil disimpan dan pengajuan telah dikirim ulang ke Kaprodi.'
+                    : 'Penelitian/PKM berhasil diperbarui.'
+            );
     }
 
     public function destroy(PenelitianPkm $penelitianPkm)
