@@ -56,22 +56,7 @@
                                         </button>
                                     </form>
 
-                                    {{-- Tolak --}}
-                                    <form
-                                        method="POST"
-                                        action="{{ route('penelitian-pkm.reject', $p) }}"
-                                    >
-                                        @csrf
-                                        @method('PATCH')
-
-                                        <button
-                                            type="submit"
-                                            class="px-3 py-1 rounded-lg text-xs font-medium text-white"
-                                            style="background: #a13d3d;"
-                                        >
-                                            Tolak
-                                        </button>
-                                    </form>
+                                    {{-- Penolakan dilakukan dari halaman detail agar Kaprodi wajib mengisi alasan. --}}
 
                                 @endif
 
