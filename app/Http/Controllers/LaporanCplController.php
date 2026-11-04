@@ -1,10 +1,10 @@
 <?php
 
-namespace App\\Http\\Controllers;
+namespace App\Http\Controllers;
 
-use App\\Models\\Kurikulum;
-use App\\Models\\Mahasiswa;
-use App\\Services\\CplAggregationService;
+use App\Models\Kurikulum;
+use App\Models\Mahasiswa;
+use App\Services\CplAggregationService;
 
 class LaporanCplController extends Controller
 {
