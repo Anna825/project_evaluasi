@@ -61,9 +61,7 @@
             </dl>
 
             <div class="flex gap-2 mt-6">
-                <a href="{{ route('mahasiswa.edit', $mahasiswa) }}" class="flex-1 text-center px-4 py-2.5 rounded-lg text-sm font-medium text-white" style="background: var(--primary);">
-                    Edit
-                </a>
+                <button type="button" onclick="document.getElementById('modalEditMahasiswa').showModal()" class="flex-1 text-center px-4 py-2.5 rounded-lg text-sm font-medium text-white" style="background: var(--primary);">Edit</button>
                 <a href="{{ route('mahasiswa.index') }}" class="flex-1 text-center px-4 py-2.5 rounded-lg text-sm font-medium border" style="border-color: var(--border); color: var(--muted-foreground);">
                     Kembali
                 </a>
@@ -129,4 +127,27 @@
             </div>
         </div>
     </div>
+
+    @if($errors->any())<div class="mb-4 rounded-xl border px-4 py-3 text-sm" style="background:#fef2f2;border-color:#fecaca;color:#991b1b"><ul class="list-disc pl-5">@foreach($errors->all() as $error)<li>{{ $error }}</li>@endforeach</ul></div>@endif
+    <dialog id="modalEditMahasiswa" class="ui-modal">
+        <form method="POST" action="{{ route('mahasiswa.update',$mahasiswa) }}" class="ui-modal__panel">
+            @csrf @method('PUT') <input type="hidden" name="form_modal" value="mahasiswa-edit">
+            <div class="ui-modal__header"><div><h2 class="text-lg font-semibold">Edit Data Mahasiswa</h2><p class="text-sm" style="color:var(--ui-muted)">{{ $mahasiswa->nama }} — {{ $mahasiswa->nim }}</p></div><button type="button" class="ui-modal__close" onclick="this.closest('dialog').close()">×</button></div>
+            <div class="ui-modal__body space-y-4">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div><label class="block text-sm font-medium mb-1">NIM *</label><input name="nim" value="{{ old('nim',$mahasiswa->nim) }}" required class="w-full rounded-xl border px-3 py-2.5" style="border-color:var(--ui-border)"></div>
+                    <div><label class="block text-sm font-medium mb-1">Nama Lengkap *</label><input name="nama" value="{{ old('nama',$mahasiswa->nama) }}" required maxlength="255" class="w-full rounded-xl border px-3 py-2.5" style="border-color:var(--ui-border)"></div>
+                </div>
+                <div><label class="block text-sm font-medium mb-1">Program Studi *</label><select name="prodi_id" required class="w-full rounded-xl border px-3 py-2.5" style="border-color:var(--ui-border)">@foreach(\App\Models\Prodi::orderBy('nama')->get() as $prodi)<option value="{{ $prodi->id }}" @selected(old('prodi_id',$mahasiswa->prodi_id)==$prodi->id)>{{ $prodi->nama }}</option>@endforeach</select></div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div><label class="block text-sm font-medium mb-1">Angkatan Masuk *</label><input type="number" name="angkatan" min="2000" max="{{ date('Y')+1 }}" value="{{ old('angkatan',$mahasiswa->angkatan_masuk) }}" required class="w-full rounded-xl border px-3 py-2.5" style="border-color:var(--ui-border)"></div>
+                    <div><label class="block text-sm font-medium mb-1">IPK Terakhir</label><input type="number" name="ipk_terakhir" min="0" max="4" step="0.01" value="{{ old('ipk_terakhir',$mahasiswa->ipk_terakhir) }}" class="w-full rounded-xl border px-3 py-2.5" style="border-color:var(--ui-border)"></div>
+                </div>
+                <div><label class="block text-sm font-medium mb-1">Status Mahasiswa *</label><select name="status" required class="w-full rounded-xl border px-3 py-2.5" style="border-color:var(--ui-border)"><option value="aktif" @selected(old('status',$mahasiswa->status)==='aktif')>Aktif</option><option value="cuti" @selected(old('status',$mahasiswa->status)==='cuti')>Cuti</option><option value="DO" @selected(old('status',$mahasiswa->status)==='DO')>DO</option></select><p class="text-xs mt-1" style="color:var(--ui-muted)">Perubahan menjadi Lulus dilakukan melalui menu Penetapan Kelulusan Kaprodi. Mahasiswa Cuti yang kembali aktif harus melalui menu Penempatan.</p></div>
+            </div>
+            <div class="ui-modal__footer"><button type="button" class="px-4 py-2 rounded-xl border" onclick="this.closest('dialog').close()">Batal</button><button type="submit" class="px-4 py-2 rounded-xl text-white" style="background:var(--ui-primary)">Simpan Perubahan</button></div>
+        </form>
+    </dialog>
+    <script>const editMhsDialog=document.getElementById('modalEditMahasiswa');editMhsDialog?.addEventListener('click',e=>{if(e.target===editMhsDialog)editMhsDialog.close()});@if($errors->any() && old('form_modal')==='mahasiswa-edit')document.addEventListener('DOMContentLoaded',()=>editMhsDialog?.showModal());@endif</script>
+
 @endsection
