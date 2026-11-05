@@ -167,8 +167,8 @@
 
                     <h3 class="text-lg font-semibold">
                         {{ $kelas->nama_kelas }}
-                        @if ($kelas->angkatan_mayoritas)
-                            <span class="font-normal">({{ $kelas->angkatan_mayoritas }})</span>
+                        @if ($kelas->angkatan)
+                            <span class="font-normal">(Angkatan {{ $kelas->angkatan }})</span>
                         @endif
                     </h3>
 
