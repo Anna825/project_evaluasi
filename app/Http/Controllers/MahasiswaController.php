@@ -104,15 +104,19 @@ class MahasiswaController extends Controller
                 'kelas_mahasiswa_id',
                 $kelas->id
             )->exists();
+            $memilikiRiwayatKenaikanKelas = DB::table('riwayat_batch_kenaikan_kelas')
+                ->where('kelas_asal_id', $kelas->id)
+                ->exists();
 
             if (
                 $masihMemilikiMahasiswa ||
                 $memilikiRiwayatPenempatan ||
                 $memilikiUsulanAsal ||
                 $memilikiUsulanTujuan ||
-                $memilikiKelasPerkuliahan
+                $memilikiKelasPerkuliahan ||
+                $memilikiRiwayatKenaikanKelas
             ) {
-                $pesanPenolakan = 'Kelas tidak dapat dihapus karena masih memiliki mahasiswa, riwayat penempatan, usulan penempatan, atau data perkuliahan yang terhubung. Pindahkan mahasiswa dan pastikan seluruh relasi sudah tidak digunakan.';
+                $pesanPenolakan = 'Kelas tidak dapat dihapus karena masih memiliki mahasiswa, riwayat penempatan, riwayat kenaikan kelas, usulan penempatan, atau data perkuliahan yang terhubung. Riwayat akademik dipertahankan sebagai jejak audit.';
                 return;
             }
 
