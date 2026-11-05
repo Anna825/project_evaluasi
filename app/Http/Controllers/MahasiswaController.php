@@ -20,7 +20,10 @@ class MahasiswaController extends Controller
         $search = trim((string) $request->query('search', ''));
         $prodiId = $request->query('prodi_id');
 
-        $kelasQuery = KelasMahasiswa::with([
+        // Tampilkan hanya kelas yang masih memiliki anggota (aktif maupun cuti).
+        // Kelas kosong tetap disimpan agar riwayat akademik yang mereferensikannya aman,
+        // tetapi tidak ditampilkan sebagai kartu kelas yang sudah tidak digunakan.
+        $kelasQuery = KelasMahasiswa::whereHas('mahasiswa')->with([
             'prodi',
             'mahasiswa:id,kelas_mahasiswa_id,angkatan_masuk,nama,nim',
         ])->withCount('mahasiswa');
