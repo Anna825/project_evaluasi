@@ -81,7 +81,6 @@ class KenaikanKelasController extends Controller
                     ->where('nama_kelas', $namaTujuan)
                     ->where('angkatan', $kelasAsalTerpilih->angkatan)
                     ->where('id', '!=', $kelasAsalTerpilih->id)
-                    ->where('status_kelas', 'aktif')
                     ->exists();
 
                 if ($bentrokKelas) {
@@ -208,7 +207,6 @@ class KenaikanKelasController extends Controller
                 ->where('nama_kelas', $namaTujuan)
                 ->where('angkatan', $kelas->angkatan)
                 ->where('id', '!=', $kelas->id)
-                ->where('status_kelas', 'aktif')
                 ->exists();
 
             if ($bentrokKelas) {
@@ -258,8 +256,9 @@ class KenaikanKelasController extends Controller
                 $rencana[] = $mahasiswa;
             }
 
-            // Buat identitas kelas tujuan baru. Pertahankan record kelas asal agar mahasiswa Cuti
-            // tetap memakai ID kelas asal sampai mengikuti prosedur penempatan saat kembali aktif.
+            // Pertahankan identitas/ID kelas yang sama. Kenaikan kelas hanya
+            // mengganti nama dan tingkat pada record kelas; seluruh mahasiswa,
+            // termasuk yang sedang Cuti, tetap terhubung ke kelas ini.
             $kelasAsalId = $kelas->id;
             $kelasSebelum = [
                 'kelas_mahasiswa_id' => $kelasAsalId,
@@ -268,12 +267,9 @@ class KenaikanKelasController extends Controller
                 'angkatan' => $kelas->angkatan,
             ];
 
-            $kelasTujuan = KelasMahasiswa::create([
-                'prodi_id' => $kelas->prodi_id,
+            $kelas->update([
                 'nama_kelas' => $namaTujuan,
                 'tingkat' => $tingkatAsal + 1,
-                'angkatan' => $kelas->angkatan,
-                'status_kelas' => 'aktif',
             ]);
 
             DB::table('riwayat_batch_kenaikan_kelas')->insert([
@@ -288,21 +284,17 @@ class KenaikanKelasController extends Controller
             ]);
 
             foreach ($rencana as $mahasiswa) {
-                $mahasiswa->update([
-                    'kelas_mahasiswa_id' => $kelasTujuan->id,
-                ]);
-
                 RiwayatAksiAkademik::create([
                     'mahasiswa_id' => $mahasiswa->id,
                     'jenis_aksi' => 'kenaikan_kelas',
                     'data_sebelum' => [
-                        'kelas_mahasiswa_id' => $kelas->id,
+                        'kelas_mahasiswa_id' => $kelasAsalId,
                         'nama_kelas' => $kelasSebelum['nama_kelas'],
                         'tingkat' => $kelasSebelum['tingkat'],
                         'angkatan' => $kelasSebelum['angkatan'],
                     ],
                     'data_sesudah' => [
-                        'kelas_mahasiswa_id' => $kelasTujuan->id,
+                        'kelas_mahasiswa_id' => $kelasAsalId,
                         'nama_kelas' => $namaTujuan,
                         'tingkat' => $tingkatAsal + 1,
                         'angkatan' => $kelas->angkatan,
@@ -314,6 +306,6 @@ class KenaikanKelasController extends Controller
         });
 
         return redirect()->route('kaprodi.kenaikan-kelas.index')
-            ->with('status', 'Kenaikan kelas berhasil. Identitas kelas mahasiswa Aktif diperbarui; mahasiswa Cuti tetap menggunakan kelas asal.');
+            ->with('status', 'Kenaikan kelas berhasil. Nama dan tingkat kelas diperbarui tanpa memindahkan mahasiswa atau membuat kartu kelas baru.');
     }
 }
