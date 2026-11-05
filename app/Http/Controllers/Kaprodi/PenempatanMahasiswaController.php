@@ -63,11 +63,21 @@ class PenempatanMahasiswaController extends Controller
         }
 
         $mahasiswa->load(['kelasMahasiswa', 'progresStudi', 'riwayatPenempatanKelas.semester', 'statusLog.semester']);
+        // Semester 1-2 berada pada tingkat 1, semester 3-4 tingkat 2, dst.
+        // Tampilkan kelas aktif pada tingkat yang sesuai dengan progres mahasiswa.
+        $semesterBerikutnya = (int) ($mahasiswa->progresStudi?->semester_berikutnya ?? 1);
+        $tingkatTujuan = (int) ceil(max(1, $semesterBerikutnya) / 2);
+
         $kelasList = KelasMahasiswa::where('prodi_id', $prodi->id)
-            ->where('status_kelas', 'aktif')->orderBy('tingkat')->orderBy('nama_kelas')->get();
+            ->where('status_kelas', 'aktif')
+            ->where('tingkat', $tingkatTujuan)
+            ->where('id', '!=', $mahasiswa->kelas_mahasiswa_id)
+            ->orderBy('angkatan')
+            ->orderBy('nama_kelas')
+            ->get();
         $semesterList = Semester::with('tahunAkademik')->orderByDesc('tanggal_mulai')->get();
 
-        return view('kaprodi.penempatan.show', compact('prodi', 'mahasiswa', 'kelasList', 'semesterList'));
+        return view('kaprodi.penempatan.show', compact('prodi', 'mahasiswa', 'kelasList', 'semesterList', 'semesterBerikutnya', 'tingkatTujuan'));
     }
 
     public function store(Request $request, Mahasiswa $mahasiswa)
@@ -80,12 +90,10 @@ class PenempatanMahasiswaController extends Controller
 
         $data = $request->validate([
             'semester_id' => ['required', 'integer', 'exists:semester,id'],
+            'kelas_tujuan_id' => ['required', 'integer', 'exists:kelas_mahasiswa,id'],
             'catatan' => ['nullable', 'string', 'max:1000'],
         ]);
-        $kelasTujuan = KelasMahasiswa::where('id', $mahasiswa->kelas_mahasiswa_id)
-            ->where('prodi_id', $prodi->id)->where('status_kelas', 'aktif')->firstOrFail();
-
-        DB::transaction(function () use ($mahasiswa, $data, $kelasTujuan) {
+        DB::transaction(function () use ($mahasiswa, $data, $prodi) {
             $mahasiswa->refresh();
             if ($mahasiswa->status !== 'cuti') {
                 throw ValidationException::withMessages(['mahasiswa' => 'Status mahasiswa sudah berubah. Muat ulang halaman.']);
@@ -95,6 +103,22 @@ class PenempatanMahasiswaController extends Controller
             if (! $semesterBerikutnya) {
                 throw ValidationException::withMessages(['semester_id' => 'Semester studi tidak dapat dihitung dari angkatan, kalender akademik, dan riwayat Cuti. Periksa data historis mahasiswa.']);
             }
+
+            $tingkatTujuan = (int) ceil(max(1, $semesterBerikutnya) / 2);
+            $kelasTujuan = KelasMahasiswa::where('id', $data['kelas_tujuan_id'])
+                ->where('prodi_id', $prodi->id)
+                ->where('status_kelas', 'aktif')
+                ->where('tingkat', $tingkatTujuan)
+                ->where('id', '!=', $mahasiswa->kelas_mahasiswa_id)
+                ->lockForUpdate()
+                ->first();
+
+            if (! $kelasTujuan) {
+                throw ValidationException::withMessages([
+                    'kelas_tujuan_id' => 'Pilih kelas aktif pada tingkat yang sesuai dengan semester studi mahasiswa (Semester ' . $semesterBerikutnya . ').',
+                ]);
+            }
+
             $riwayatCuti = RiwayatCutiMahasiswa::where('mahasiswa_id', $mahasiswa->id)
                 ->whereNull('tanggal_selesai')->latest('tanggal_mulai')->first();
 
@@ -108,6 +132,7 @@ class PenempatanMahasiswaController extends Controller
             $dataSebelum = [
                 'status' => $mahasiswa->status,
                 'kelas_mahasiswa_id' => $mahasiswa->kelas_mahasiswa_id,
+                'nama_kelas' => $mahasiswa->kelasMahasiswa?->nama_kelas,
             ];
             $mahasiswa->update(['kelas_mahasiswa_id' => $kelasTujuan->id, 'status' => 'aktif']);
 
@@ -118,6 +143,8 @@ class PenempatanMahasiswaController extends Controller
                 'data_sesudah' => [
                     'status' => 'aktif',
                     'kelas_mahasiswa_id' => $kelasTujuan->id,
+                    'nama_kelas' => $kelasTujuan->nama_kelas,
+                    'angkatan_kelas' => $kelasTujuan->angkatan,
                     'semester_berikutnya' => $semesterBerikutnya,
                     'semester_id' => $semester->id,
                 ],
