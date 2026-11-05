@@ -258,15 +258,22 @@ class KenaikanKelasController extends Controller
                 $rencana[] = $mahasiswa;
             }
 
+            // Buat identitas kelas tujuan baru. Jangan mengubah record kelas asal,
+            // karena mahasiswa Cuti/nonaktif masih harus tercatat pada kelas sebelum kenaikan.
+            $kelasAsalId = $kelas->id;
             $kelasSebelum = [
+                'kelas_mahasiswa_id' => $kelasAsalId,
                 'nama_kelas' => $kelas->nama_kelas,
                 'tingkat' => $kelas->tingkat,
                 'angkatan' => $kelas->angkatan,
             ];
 
-            $kelas->update([
+            $kelasTujuan = KelasMahasiswa::create([
+                'prodi_id' => $kelas->prodi_id,
                 'nama_kelas' => $namaTujuan,
                 'tingkat' => $tingkatAsal + 1,
+                'angkatan' => $kelas->angkatan,
+                'status_kelas' => 'aktif',
             ]);
 
             DB::table('riwayat_batch_kenaikan_kelas')->insert([
@@ -281,6 +288,10 @@ class KenaikanKelasController extends Controller
             ]);
 
             foreach ($rencana as $mahasiswa) {
+                $mahasiswa->update([
+                    'kelas_mahasiswa_id' => $kelasTujuan->id,
+                ]);
+
                 RiwayatAksiAkademik::create([
                     'mahasiswa_id' => $mahasiswa->id,
                     'jenis_aksi' => 'kenaikan_kelas',
@@ -291,7 +302,7 @@ class KenaikanKelasController extends Controller
                         'angkatan' => $kelasSebelum['angkatan'],
                     ],
                     'data_sesudah' => [
-                        'kelas_mahasiswa_id' => $kelas->id,
+                        'kelas_mahasiswa_id' => $kelasTujuan->id,
                         'nama_kelas' => $namaTujuan,
                         'tingkat' => $tingkatAsal + 1,
                         'angkatan' => $kelas->angkatan,
@@ -303,6 +314,6 @@ class KenaikanKelasController extends Controller
         });
 
         return redirect()->route('kaprodi.kenaikan-kelas.index')
-            ->with('status', 'Kenaikan kelas berhasil. Identitas kelas diperbarui tanpa memindahkan mahasiswa.');
+            ->with('status', 'Kenaikan kelas berhasil. Mahasiswa Aktif dipindahkan ke kelas tujuan baru; mahasiswa Cuti tetap pada kelas asal.');
     }
 }
