@@ -10,9 +10,33 @@
     <form method="POST" action="{{ route('kaprodi.penempatan.store', $mahasiswa) }}" class="space-y-5 rounded-xl border border-slate-200 bg-white p-5 shadow-sm">@csrf
         <div><h2 class="font-semibold">Form Penempatan Kembali</h2><p class="mt-1 text-sm text-slate-500">Semester studi dihitung otomatis. Kaprodi hanya menentukan periode akademik saat mahasiswa kembali.</p></div>
         <div class="grid gap-5 md:grid-cols-2">
-            <div><label class="mb-2 block text-sm font-medium">Semester akademik berlaku</label><select name="semester_id" required class="w-full rounded-lg border border-slate-300 bg-white px-4 py-3 text-sm"><option value="">Pilih semester akademik</option>@foreach($semesterList as $semester)<option value="{{ $semester->id }}" @selected(old('semester_id') == $semester->id)>{{ $semester->tahunAkademik->label ?? '-' }} — {{ ucfirst($semester->jenis) }} ({{ $semester->tanggal_mulai }} s.d. {{ $semester->tanggal_selesai }})</option>@endforeach</select></div>
+            <div>
+                <label class="mb-2 block text-sm font-medium">Semester akademik berlaku</label>
+                <select name="semester_id" required class="w-full rounded-lg border border-slate-300 bg-white px-4 py-3 text-sm">
+                    <option value="">Pilih semester akademik</option>
+                    @foreach($semesterList as $semester)
+                        <option value="{{ $semester->id }}" @selected(old('semester_id') == $semester->id)>{{ $semester->tahunAkademik->label ?? '-' }} — {{ ucfirst($semester->jenis) }} ({{ $semester->tanggal_mulai }} s.d. {{ $semester->tanggal_selesai }})</option>
+                    @endforeach
+                </select>
+            </div>
+            <div>
+                <label class="mb-2 block text-sm font-medium">Kelas tujuan penempatan</label>
+                <select name="kelas_tujuan_id" required class="w-full rounded-lg border border-slate-300 bg-white px-4 py-3 text-sm">
+                    <option value="">Pilih kelas tujuan</option>
+                    @foreach($kelasList as $kelas)
+                        <option value="{{ $kelas->id }}" @selected(old('kelas_tujuan_id') == $kelas->id)>
+                            {{ $kelas->nama_kelas }} (Angkatan {{ $kelas->angkatan }})
+                        </option>
+                    @endforeach
+                </select>
+                @if($kelasList->isEmpty())
+                    <p class="mt-2 text-sm text-amber-700">Belum ada kelas aktif tingkat {{ $tingkatTujuan }} untuk semester studi {{ $semesterBerikutnya }}. Buat atau aktifkan kelas yang sesuai terlebih dahulu.</p>
+                @else
+                    <p class="mt-2 text-xs text-slate-500">Pilihan dibatasi pada kelas aktif tingkat {{ $tingkatTujuan }}, sesuai semester studi berikutnya (Semester {{ $semesterBerikutnya }}).</p>
+                @endif
+            </div>
             <div class="md:col-span-2 rounded-lg bg-blue-50 p-4 text-sm text-blue-800">
-                Semester studi dihitung otomatis dari angkatan masuk, kalender akademik, dan riwayat Cuti. Mahasiswa akan kembali ke kelas yang sama seperti sebelum Cuti: <strong>{{ $mahasiswa->kelasMahasiswa->nama_kelas ?? 'Kelas belum tersedia' }}</strong>.
+                Semester studi dihitung otomatis dari angkatan masuk, kalender akademik, dan riwayat Cuti. Pilih kelas yang saat ini menjalankan semester yang sama dengan semester studi mahasiswa. Kelas asal sebelum cuti: <strong>{{ $mahasiswa->kelasMahasiswa->nama_kelas ?? 'Kelas belum tersedia' }} (Angkatan {{ $mahasiswa->kelasMahasiswa->angkatan ?? '-' }})</strong>.
             </div>
             <div class="md:col-span-2"><label class="mb-2 block text-sm font-medium">Catatan (opsional)</label><textarea name="catatan" rows="3" class="w-full rounded-lg border border-slate-300 px-4 py-3 text-sm">{{ old('catatan') }}</textarea></div>
         </div>
