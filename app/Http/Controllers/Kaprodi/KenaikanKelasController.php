@@ -258,8 +258,8 @@ class KenaikanKelasController extends Controller
                 $rencana[] = $mahasiswa;
             }
 
-            // Buat identitas kelas tujuan baru. Jangan mengubah record kelas asal,
-            // karena mahasiswa Cuti/nonaktif masih harus tercatat pada kelas sebelum kenaikan.
+            // Buat identitas kelas tujuan baru. Pertahankan record kelas asal agar mahasiswa Cuti
+            // tetap memakai ID kelas asal sampai mengikuti prosedur penempatan saat kembali aktif.
             $kelasAsalId = $kelas->id;
             $kelasSebelum = [
                 'kelas_mahasiswa_id' => $kelasAsalId,
@@ -314,6 +314,6 @@ class KenaikanKelasController extends Controller
         });
 
         return redirect()->route('kaprodi.kenaikan-kelas.index')
-            ->with('status', 'Kenaikan kelas berhasil. Mahasiswa Aktif dipindahkan ke kelas tujuan baru; mahasiswa Cuti tetap pada kelas asal.');
+            ->with('status', 'Kenaikan kelas berhasil. Identitas kelas mahasiswa Aktif diperbarui; mahasiswa Cuti tetap menggunakan kelas asal.');
     }
 }
