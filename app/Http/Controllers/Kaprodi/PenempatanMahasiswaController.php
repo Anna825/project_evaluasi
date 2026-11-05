@@ -99,10 +99,24 @@ class PenempatanMahasiswaController extends Controller
                 throw ValidationException::withMessages(['mahasiswa' => 'Status mahasiswa sudah berubah. Muat ulang halaman.']);
             }
             $semester = Semester::findOrFail($data['semester_id']);
-            $semesterBerikutnya = app(AcademicProgressCalculator::class)->semesterBerjalan($mahasiswa, $semester, true);
+
+            // Untuk mahasiswa yang kembali dari Cuti, progres tersimpan adalah
+            // sumber utama. Semester studi tidak boleh bertambah hanya karena
+            // kalender akademik terus berjalan selama mahasiswa Cuti.
+            $mahasiswa->loadMissing('progresStudi');
+            $semesterBerikutnya = $mahasiswa->progresStudi?->semester_berikutnya;
+
+            // Fallback hanya untuk mahasiswa yang belum memiliki catatan progres.
             if (! $semesterBerikutnya) {
-                throw ValidationException::withMessages(['semester_id' => 'Semester studi tidak dapat dihitung dari angkatan, kalender akademik, dan riwayat Cuti. Periksa data historis mahasiswa.']);
+                $semesterBerikutnya = app(AcademicProgressCalculator::class)
+                    ->semesterBerjalan($mahasiswa, $semester, true);
             }
+
+            if (! $semesterBerikutnya) {
+                throw ValidationException::withMessages(['semester_id' => 'Semester studi tidak dapat ditentukan. Periksa progres studi dan riwayat akademik mahasiswa.']);
+            }
+
+            $semesterBerikutnya = (int) $semesterBerikutnya;
 
             $tingkatTujuan = (int) ceil(max(1, $semesterBerikutnya) / 2);
             $kelasTujuan = KelasMahasiswa::where('id', $data['kelas_tujuan_id'])
