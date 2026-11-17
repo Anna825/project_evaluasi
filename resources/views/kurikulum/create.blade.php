@@ -9,28 +9,7 @@
     {{-- Header Bar: Breadcrumb & Tombol Kembali --}}
     {{-- Navigasi Kembali --}}
     <div class="mb-6">
-        <a
-            href="{{ route('kurikulum.index') }}"
-            class="inline-flex items-center gap-1.5 text-sm font-medium hover:underline"
-            style="color: var(--primary);"
-        >
-            <svg
-                width="16"
-                height="16"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                stroke-width="2"
-            >
-                <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    d="M10 19l-7-7m0 0l7-7m-7 7h18"
-                />
-            </svg>
-
-            Kembali ke Kurikulum
-        </a>
+        <x-back-button href="{{ route('kurikulum.index') }}" label="Kembali ke Kurikulum" />
     </div>
     {{-- Alert Error Validasi --}}
     @if ($errors->any())
