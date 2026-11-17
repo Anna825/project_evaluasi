@@ -5,12 +5,8 @@
 @section('page-desc', 'Perbarui label tahun akademik dan tanggal periode Semester Ganjil maupun Genap.')
 
 @section('content')
-<div class="mb-4">
-    <a href="{{ route('tahun-akademik.index') }}"
-       class="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium"
-       style="background: var(--secondary); color: var(--foreground);">
-        ← Kembali ke Tahun Akademik
-    </a>
+<div class="mb-6">
+    <x-back-button href="{{ route('tahun-akademik.index') }}" label="Kembali ke Tahun Akademik" />
 </div>
 
 <div class="rounded-2xl border p-6"
