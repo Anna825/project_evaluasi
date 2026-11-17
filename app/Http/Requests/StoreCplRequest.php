@@ -23,9 +23,7 @@ class StoreCplRequest extends FormRequest
                 'required',
                 'string',
                 'max:20',
-                Rule::unique('cpl', 'kode')
-                    ->where(fn ($query) => $query->where('kurikulum_id', $this->input('kurikulum_id')))
-                    ->ignore($cpl?->id),
+                Rule::unique('cpl', 'kode')->ignore($cpl?->id),
             ],
             'domain' => ['nullable', 'string', 'max:255'],
             'deskripsi' => ['required', 'string'],
@@ -36,7 +34,7 @@ class StoreCplRequest extends FormRequest
     {
         return [
             'kode.required' => 'Kode CPL wajib diisi.',
-            'kode.unique' => 'Kode CPL sudah digunakan pada kurikulum ini. Silakan gunakan kode lain.',
+            'kode.unique' => 'Kode CPL sudah digunakan. Silakan gunakan kode lain.',
             'kode.max' => 'Kode CPL maksimal 20 karakter.',
         ];
     }
