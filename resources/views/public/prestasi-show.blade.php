@@ -247,9 +247,6 @@
                     style="border-color: var(--border);"
                 >
 
-                    {{-- Kembali --}}
-                    <x-back-button href="{{ route('public.prestasi.index', $mahasiswa->nim) }}" label="nim) }}" class="inline-flex items-center justify-center px-5 py-2.5 rounded-xl text-sm font-medium" style="background: var(--secondary); color: var(--foreground);" > Kembali" />
-
                     {{-- Edit --}}
                     <a
                         href="{{ route('public.prestasi.edit', [$mahasiswa->nim, $prestasi->id]) }}"
