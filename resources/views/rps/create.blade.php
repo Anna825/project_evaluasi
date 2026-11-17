@@ -7,14 +7,8 @@
 @section('content')
 
     {{-- Kembali --}}
-    <div class="mb-4 text-left">
-        <a
-            href="{{ route('mata-kuliah.show', $mataKuliah) }}"
-            class="text-sm underline hover:opacity-70"
-            style="color: var(--muted-foreground);"
-        >
-            ← Kembali ke CPMK &amp; RPS
-        </a>
+    <div class="mb-6">
+        <x-back-button href="{{ route('mata-kuliah.show', $mataKuliah) }}" label="Kembali ke CPMK & RPS" />
     </div>
 
     <div
@@ -43,7 +37,7 @@
             >
 
             {{-- Versi --}}
-            <div class="mb-4">
+            <div class="mb-6">
                 <label class="block text-sm font-medium mb-1">
                     Versi
                 </label>
@@ -60,7 +54,7 @@
             </div>
 
             {{-- Tanggal Disusun --}}
-            <div class="mb-4">
+            <div class="mb-6">
                 <label class="block text-sm font-medium mb-1">
                     Tanggal Disusun
                 </label>
