@@ -6,14 +6,8 @@
 
 @section('content')
         {{-- Kembali --}}
-    <div class="mb-4 text-left">
-        <a
-            href="{{ route('mata-kuliah.show', $cpmk->mata_kuliah_id) }}"
-            class="text-sm underline hover:opacity-70"
-            style="color: var(--muted-foreground);"
-        >
-            ← Kembali ke CPMK &amp; RPS
-        </a>
+    <div class="mb-6">
+        <x-back-button href="{{ route('mata-kuliah.show', $cpmk->mata_kuliah_id) }}" label="mata_kuliah_id) }}" class="text-sm underline hover:opacity-70" style="color: var(--muted-foreground);" > Kembali ke CPMK & RPS" />
     </div>
     <div
         class="w-full rounded-2xl border p-6 sm:p-8"
@@ -27,7 +21,7 @@
         <form method="POST" action="{{ route('cpmk.update', $cpmk) }}">
             @csrf @method('PUT')
             <input type="hidden" name="mata_kuliah_id" value="{{ $cpmk->mata_kuliah_id }}">
-            <div class="mb-4">
+            <div class="mb-6">
                 <label class="block text-sm font-medium mb-1">Kode CPMK</label>
                 <input type="text" name="kode" value="{{ old('kode', $cpmk->kode) }}" class="w-full rounded-xl border px-3 py-2 text-sm" style="border-color: var(--border);" required>
             </div>
