@@ -5,6 +5,10 @@
 
 @section('content')
 
+    <div class="mb-6">
+        <x-back-button href="{{ route('dosen.dashboard') }}" label="Kembali ke Dashboard Dosen" />
+    </div>
+
     @if (session('status'))
         <div class="mb-5 rounded-xl border px-4 py-3 text-sm"
              style="background: var(--secondary); border-color: var(--border);">
