@@ -5,12 +5,8 @@
 @section('page-desc', 'Pilih kelas untuk melihat rekap capaian CPL - ' . $kurikulum->nama)
 
 @section('content')
-    <div class="mb-5">
-        <a href="{{ route('kurikulum.show', $kurikulum) }}"
-           class="text-sm hover:underline"
-           style="color: var(--muted-foreground);">
-            ← Kembali ke Detail Kurikulum
-        </a>
+    <div class="mb-6">
+        <x-back-button href="{{ route('kurikulum.show', $kurikulum) }}" label="Kembali ke Detail Kurikulum" />
     </div>
 
     <div class="w-full rounded-2xl border p-6 mb-6"
