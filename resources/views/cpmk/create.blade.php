@@ -6,12 +6,8 @@
 @section('page-desc', 'Buat CPMK dan petakan ke CPL yang relevan.')
 
 @section('content')
-<div class="mb-4">
-    <a href="{{ route('mata-kuliah.index') }}"
-       class="text-sm underline"
-       style="color: var(--muted-foreground);">
-        ← Kembali ke Mata Kuliah
-    </a>
+<div class="mb-6">
+    <x-back-button href="{{ route('mata-kuliah.index') }}" label="Kembali ke Mata Kuliah" />
 </div>
 
 <div class="w-full rounded-2xl border p-6 sm:p-8"
@@ -62,7 +58,7 @@
         </div>
 
         {{-- Kode CPMK --}}
-        <div class="mb-4">
+        <div class="mb-6">
             <label for="kode" class="block text-sm font-medium mb-1">
                 Kode CPMK <span class="text-red-500">*</span>
             </label>
