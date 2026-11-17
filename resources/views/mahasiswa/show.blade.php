@@ -6,7 +6,7 @@
 
 @section('content')
     <div class="mb-6">
-        <x-back-button href="{{ route('mahasiswa.kelas.show', $mahasiswa->kelasMahasiswa) }}" label="kelasMahasiswa) }}" class="inline-flex items-center gap-2 text-sm font-medium transition hover:opacity-70" style="color: var(--muted-foreground);"> Kembali ke Daftar Mahasiswa" />
+        <x-back-button href="{{ route('mahasiswa.kelas.show', $mahasiswa->kelasMahasiswa) }}" label="Kembali ke Daftar Mahasiswa" />
     </div>
     @php
         $statusBadge = [
