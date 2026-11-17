@@ -2,7 +2,7 @@
 
 @section('content')
 <div class="space-y-6">
-    <a href="{{ route('kaprodi.validasi-progres.index') }}" class="text-sm font-medium text-blue-700 hover:underline">← Kembali ke daftar validasi</a>
+    <x-back-button href="{{ route('kaprodi.validasi-progres.index') }}" label="Kembali ke daftar validasi" />
 
     @if(session('status'))<div class="rounded-lg border border-green-200 bg-green-50 p-4 text-sm text-green-800">{{ session('status') }}</div>@endif
     @if($errors->any())<div class="rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-700"><ul class="list-disc pl-5">@foreach($errors->all() as $error)<li>{{ $error }}</li>@endforeach</ul></div>@endif
