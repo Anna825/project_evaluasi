@@ -10,13 +10,7 @@
 
         {{-- Kembali --}}
         <div class="mb-6">
-            <a
-                href="{{ route('admin.prestasi.dosen') }}"
-                class="inline-flex items-center gap-2 text-sm font-medium hover:underline"
-                style="color: var(--primary);"
-            >
-                ← Kembali ke Prestasi Dosen
-            </a>
+            <x-back-button href="{{ route('admin.prestasi.dosen') }}" label="Kembali ke Prestasi Dosen" />
         </div>
 
 
@@ -204,13 +198,7 @@
         {{-- Kembali --}}
         <div class="pt-2">
 
-            <a
-                href="{{ route('admin.prestasi.dosen') }}"
-                class="inline-flex items-center justify-center px-5 py-2.5 rounded-xl text-sm font-medium"
-                style="background: var(--secondary); color: var(--foreground);"
-            >
-                ← Kembali
-            </a>
+            <x-back-button href="{{ route('admin.prestasi.dosen') }}" label="Kembali" />
 
         </div>
 
