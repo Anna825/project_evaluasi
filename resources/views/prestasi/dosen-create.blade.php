@@ -7,14 +7,8 @@
 @section('content')
 
     {{-- Kembali --}}
-    <div class="mb-4 text-left">
-        <a
-            href="{{ route('prestasi-dosen.index') }}"
-            class="text-sm underline hover:opacity-70"
-            style="color: var(--muted-foreground);"
-        >
-            ← Kembali ke Prestasi
-        </a>
+    <div class="mb-6">
+        <x-back-button href="{{ route('prestasi-dosen.index') }}" label="Kembali ke Prestasi" />
     </div>
 
     <div
@@ -38,7 +32,7 @@
             @csrf
 
             {{-- Nama Kegiatan --}}
-            <div class="mb-4">
+            <div class="mb-6">
                 <label
                     for="nama_kegiatan"
                     class="block text-sm font-medium mb-1"
@@ -58,7 +52,7 @@
             </div>
 
             {{-- Tingkat --}}
-            <div class="mb-4">
+            <div class="mb-6">
                 <label
                     for="tingkat"
                     class="block text-sm font-medium mb-1"
@@ -78,7 +72,7 @@
             </div>
 
             {{-- Jenis --}}
-            <div class="mb-4">
+            <div class="mb-6">
                 <label
                     for="jenis"
                     class="block text-sm font-medium mb-1"
@@ -97,7 +91,7 @@
             </div>
 
             {{-- Peringkat --}}
-            <div class="mb-4">
+            <div class="mb-6">
                 <label
                     for="peringkat"
                     class="block text-sm font-medium mb-1"
@@ -116,7 +110,7 @@
             </div>
 
             {{-- Tempat Pelaksanaan --}}
-            <div class="mb-4">
+            <div class="mb-6">
                 <label
                     for="tempat_pelaksanaan"
                     class="block text-sm font-medium mb-1"
