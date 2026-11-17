@@ -8,13 +8,7 @@
 
     {{-- Kembali --}}
     <div class="mb-4 text-left">
-        <a
-            href="{{ route('admin.users.index') }}"
-            class="text-sm underline hover:opacity-70"
-            style="color: var(--muted-foreground);"
-        >
-            ← Kembali ke Akun Dosen
-        </a>
+        <x-back-button href="{{ route('admin.users.index') }}" label="Kembali ke Akun Dosen" />
     </div>
 
     {{-- Card utama --}}
@@ -260,13 +254,7 @@
             style="border-color: var(--border);"
         >
 
-            <a
-                href="{{ route('admin.users.index') }}"
-                class="inline-flex items-center justify-center px-5 py-2.5 rounded-xl text-sm font-medium"
-                style="background: var(--secondary); color: var(--foreground);"
-            >
-                Kembali
-            </a>
+            <x-back-button href="{{ route('admin.users.index') }}" label="Kembali" />
 
             <div class="flex flex-col sm:flex-row gap-3">
 
