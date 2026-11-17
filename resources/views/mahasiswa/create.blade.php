@@ -10,8 +10,6 @@
 {{-- Header Bar: Breadcrumb & Tombol Back --}}
 <div class="mb-6">
     <x-back-button href="{{ route('mahasiswa.index') }}" label="Kembali ke Data Mahasiswa" />
-    <span style="color: var(--muted-foreground);">/</span>
-    <span style="color: var(--muted-foreground);">Tambah Mahasiswa</span>
 </div>
 
 {{-- Alert Error Validasi --}}
