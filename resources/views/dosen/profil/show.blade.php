@@ -16,14 +16,6 @@
         </div>
     @endif
 
-    <div class="mb-5">
-        <a href="{{ route('dosen.dashboard') }}"
-           class="inline-flex items-center gap-2 text-sm font-medium transition hover:opacity-70"
-           style="color: var(--muted-foreground);">
-            ← Kembali ke Dashboard
-        </a>
-    </div>
-
     <div class="rounded-2xl border p-6"
          style="background: var(--card); border-color: var(--border);">
 
