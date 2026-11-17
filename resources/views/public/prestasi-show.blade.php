@@ -12,7 +12,7 @@
 
         {{-- Header halaman --}}
         <div class="mb-6">
-            <x-back-button href="{{ route('public.prestasi.index', $mahasiswa->nim) }}" label="nim) }}" class="inline-flex items-center gap-2 text-sm font-medium hover:underline" style="color: var(--primary);" > Kembali ke Prestasi Saya" />
+            <x-back-button href="{{ route('public.prestasi.index', $mahasiswa->nim) }}" label="Kembali ke Prestasi Saya" />
         </div>
 
         {{-- Detail Prestasi --}}
