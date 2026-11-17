@@ -8,14 +8,8 @@
 
 @section('content')
 {{-- Kembali --}}
-<div class="mb-4 text-left">
-    <a
-        href="{{ route('mata-kuliah.index') }}"
-        class="text-sm underline hover:opacity-70"
-        style="color: var(--muted-foreground);"
-    >
-        ← Kembali ke Mata Kuliah
-    </a>
+<div class="mb-6">
+    <x-back-button href="{{ route('mata-kuliah.index') }}" label="Kembali ke Mata Kuliah" />
 </div>
 <div class="w-full">
 
@@ -63,7 +57,7 @@
             </div>
 
             {{-- Kode Mata Kuliah --}}
-            <div class="mb-5">
+            <div class="mb-6">
 
                 <label
                     for="kode"
@@ -87,7 +81,7 @@
 
 
             {{-- Nama Mata Kuliah --}}
-            <div class="mb-5">
+            <div class="mb-6">
 
                 <label
                     for="nama"
@@ -111,7 +105,7 @@
 
 
             {{-- SKS --}}
-            <div class="mb-5">
+            <div class="mb-6">
 
                 <label
                     for="sks"
@@ -137,7 +131,7 @@
 
 
             {{-- Semester Ke --}}
-            <div class="mb-5">
+            <div class="mb-6">
 
                 <label
                     for="semester_ke"
@@ -163,7 +157,7 @@
 
 
             {{-- Jenis --}}
-            <div class="mb-5">
+            <div class="mb-6">
 
                 <label
                     for="jenis"
@@ -202,7 +196,7 @@
 
 
             {{-- Semester Akademik --}}
-            <div class="mb-5">
+            <div class="mb-6">
 
                 <label
                     for="semester_id"
