@@ -6,14 +6,8 @@
 
 @section('content')
     {{-- Kembali --}}
-    <div class="mb-4 text-left">
-        <a
-            href="{{ route('penelitian-pkm.index') }}"
-            class="text-sm underline hover:opacity-70"
-            style="color: var(--muted-foreground);"
-        >
-            ← Kembali ke Penelitian & PKM
-        </a>
+    <div class="mb-6">
+        <x-back-button href="{{ route('penelitian-pkm.index') }}" label="Kembali ke Penelitian & PKM" />
     </div>
     <div class="w-full rounded-2xl border p-6 sm:p-8" style="background: var(--card); border-color: var(--border);">        
         @if ($errors->any())
@@ -23,11 +17,11 @@
         @endif
         <form method="POST" action="{{ route('penelitian-pkm.store') }}">
             @csrf
-            <div class="mb-4">
+            <div class="mb-6">
                 <label class="block text-sm font-medium mb-1">Judul</label>
                 <input type="text" name="judul" value="{{ old('judul') }}" class="w-full rounded-xl border px-3 py-2 text-sm" style="border-color: var(--border);" required>
             </div>
-            <div class="mb-4">
+            <div class="mb-6">
                 <label for="deskripsi_kegiatan" class="block text-sm font-medium mb-1">
                     Deskripsi Kegiatan <span class="text-red-600">*</span>
                 </label>
@@ -41,18 +35,18 @@
                 <p class="text-xs mt-1" style="color: var(--muted-foreground);">Minimal 20 karakter, maksimal 5.000 karakter.</p>
             </div>
 
-            <div class="mb-4">
+            <div class="mb-6">
                 <label class="block text-sm font-medium mb-1">Jenis</label>
                 <select name="jenis" class="w-full rounded-xl border px-3 py-2 text-sm" style="border-color: var(--border);" required>
                     <option value="Penelitian" {{ old('jenis') == 'Penelitian' ? 'selected' : '' }}>Penelitian</option>
                     <option value="PKM" {{ old('jenis') == 'PKM' ? 'selected' : '' }}>PKM</option>
                 </select>
             </div>
-            <div class="mb-4">
+            <div class="mb-6">
                 <label class="block text-sm font-medium mb-1">Kategori Pendanaan (opsional)</label>
                 <input type="text" name="kategori_pendanaan" value="{{ old('kategori_pendanaan') }}" placeholder="Internal, DIKTI, dsb" class="w-full rounded-xl border px-3 py-2 text-sm" style="border-color: var(--border);">
             </div>
-            <div class="mb-4">
+            <div class="mb-6">
                 <label class="block text-sm font-medium mb-1">Tahun Akademik</label>
                 <select name="tahun_akademik_id" class="w-full rounded-xl border px-3 py-2 text-sm" style="border-color: var(--border);" required>
                     <option value="">-- Pilih --</option>
