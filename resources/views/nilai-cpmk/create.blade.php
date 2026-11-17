@@ -7,14 +7,8 @@
 @section('content')
 
     {{-- Kembali --}}
-    <div class="mb-4 text-left">
-        <a
-            href="{{ route('mata-kuliah.show', $kelas->mata_kuliah_id) }}"
-            class="text-sm underline hover:opacity-70"
-            style="color: var(--muted-foreground);"
-        >
-            ← Kembali ke CPMK &amp; RPS
-        </a>
+    <div class="mb-6">
+        <x-back-button href="{{ route('mata-kuliah.show', $kelas->mata_kuliah_id) }}" label="mata_kuliah_id) }}" class="text-sm underline hover:opacity-70" style="color: var(--muted-foreground);" > Kembali ke CPMK & RPS" />
     </div>
 
     @if ($cpmkList->isEmpty())
