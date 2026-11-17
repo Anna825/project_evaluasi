@@ -10,13 +10,7 @@
 
         {{-- Kembali --}}
         <div class="mb-6">
-            <a
-                href="{{ route('admin.prestasi.mahasiswa') }}"
-                class="inline-flex items-center gap-2 text-sm font-medium hover:underline"
-                style="color: var(--primary);"
-            >
-                ← Kembali ke Prestasi Mahasiswa
-            </a>
+            <x-back-button href="{{ route('admin.prestasi.mahasiswa') }}" label="Kembali ke Prestasi Mahasiswa" />
         </div>
 
         {{-- Data Mahasiswa --}}
@@ -221,13 +215,7 @@
         {{-- Navigasi --}}
         <div class="flex justify-start pt-2">
 
-            <a
-                href="{{ route('admin.prestasi.mahasiswa') }}"
-                class="inline-flex items-center justify-center px-5 py-2.5 rounded-xl text-sm font-medium"
-                style="background: var(--secondary); color: var(--foreground);"
-            >
-                ← Kembali
-            </a>
+            <x-back-button href="{{ route('admin.prestasi.mahasiswa') }}" label="Kembali" />
 
         </div> -->
 
