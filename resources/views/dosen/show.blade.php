@@ -160,15 +160,6 @@
 
         </div>
 
-
-        {{-- Footer --}}
-        <div class="px-6 py-4 border-t"
-             style="border-color: var(--border);">
-
-            <x-back-button href="{{ route('kaprodi.dosen.index') }}" label="Kembali" />
-
-        </div>
-
     </div>
 
 @endsection
