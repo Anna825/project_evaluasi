@@ -6,11 +6,7 @@
 @section('content')
 
     <div class="mb-5">
-        <a href="{{ route('dosen.profil.show') }}"
-           class="inline-flex items-center gap-2 text-sm font-medium transition hover:opacity-70"
-           style="color: var(--muted-foreground);">
-            ← Kembali ke Profil Dosen
-        </a>
+        <x-back-button href="{{ route('dosen.profil.show') }}" label="Kembali ke Profil Dosen" />
     </div>
 
     @if ($errors->any())
