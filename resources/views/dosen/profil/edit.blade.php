@@ -5,7 +5,7 @@
 
 @section('content')
 
-    <div class="mb-5">
+    <div class="mb-6">
         <x-back-button href="{{ route('dosen.profil.show') }}" label="Kembali ke Profil Dosen" />
     </div>
 
