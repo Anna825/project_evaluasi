@@ -66,8 +66,23 @@ class PenyelesaianSemesterController extends Controller
     {
         $prodi = $this->prodiKaprodi();
         $semesterList = Semester::with('tahunAkademik')->orderByDesc('tanggal_mulai')->get();
+        // Sembunyikan hanya lima entri kelas riwayat yang diminta dari filter.
+        // Data kelas dan relasi mahasiswa tetap dipertahankan di database.
         $kelasList = KelasMahasiswa::where('prodi_id', $prodi->id)
-            ->where('status_kelas', 'aktif')->orderBy('tingkat')->orderBy('nama_kelas')->get();
+            ->where('status_kelas', 'aktif')
+            ->whereNot(function ($query) {
+                $query->where(function ($q) {
+                    $q->where('nama_kelas', '1AEC-0')
+                        ->whereIn('angkatan', [2024, 2025]);
+                })->orWhere(function ($q) {
+                    $q->where('nama_kelas', '2AEC-0')
+                        ->whereIn('angkatan', [2024, 2025]);
+                })->orWhere(function ($q) {
+                    $q->where('nama_kelas', '3AEC-0')
+                        ->where('angkatan', 2024);
+                });
+            })
+            ->orderBy('tingkat')->orderBy('nama_kelas')->get();
 
         $semester = $request->filled('semester_id')
             ? $semesterList->firstWhere('id', (int) $request->semester_id)
