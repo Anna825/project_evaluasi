@@ -20,8 +20,11 @@
 
         <a href="{{ route('admin.users.index') }}" class="block rounded-2xl p-5 border card-hover" style="background: var(--card); border-color: var(--border);">
             <p class="text-xs font-medium uppercase tracking-wider mb-2" style="color: var(--muted-foreground);">Menunggu Aktivasi</p>
-            <p class="text-3xl font-bold mono" style="color: var(--accent);">{{ $stats['dosen_pending'] }}</p>
-            <p class="text-xs mt-2" style="color: var(--muted-foreground);">Perlu ditinjau →</p>
+            <p class="text-3xl font-bold mono" style="color: var(--accent);">{{ $stats['dosen_pending'] + $stats['alumni_pending'] }}</p>
+            <p class="text-xs mt-2" style="color: var(--muted-foreground);">
+                Dosen: {{ $stats['dosen_pending'] }} · Alumni: {{ $stats['alumni_pending'] }}
+            </p>
+            <p class="text-xs mt-1" style="color: var(--muted-foreground);">Perlu ditinjau →</p>
         </a>
 
         <a href="{{ route('prodi.index') }}" class="block rounded-2xl p-5 border card-hover" style="background: var(--card); border-color: var(--border);">
