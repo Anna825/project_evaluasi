@@ -16,12 +16,8 @@
         </div>
     @endif
 
-    <div class="mb-5">
-        <a href="{{ route('kurikulum.show', $kurikulum) }}"
-           class="text-sm hover:underline"
-           style="color: var(--muted-foreground);">
-            ← Kembali ke Detail Kurikulum
-        </a>
+    <div class="mb-6">
+        <x-back-button href="{{ route('kurikulum.show', $kurikulum) }}" label="Kembali ke Detail Kurikulum" />
     </div>
 
     <div class="max-w-2xl rounded-2xl border p-6"
@@ -46,7 +42,7 @@
               method="POST">
             @csrf
 
-            <div class="mb-5">
+            <div class="mb-6">
                 <label for="kode" class="block text-sm font-medium mb-2">
                     Kode Mata Kuliah <span class="text-red-500">*</span>
                 </label>
@@ -58,7 +54,7 @@
                        placeholder="Contoh: TII101">
             </div>
 
-            <div class="mb-5">
+            <div class="mb-6">
                 <label for="nama" class="block text-sm font-medium mb-2">
                     Nama Mata Kuliah <span class="text-red-500">*</span>
                 </label>
