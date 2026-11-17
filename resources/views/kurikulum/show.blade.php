@@ -283,14 +283,21 @@
     @if (session('status'))
         <div class="mb-4 rounded-xl border px-4 py-3 text-sm" style="background:#f0fdf4;border-color:#bbf7d0;color:#166534">{{ session('status') }}</div>
     @endif
-    @if ($errors->any())
-        <div class="mb-4 rounded-xl border px-4 py-3 text-sm" style="background:#fef2f2;border-color:#fecaca;color:#991b1b"><ul class="list-disc pl-5">@foreach ($errors->all() as $error)<li>{{ $error }}</li>@endforeach</ul></div>
-    @endif
     <dialog id="modalTambahCpl" class="ui-modal">
         <form method="POST" action="{{ route('cpl.store') }}" class="ui-modal__panel">
             @csrf <input type="hidden" name="kurikulum_id" value="{{ $kurikulum->id }}"><input type="hidden" name="form_modal" value="create">
             <div class="ui-modal__header"><div><h2 class="text-lg font-semibold">Tambah CPL</h2><p class="text-sm" style="color:var(--ui-muted)">Kurikulum: {{ $kurikulum->nama }}</p></div><button type="button" class="ui-modal__close" onclick="this.closest('dialog').close()">×</button></div>
             <div class="ui-modal__body space-y-4">
+                @if ($errors->any() && old('form_modal') === 'create')
+                    <div role="alert" aria-live="assertive" class="rounded-xl border px-4 py-3 text-sm" style="background:#fef2f2;border-color:#fecaca;color:#991b1b">
+                        <p class="font-semibold mb-1">CPL belum bisa disimpan.</p>
+                        <ul class="list-disc pl-5">
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
                 <div><label class="block text-sm font-medium mb-1" for="cpl_kode_baru">Kode CPL</label><input id="cpl_kode_baru" name="kode" value="{{ old('kode') }}" placeholder="Contoh: CPL-01" required class="w-full rounded-xl border px-3 py-2.5" style="border-color:var(--ui-border)"></div>
                 <div><label class="block text-sm font-medium mb-1" for="cpl_domain_baru">Domain (opsional)</label><input id="cpl_domain_baru" name="domain" value="{{ old('domain') }}" class="w-full rounded-xl border px-3 py-2.5" style="border-color:var(--ui-border)"></div>
                 <div><label class="block text-sm font-medium mb-1" for="cpl_deskripsi_baru">Deskripsi</label><textarea id="cpl_deskripsi_baru" name="deskripsi" rows="5" required class="w-full rounded-xl border px-3 py-2.5" style="border-color:var(--ui-border)">{{ old('deskripsi') }}</textarea></div>
