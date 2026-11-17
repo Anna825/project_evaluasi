@@ -8,13 +8,8 @@
 @endphp
 
 {{-- Header Bar: Breadcrumb & Tombol Back --}}
-<div class="flex items-center gap-2 text-sm mb-6">
-    <a href="{{ route('mahasiswa.index') }}" class="inline-flex items-center gap-1.5 font-medium hover:underline" style="color: var(--primary);">
-        <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-        </svg>
-        Kembali ke Data Mahasiswa
-    </a>
+<div class="mb-6">
+    <x-back-button href="{{ route('mahasiswa.index') }}" label="Kembali ke Data Mahasiswa" />
     <span style="color: var(--muted-foreground);">/</span>
     <span style="color: var(--muted-foreground);">Tambah Mahasiswa</span>
 </div>
