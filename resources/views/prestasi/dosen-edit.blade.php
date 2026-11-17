@@ -9,13 +9,7 @@
     <div class="w-full">
 
         <div class="mb-6">
-            <a
-                href="{{ route('prestasi-dosen.show', $prestasi->id) }}"
-                class="inline-flex items-center gap-2 text-sm font-medium hover:underline"
-                style="color: var(--primary);"
-            >
-                ← Kembali ke Detail Prestasi
-            </a>
+            <x-back-button href="{{ route('prestasi-dosen.show', $prestasi->id) }}" label="id) }}" class="inline-flex items-center gap-2 text-sm font-medium hover:underline" style="color: var(--primary);" > Kembali ke Detail Prestasi" />
         </div>
 
         <div
@@ -66,7 +60,7 @@
                     @method('PUT')
 
                     {{-- Nama Kegiatan --}}
-                    <div class="mb-5">
+                    <div class="mb-6">
                         <label
                             for="nama_kegiatan"
                             class="block text-sm font-medium mb-1.5"
@@ -172,7 +166,7 @@
                     </div>
 
                     {{-- Tanggal Penerimaan --}}
-                    <div class="mb-5">
+                    <div class="mb-6">
 
                         <label
                             for="tanggal_penerimaan"
