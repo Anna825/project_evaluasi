@@ -56,9 +56,8 @@
                 </div>
             </dl>
 
-            <div class="flex gap-2 mt-6">
-                <button type="button" onclick="document.getElementById('modalEditMahasiswa').showModal()" class="flex-1 text-center px-4 py-2.5 rounded-lg text-sm font-medium text-white" style="background: var(--primary);">Edit</button>
-                <x-back-button href="{{ route('mahasiswa.index') }}" label="Kembali" />
+            <div class="mt-6">
+                <button type="button" onclick="document.getElementById('modalEditMahasiswa').showModal()" class="w-full text-center px-4 py-2.5 rounded-lg text-sm font-medium text-white" style="background: var(--primary);">Edit Data Mahasiswa</button>
             </div>
         </div>
 
