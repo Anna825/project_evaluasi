@@ -6,14 +6,8 @@
 
 @section('content')
      {{-- Kembali --}}
-    <div class="mb-4 text-left">
-        <a
-            href="{{ route('mata-kuliah.index') }}"
-            class="text-sm underline hover:opacity-70"
-            style="color: var(--muted-foreground);"
-        >
-            ← Kembali ke Mata Kuliah
-        </a>
+    <div class="mb-6">
+        <x-back-button href="{{ route('mata-kuliah.index') }}" label="Kembali ke Mata Kuliah" />
     </div>
 
     <dialog id="modalTambahCpmk" class="ui-modal">
