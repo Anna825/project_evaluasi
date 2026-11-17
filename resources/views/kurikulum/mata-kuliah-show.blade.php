@@ -7,14 +7,8 @@
 @section('content')
 
     {{-- Kembali ke Kurikulum --}}
-    <div class="mb-4 text-left">
-        <a
-            href="{{ route('kurikulum.show', $mataKuliah->kurikulum_id) }}"
-            class="text-sm underline hover:opacity-70"
-            style="color: var(--muted-foreground);"
-        >
-            ← Kembali ke Kurikulum
-        </a>
+    <div class="mb-6">
+        <x-back-button href="{{ route('kurikulum.show', $mataKuliah->kurikulum_id) }}" label="kurikulum_id) }}" class="text-sm underline hover:opacity-70" style="color: var(--muted-foreground);" > Kembali ke Kurikulum" />
     </div>
 
     {{-- Informasi Mata Kuliah --}}
