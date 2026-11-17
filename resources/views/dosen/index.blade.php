@@ -6,12 +6,8 @@
 
 @section('content')
 
-    <div class="mb-4 text-left">
-        <a href="{{ route('kaprodi.dashboard') }}"
-           class="text-sm underline hover:opacity-70"
-           style="color: var(--muted-foreground);">
-            ← Kembali ke Dashboard
-        </a>
+    <div class="mb-6">
+        <x-back-button href="{{ route('kaprodi.dashboard') }}" label="Kembali ke Dashboard Utama" />
     </div>
 
     <div class="w-full rounded-2xl border overflow-hidden"
