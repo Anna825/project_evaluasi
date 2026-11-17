@@ -63,6 +63,10 @@
                     style="border-color: var(--border);"
                     required
                 >
+
+                @error('kode')
+                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                @enderror
             </div>
 
             {{-- Domain --}}
