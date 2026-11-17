@@ -12,8 +12,6 @@
 <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
     <div class="flex items-center gap-2 text-sm">
         <x-back-button href="{{ route('mahasiswa.index') }}" label="Kembali ke Data Mahasiswa" />
-        <span style="color: var(--muted-foreground);">/</span>
-        <span style="color: var(--muted-foreground);">Import Excel</span>
     </div>
 
     <div class="flex items-center gap-2 px-3.5 py-1.5 rounded-full border text-xs font-medium" style="background: var(--card); border-color: var(--border);">
