@@ -11,7 +11,7 @@
                 Data ditampilkan khusus untuk alumni yang berasal dari Program Studi {{ $prodi->nama ?? '-' }}.
             </p>
         </div>
-        <a href="{{ route('kaprodi.manajemen-prodi') }}" class="ui-btn ui-btn-outline">← Manajemen Program Studi</a>
+        <x-back-button href="{{ route('kaprodi.manajemen-prodi') }}" label="Kembali ke Manajemen Program Studi" />
     </div>
 
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
