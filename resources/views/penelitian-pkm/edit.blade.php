@@ -6,14 +6,8 @@
 
 @section('content')
     {{-- Kembali --}}
-    <div class="mb-4 text-left">
-        <a
-            href="{{ route('penelitian-pkm.index') }}"
-            class="text-sm underline hover:opacity-70"
-            style="color: var(--muted-foreground);"
-        >
-            ← Kembali ke Penelitian & PKM
-        </a>
+    <div class="mb-6">
+        <x-back-button href="{{ route('penelitian-pkm.index') }}" label="Kembali ke Penelitian & PKM" />
     </div>
     <div
         class="w-full rounded-2xl border p-6 sm:p-8"
@@ -40,11 +34,11 @@
         @endif
         <form method="POST" action="{{ route('penelitian-pkm.update', $penelitianPkm) }}">
             @csrf @method('PUT')
-            <div class="mb-4">
+            <div class="mb-6">
                 <label class="block text-sm font-medium mb-1">Judul</label>
                 <input type="text" name="judul" value="{{ old('judul', $penelitianPkm->judul) }}" class="w-full rounded-xl border px-3 py-2 text-sm" style="border-color: var(--border);" required>
             </div>
-            <div class="mb-4">
+            <div class="mb-6">
                 <label for="deskripsi_kegiatan" class="block text-sm font-medium mb-1">
                     Deskripsi Kegiatan <span class="text-red-600">*</span>
                 </label>
@@ -57,14 +51,14 @@
                     style="border-color: var(--border);">{{ old('deskripsi_kegiatan', $penelitianPkm->deskripsi_kegiatan) }}</textarea>
                 <p class="text-xs mt-1" style="color: var(--muted-foreground);">Minimal 20 karakter, maksimal 5.000 karakter.</p>
             </div>
-            <div class="mb-4">
+            <div class="mb-6">
                 <label class="block text-sm font-medium mb-1">Jenis</label>
                 <select name="jenis" class="w-full rounded-xl border px-3 py-2 text-sm" style="border-color: var(--border);" required>
                     <option value="Penelitian" {{ old('jenis', $penelitianPkm->jenis) == 'Penelitian' ? 'selected' : '' }}>Penelitian</option>
                     <option value="PKM" {{ old('jenis', $penelitianPkm->jenis) == 'PKM' ? 'selected' : '' }}>PKM</option>
                 </select>
             </div>
-            <div class="mb-4">
+            <div class="mb-6">
                 <label class="block text-sm font-medium mb-1">Kategori Pendanaan (opsional)</label>
                 <input type="text" name="kategori_pendanaan" value="{{ old('kategori_pendanaan', $penelitianPkm->kategori_pendanaan) }}" class="w-full rounded-xl border px-3 py-2 text-sm" style="border-color: var(--border);">
             </div>
