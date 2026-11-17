@@ -12,13 +12,7 @@
 
         {{-- Header halaman --}}
         <div class="mb-6">
-            <a
-                href="{{ route('public.prestasi.show', [$mahasiswa->nim, $prestasi->id]) }}"
-                class="inline-flex items-center gap-2 text-sm font-medium hover:underline"
-                style="color: var(--primary);"
-            >
-                ← Kembali ke Detail Prestasi
-            </a>
+            <x-back-button href="{{ route('public.prestasi.show', [$mahasiswa->nim, $prestasi->id]) }}" label="nim, $prestasi->id]) }}" class="inline-flex items-center gap-2 text-sm font-medium hover:underline" style="color: var(--primary);" > Kembali ke Detail Prestasi" />
         </div>
 
         {{-- Form --}}
@@ -72,7 +66,7 @@
                     @method('PUT')
 
                     {{-- Nama Kegiatan --}}
-                    <div class="mb-5">
+                    <div class="mb-6">
                         <label
                             for="nama_kegiatan"
                             class="block text-sm font-medium mb-1.5"
@@ -157,7 +151,7 @@
                     </div>
 
                     {{-- Tanggal Penerimaan --}}
-                    <div class="mb-5">
+                    <div class="mb-6">
                         <label for="tanggal_penerimaan" class="block text-sm font-medium mb-1.5">
                             Tanggal Penerimaan Penghargaan / Sertifikat
                         </label>
@@ -170,7 +164,7 @@
                     </div>
 
                     {{-- Dosen Pembimbing --}}
-                    <div class="mb-5">
+                    <div class="mb-6">
                         <label for="dosen_id" class="block text-sm font-medium mb-1.5">
                             Dosen Pembimbing
                         </label>
