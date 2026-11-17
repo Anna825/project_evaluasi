@@ -10,13 +10,7 @@
 
         {{-- Kembali --}}
         <div class="mb-6">
-            <a
-                href="{{ route('kaprodi.prestasi.mahasiswa') }}"
-                class="inline-flex items-center gap-2 text-sm font-medium hover:underline"
-                style="color: var(--primary);"
-            >
-                ← Kembali ke Prestasi Mahasiswa
-            </a>
+            <x-back-button href="{{ route('kaprodi.prestasi.mahasiswa') }}" label="Kembali ke Prestasi Mahasiswa" />
         </div>
 
         {{-- Mahasiswa Peraih Prestasi --}}
