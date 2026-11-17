@@ -6,10 +6,8 @@
 
 @section('content')
     {{-- Kembali --}}
-    <div class="mb-5">
-        <a href="{{ route('kurikulum.index') }}"class="text-sm hover:underline"style="color: var(--muted-foreground);">
-            ← Kembali ke Daftar Kurikulum
-        </a>
+    <div class="mb-6">
+        <x-back-button href="{{ route('kurikulum.index') }}" label="Kembali ke Daftar Kurikulum" />
     </div>
     {{-- Informasi Kurikulum --}}
     <div class="w-full rounded-2xl border p-6 mb-6"style="background: var(--card); border-color: var(--border);">
