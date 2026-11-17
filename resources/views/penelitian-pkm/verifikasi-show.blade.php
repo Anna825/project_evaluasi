@@ -7,14 +7,8 @@
 @section('content')
 
     {{-- Kembali --}}
-    <div class="mb-4 text-left">
-        <a
-            href="{{ route('penelitian-pkm.verifikasi') }}"
-            class="text-sm underline hover:opacity-70"
-            style="color: var(--muted-foreground);"
-        >
-            ← Kembali ke Verifikasi Penelitian & PKM
-        </a>
+    <div class="mb-6">
+        <x-back-button href="{{ route('penelitian-pkm.verifikasi') }}" label="Kembali ke Verifikasi Penelitian & PKM" />
     </div>
 
 
@@ -288,7 +282,7 @@
                             >
 
                                 {{-- Bentuk Luaran --}}
-                                <div class="mb-5">
+                                <div class="mb-6">
                                     <p
                                         class="text-xs mb-1.5"
                                         style="color: var(--muted-foreground);"
