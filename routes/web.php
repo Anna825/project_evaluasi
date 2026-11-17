@@ -170,6 +170,11 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
             'dosen_pending' => \App\Models\User::whereHas('dosen')
                 ->where('status', 'pending')
                 ->count(),
+            'alumni_pending' => \App\Models\User::whereHas('roles', function ($query) {
+                    $query->where('nama_role', 'alumni');
+                })
+                ->where('status', 'pending')
+                ->count(),
             'prodi' => \App\Models\Prodi::count(),
         ];
 
