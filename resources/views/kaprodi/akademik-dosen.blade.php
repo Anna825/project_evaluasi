@@ -7,7 +7,7 @@
 @section('content')
     <div class="flex flex-wrap items-center justify-between gap-3 mb-6">
         <p class="text-sm" style="color: var(--muted-foreground);">Ringkasan ini membantu memantau beban mengajar, penelitian/PKM, dan capaian dosen.</p>
-        <a href="{{ route('kaprodi.dashboard') }}" class="ui-btn ui-btn-outline">← Dashboard Utama</a>
+        <x-back-button href="{{ route('kaprodi.dashboard') }}" label="Kembali ke Dashboard Utama" />
     </div>
 
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
