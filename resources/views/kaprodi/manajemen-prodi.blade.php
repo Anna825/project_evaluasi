@@ -9,7 +9,7 @@
         <div>
             <p class="text-sm" style="color: var(--muted-foreground);">Gunakan ringkasan ini untuk berpindah ke data yang perlu dikelola.</p>
         </div>
-        <a href="{{ route('kaprodi.dashboard') }}" class="ui-btn ui-btn-outline">← Dashboard Utama</a>
+        <x-back-button href="{{ route('kaprodi.dashboard') }}" label="Kembali ke Dashboard Utama" />
     </div>
 
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
