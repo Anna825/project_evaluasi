@@ -10,6 +10,7 @@ use App\Models\KelasMahasiswa;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
 
 class MataKuliahDosenController extends Controller
 {
@@ -77,7 +78,8 @@ class MataKuliahDosenController extends Controller
                 'required',
                 'string',
                 'max:50',
-                'unique:mata_kuliah,kode',
+                Rule::unique('mata_kuliah', 'kode')
+                    ->where(fn ($query) => $query->where('kurikulum_id', $kurikulum->id)),
             ],
             'nama' => [
                 'required',
@@ -245,7 +247,8 @@ class MataKuliahDosenController extends Controller
                 'required',
                 'string',
                 'max:50',
-                'unique:mata_kuliah,kode',
+                Rule::unique('mata_kuliah', 'kode')
+                    ->where(fn ($query) => $query->where('kurikulum_id', $request->input('kurikulum_id'))),
             ],
 
             'nama' => [
