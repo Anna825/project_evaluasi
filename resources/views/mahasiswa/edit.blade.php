@@ -14,8 +14,6 @@
     <div class="flex items-center gap-2 text-sm">
         <x-back-button href="{{ route('mahasiswa.index') }}" label="Kembali ke Data Mahasiswa" />
         <span style="color: var(--muted-foreground);">/</span>
-        <span style="color: var(--muted-foreground);">Edit Data</span>
-        <span style="color: var(--muted-foreground);">/</span>
         <span class="font-medium" style="color: var(--foreground);">{{ $mahasiswa->nama }}</span>
     </div>
 </div>
