@@ -6,9 +6,7 @@
 
 @section('content')
     <div class="mb-6">
-        <a href="{{ route('kaprodi.tracer-study.index') }}" class="inline-flex items-center gap-2 text-sm font-medium hover:underline" style="color: var(--primary);">
-            ← Kembali ke Rekap Tracer Study
-        </a>
+        <x-back-button href="{{ route('kaprodi.tracer-study.index') }}" label="Kembali ke Rekap Tracer Study" />
     </div>
 
     <div class="ui-card overflow-hidden mb-6">
