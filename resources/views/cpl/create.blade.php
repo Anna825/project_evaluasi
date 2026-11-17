@@ -7,12 +7,8 @@
 @section('content')
 
     {{-- Tombol kembali --}}
-    <div class="mb-4 text-left">
-        <a href="{{ route('kurikulum.show', $kurikulum) }}"
-           class="text-sm underline hover:opacity-70"
-           style="color: var(--muted-foreground);">
-            ← Kembali ke Kurikulum
-        </a>
+    <div class="mb-6">
+        <x-back-button href="{{ route('kurikulum.show', $kurikulum) }}" label="Kembali ke Kurikulum" />
     </div>
 
     {{-- Form CPL --}}
@@ -65,7 +61,7 @@
                    value="{{ $kurikulum->id }}">
 
             {{-- Kode CPL --}}
-            <div class="mb-5">
+            <div class="mb-6">
                 <label class="block text-sm font-medium mb-1">
                     Kode CPL
                 </label>
@@ -86,7 +82,7 @@
             </div>
 
             {{-- Domain --}}
-            <div class="mb-5">
+            <div class="mb-6">
                 <label class="block text-sm font-medium mb-1">
                     Domain
                     <span class="font-normal"
