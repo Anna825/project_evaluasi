@@ -98,9 +98,7 @@
         </div>
         {{-- Aksi --}}
         <div class="flex flex-wrap gap-2">
-            <a href="{{ route('admin.alumni.index') }}" class="px-4 py-2 rounded-lg text-sm font-medium border" style="border-color: var(--border); color: var(--foreground);">
-                Kembali
-            </a>
+            <x-back-button href="{{ route('admin.alumni.index') }}" label="Kembali" />
             @if ($user->status !== 'aktif')
                 <form method="POST" action="{{ route('admin.alumni.activate', $user) }}">
                     @csrf
