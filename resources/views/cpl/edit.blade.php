@@ -6,14 +6,8 @@
 
 @section('content')
  {{-- Kembali --}}
-    <div class="mb-4 text-left">
-        <a
-            href="{{ route('kurikulum.show', $cpl->kurikulum_id) }}"
-            class="text-sm underline hover:opacity-70"
-            style="color: var(--muted-foreground);"
-        >
-            ← Kembali ke Kurikulum
-        </a>
+    <div class="mb-6">
+        <x-back-button href="{{ route('kurikulum.show', $cpl->kurikulum_id) }}" label="kurikulum_id) }}" class="text-sm underline hover:opacity-70" style="color: var(--muted-foreground);" > Kembali ke Kurikulum" />
     </div>
 
     <div
@@ -51,7 +45,7 @@
             @csrf
             @method('PUT')
             <input type="hidden" name="kurikulum_id" value="{{ $cpl->kurikulum_id }}">
-            <div class="mb-4">
+            <div class="mb-6">
                 <label class="block text-sm font-medium mb-1">Kode CPL</label>
                 <input type="text" name="kode" value="{{ old('kode', $cpl->kode) }}" class="w-full rounded-xl border px-3 py-2 text-sm" style="border-color: var(--border);" required>
 
@@ -59,7 +53,7 @@
                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                 @enderror
             </div>
-            <div class="mb-4">
+            <div class="mb-6">
                 <label class="block text-sm font-medium mb-1">Domain (opsional)</label>
                 <input type="text" name="domain" value="{{ old('domain', $cpl->domain) }}" class="w-full rounded-xl border px-3 py-2 text-sm" style="border-color: var(--border);">
             </div>
