@@ -6,12 +6,8 @@
 
 @section('content')
 
-    <div class="mb-4 text-left">
-        <a href="{{ route('kaprodi.dosen.index') }}"
-           class="text-sm underline hover:opacity-70"
-           style="color: var(--muted-foreground);">
-            ← Kembali ke Daftar Dosen
-        </a>
+    <div class="mb-6">
+        <x-back-button href="{{ route('kaprodi.dosen.index') }}" label="Kembali ke Daftar Dosen" />
     </div>
 
     <div class="w-full rounded-2xl border overflow-hidden"
@@ -169,11 +165,7 @@
         <div class="px-6 py-4 border-t"
              style="border-color: var(--border);">
 
-            <a href="{{ route('kaprodi.dosen.index') }}"
-               class="inline-flex items-center px-4 py-2 rounded-xl text-sm font-medium"
-               style="background: var(--secondary); color: var(--foreground);">
-                Kembali
-            </a>
+            <x-back-button href="{{ route('kaprodi.dosen.index') }}" label="Kembali" />
 
         </div>
 
