@@ -5,12 +5,8 @@
 @section('page-desc', 'Daftar capaian CPL mahasiswa pada kelas ' . $kelasMahasiswa->nama_kelas)
 
 @section('content')
-    <div class="mb-5">
-        <a href="{{ route('kurikulum.laporan-cpl', $kurikulum) }}"
-           class="text-sm hover:underline"
-           style="color: var(--muted-foreground);">
-            ← Kembali ke Daftar Kelas
-        </a>
+    <div class="mb-6">
+        <x-back-button href="{{ route('kurikulum.laporan-cpl', $kurikulum) }}" label="Kembali ke Daftar Kelas" />
     </div>
 
     <div class="rounded-2xl border p-5 mb-5"
