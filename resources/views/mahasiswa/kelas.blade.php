@@ -6,36 +6,9 @@
 <div class="w-full py-5">
 
     {{-- Breadcrumb / Kembali --}}
-    <div class="flex items-center justify-between mb-5">
-
-        <div>
-            <p class="text-sm" style="color: var(--muted-foreground);">
-                Data Mahasiswa
-                <span class="mx-2">›</span>
-                {{ $kelas->nama_kelas }}
-            </p>
-
-            <!-- <h1 class="text-2xl font-semibold mt-1"
-                style="color: var(--foreground);">
-                {{ $kelas->nama_kelas }}
-            </h1> -->
-
-            <!-- <p class="text-sm mt-1"
-               style="color: var(--muted-foreground);">
-                Daftar mahasiswa pada kelas ini
-            </p> -->
-        </div>
-
-        <a href="{{ route('mahasiswa.index') }}"
-           class="inline-flex items-center gap-2 px-4 py-2 rounded-xl border text-sm font-medium transition hover:opacity-80"
-           style="border-color: var(--border);
-                  background: var(--card);
-                  color: var(--foreground);">
-            ← Kembali
-        </a>
-
+    <div class="mb-6">
+        <x-back-button href="{{ route('mahasiswa.index') }}" label="Kembali ke Data Mahasiswa" />
     </div>
-
 
     {{-- Informasi Kelas --}}
     <div class="rounded-2xl border p-5 mb-5"
