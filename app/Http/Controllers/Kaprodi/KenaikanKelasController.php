@@ -38,8 +38,22 @@ class KenaikanKelasController extends Controller
     public function index(Request $request)
     {
         $prodi = $this->prodiKaprodi();
+        // Sembunyikan hanya lima kelas riwayat yang diminta dari dropdown kelas asal.
+        // Record kelas dan seluruh riwayat akademiknya tetap dipertahankan.
         $kelasList = KelasMahasiswa::where('prodi_id', $prodi->id)
             ->where('status_kelas', 'aktif')
+            ->whereNot(function ($query) {
+                $query->where(function ($q) {
+                    $q->where('nama_kelas', '1AEC-0')
+                        ->whereIn('angkatan', [2024, 2025]);
+                })->orWhere(function ($q) {
+                    $q->where('nama_kelas', '2AEC-0')
+                        ->whereIn('angkatan', [2024, 2025]);
+                })->orWhere(function ($q) {
+                    $q->where('nama_kelas', '3AEC-0')
+                        ->where('angkatan', 2024);
+                });
+            })
             ->orderBy('tingkat')->orderBy('nama_kelas')->get();
         $semesterList = Semester::with('tahunAkademik')->orderByDesc('tanggal_mulai')->get();
         $preview = collect();
