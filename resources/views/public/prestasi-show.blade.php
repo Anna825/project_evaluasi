@@ -12,13 +12,7 @@
 
         {{-- Header halaman --}}
         <div class="mb-6">
-            <a
-                href="{{ route('public.prestasi.index', $mahasiswa->nim) }}"
-                class="inline-flex items-center gap-2 text-sm font-medium hover:underline"
-                style="color: var(--primary);"
-            >
-                ← Kembali ke Prestasi Saya
-            </a>
+            <x-back-button href="{{ route('public.prestasi.index', $mahasiswa->nim) }}" label="nim) }}" class="inline-flex items-center gap-2 text-sm font-medium hover:underline" style="color: var(--primary);" > Kembali ke Prestasi Saya" />
         </div>
 
         {{-- Detail Prestasi --}}
@@ -254,13 +248,7 @@
                 >
 
                     {{-- Kembali --}}
-                    <a
-                        href="{{ route('public.prestasi.index', $mahasiswa->nim) }}"
-                        class="inline-flex items-center justify-center px-5 py-2.5 rounded-xl text-sm font-medium"
-                        style="background: var(--secondary); color: var(--foreground);"
-                    >
-                        ← Kembali
-                    </a>
+                    <x-back-button href="{{ route('public.prestasi.index', $mahasiswa->nim) }}" label="nim) }}" class="inline-flex items-center justify-center px-5 py-2.5 rounded-xl text-sm font-medium" style="background: var(--secondary); color: var(--foreground);" > Kembali" />
 
                     {{-- Edit --}}
                     <a
