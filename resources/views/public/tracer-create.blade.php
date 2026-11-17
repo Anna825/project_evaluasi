@@ -14,12 +14,7 @@
         NAVIGASI
     ========================================================== --}}
     <div class="mb-4 text-left">
-        <a
-            href="{{ route('alumni.dashboard') }}"
-            class="text-sm text-gray-600 underline hover:text-gray-900"
-        >
-            ← Kembali ke Dashboard
-        </a>
+        <x-back-button href="{{ route('alumni.dashboard') }}" label="Kembali ke Dashboard" />
     </div>
 
 
@@ -74,13 +69,7 @@
                 </span>.
             </p>
 
-            <a
-                href="{{ route('public.mahasiswa.menu', $mahasiswa->nim) }}"
-                class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-medium text-white"
-                style="background: var(--primary);"
-            >
-                ← Kembali ke Dashboard
-            </a>
+            <x-back-button href="{{ route('public.mahasiswa.menu', $mahasiswa->nim) }}" label="nim) }}" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-medium text-white" style="background: var(--primary);" > Kembali ke Dashboard" />
 
         </div>
 
