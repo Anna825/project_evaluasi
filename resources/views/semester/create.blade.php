@@ -11,14 +11,8 @@
 <div class="w-full">
 
     {{-- Kembali --}}
-    <div class="mb-4 text-left">
-        <a
-            href="{{ route('semester.index') }}"
-            class="text-sm underline hover:opacity-70"
-            style="color: var(--muted-foreground);"
-        >
-            ← Kembali ke Semester
-        </a>
+    <div class="mb-6">
+        <x-back-button href="{{ route('semester.index') }}" label="Kembali ke Semester" />
     </div>
 
 
@@ -61,7 +55,7 @@
 
 
             {{-- Tahun Akademik --}}
-            <div class="mb-5">
+            <div class="mb-6">
 
                 <label
                     for="tahun_akademik_id"
@@ -99,7 +93,7 @@
 
 
             {{-- Jenis Semester --}}
-            <div class="mb-5">
+            <div class="mb-6">
 
                 <label
                     for="jenis"
@@ -140,7 +134,7 @@
 
 
             {{-- Tanggal Mulai --}}
-            <div class="mb-5">
+            <div class="mb-6">
 
                 <label
                     for="tanggal_mulai"
