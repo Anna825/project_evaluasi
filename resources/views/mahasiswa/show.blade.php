@@ -5,12 +5,8 @@
 @section('page-desc', 'Detail data mahasiswa')
 
 @section('content')
-    <div class="mb-5">
-        <a href="{{ route('mahasiswa.kelas.show', $mahasiswa->kelasMahasiswa) }}"
-        class="inline-flex items-center gap-2 text-sm font-medium transition hover:opacity-70"
-        style="color: var(--muted-foreground);">
-            ← Kembali ke Daftar Mahasiswa
-        </a>
+    <div class="mb-6">
+        <x-back-button href="{{ route('mahasiswa.kelas.show', $mahasiswa->kelasMahasiswa) }}" label="kelasMahasiswa) }}" class="inline-flex items-center gap-2 text-sm font-medium transition hover:opacity-70" style="color: var(--muted-foreground);"> Kembali ke Daftar Mahasiswa" />
     </div>
     @php
         $statusBadge = [
@@ -62,9 +58,7 @@
 
             <div class="flex gap-2 mt-6">
                 <button type="button" onclick="document.getElementById('modalEditMahasiswa').showModal()" class="flex-1 text-center px-4 py-2.5 rounded-lg text-sm font-medium text-white" style="background: var(--primary);">Edit</button>
-                <a href="{{ route('mahasiswa.index') }}" class="flex-1 text-center px-4 py-2.5 rounded-lg text-sm font-medium border" style="border-color: var(--border); color: var(--muted-foreground);">
-                    Kembali
-                </a>
+                <x-back-button href="{{ route('mahasiswa.index') }}" label="Kembali" />
             </div>
         </div>
 
