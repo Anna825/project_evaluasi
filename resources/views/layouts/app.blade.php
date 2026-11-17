@@ -411,6 +411,43 @@
             </div>
 
             <div class="p-6">
+                {{-- Alert validasi: tampilkan dengan jelas ketika data gagal disimpan --}}
+                @if ($errors->any())
+                    <div role="alert" aria-live="assertive" class="mb-6 px-4 py-4 rounded-xl border"
+                         style="background: #fdecea; border-color: #e6a5a0; color: #9b2c2c;">
+                        <div class="flex items-start gap-3">
+                            <svg class="shrink-0 mt-0.5" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <path stroke-linecap="round" d="M12 8v4m0 4h.01"></path>
+                            </svg>
+                            <div class="flex-1">
+                                <p class="font-semibold mb-1">Data belum bisa disimpan.</p>
+                                <p class="text-sm mb-2">Periksa kembali isian form berikut:</p>
+                                <ul class="list-disc pl-5 text-sm space-y-1">
+                                    @foreach ($errors->all() as $error)
+                                        <li>{{ $error }}</li>
+                                    @endforeach
+                                </ul>
+                            </div>
+                            <button type="button" onclick="this.closest('[role=alert]').remove()"
+                                    class="text-lg leading-none font-semibold hover:opacity-70"
+                                    aria-label="Tutup pemberitahuan">&times;</button>
+                        </div>
+                    </div>
+                @endif
+
+                @if (session('error'))
+                    <div role="alert" aria-live="assertive" class="mb-6 px-4 py-3 rounded-xl border"
+                         style="background: #fdecea; border-color: #e6a5a0; color: #9b2c2c;">
+                        <div class="flex items-center justify-between gap-3">
+                            <p class="text-sm font-medium">{{ session('error') }}</p>
+                            <button type="button" onclick="this.closest('[role=alert]').remove()"
+                                    class="text-lg leading-none font-semibold hover:opacity-70"
+                                    aria-label="Tutup pemberitahuan">&times;</button>
+                        </div>
+                    </div>
+                @endif
+
                 @if (session('status'))
                     <div class="mb-6 px-4 py-3 rounded-xl border-l-4 text-sm" style="background: var(--card); border-color: #2e7d32;">
                         {{ session('status') }}
