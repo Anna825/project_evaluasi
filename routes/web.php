@@ -142,10 +142,6 @@ Route::get('/alumni/login', [AlumniLoginController::class, 'create'])
     ->name('alumni.login');
 Route::post('/alumni/login', [AlumniLoginController::class, 'store'])
     ->name('alumni.login.store');
-Route::get('/alumni/tracer-study', [AlumniTracerController::class, 'create'])
-    ->name('alumni.tracer.index');
-Route::post('/alumni/tracer-study', [AlumniTracerController::class, 'store'])
-    ->name('alumni.tracer.store');
 Route::middleware(['auth', 'role:alumni'])->group(function () {
     Route::get('/alumni/dashboard', [AlumniDashboardController::class, 'index'])
         ->name('alumni.dashboard');
