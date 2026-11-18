@@ -69,7 +69,7 @@
                 </span>.
             </p>
 
-            <x-back-button href="{{ route('public.mahasiswa.menu', $mahasiswa->nim) }}" label="nim) }}" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-medium text-white" style="background: var(--primary);" > Kembali ke Dashboard" />
+            <a href="{{ route('alumni.dashboard') }}" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-medium text-white" style="background: var(--primary);">Kembali ke Dashboard</a>
 
         </div>
 
