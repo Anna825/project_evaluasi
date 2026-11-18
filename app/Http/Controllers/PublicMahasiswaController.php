@@ -27,6 +27,46 @@ class PublicMahasiswaController extends Controller
             ->firstOrFail();
     }
 
+    /**
+     * Identifikasi mahasiswa untuk fitur Tracer Study.
+     * Mahasiswa reguler menggunakan sesi cek NIM, sedangkan alumni
+     * menggunakan relasi akun login ke data mahasiswa.
+     */
+    private function mahasiswaUntukTracer(string $nim): Mahasiswa
+    {
+        if ((string) session('public_mahasiswa_nim') === (string) $nim) {
+            return Mahasiswa::with('prodi')
+                ->where('nim', $nim)
+                ->firstOrFail();
+        }
+
+        $user = auth()->user();
+
+        if (! $user) {
+            abort(403, 'Silakan login menggunakan akun Alumni untuk mengakses Tracer Study.');
+        }
+
+        $userRole = $user->userRoles()
+            ->whereHas('role', function ($query) {
+                $query->where('nama_role', 'alumni');
+            })
+            ->whereHas('mahasiswa', function ($query) use ($nim) {
+                $query->where('nim', $nim);
+            })
+            ->with('mahasiswa.prodi')
+            ->first();
+
+        if (! $userRole || ! $userRole->mahasiswa) {
+            abort(403, 'Anda tidak memiliki akses ke data Tracer Study ini.');
+        }
+
+        if ($userRole->mahasiswa->status !== 'lulus') {
+            abort(403, 'Tracer Study hanya dapat diakses oleh alumni yang sudah lulus.');
+        }
+
+        return $userRole->mahasiswa;
+    }
+
     public function cekNim()
     {
         $stats = [
@@ -344,7 +384,7 @@ class PublicMahasiswaController extends Controller
     }
     public function tracerCreate(string $nim)
     {
-        $mahasiswa = $this->mahasiswaDalamSesi($nim);
+        $mahasiswa = $this->mahasiswaUntukTracer($nim);
 
         if ($mahasiswa->status !== 'lulus') {
             return redirect()
@@ -375,7 +415,7 @@ class PublicMahasiswaController extends Controller
 
     public function tracerStore(Request $request, string $nim)
     {
-        $mahasiswa = $this->mahasiswaDalamSesi($nim);
+        $mahasiswa = $this->mahasiswaUntukTracer($nim);
 
         if ($mahasiswa->status !== 'lulus') {
             abort(
@@ -612,12 +652,12 @@ class PublicMahasiswaController extends Controller
             ? 'Tracer Study berhasil dicatat. Terima kasih!'
             : 'Riwayat perubahan pekerjaan berhasil ditambahkan. Terima kasih!';
         return redirect()
-            ->route('public.tracer.create', $nim)
+            ->route('alumni.tracer.index')
             ->with('status', $message);
     }
     public function tracerDestroy(string $nim, TracerStudy $tracer)
     {
-        $mahasiswa = $this->mahasiswaDalamSesi($nim);
+        $mahasiswa = $this->mahasiswaUntukTracer($nim);
         // Pastikan riwayat yang dihapus benar-benar milik mahasiswa tersebut.
         if ($tracer->mahasiswa_id !== $mahasiswa->id) {
             abort(403);
